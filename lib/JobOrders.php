@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CATS
  * Job Orders Library
@@ -29,18 +30,17 @@
  * @copyright Copyright (C) 2005 - 2007 Cognizo Technologies, Inc.
  * @version    $Id: JobOrders.php 3829 2007-12-11 21:17:46Z brian $
  */
-
-define('JOBORDERS_STATUS_ACTIVE',        100);
-define('JOBORDERS_STATUS_ONHOLD',        200);
-define('JOBORDERS_STATUS_FULL',          300);
-define('JOBORDERS_STATUS_PLACED',        400);
-define('JOBORDERS_STATUS_LOST',          500);
-define('JOBORDERS_STATUS_CLOSED',        600);
+define('JOBORDERS_STATUS_ACTIVE', 100);
+define('JOBORDERS_STATUS_ONHOLD', 200);
+define('JOBORDERS_STATUS_FULL', 300);
+define('JOBORDERS_STATUS_PLACED', 400);
+define('JOBORDERS_STATUS_LOST', 500);
+define('JOBORDERS_STATUS_CLOSED', 600);
 define('JOBORDERS_STATUS_UPCOMING_LEAD', 700);
-define('JOBORDERS_STATUS_CANCELED',      800);
+define('JOBORDERS_STATUS_CANCELED', 800);
 
-define('JOBORDERS_STATUS_ALL',              10100);
-define('JOBORDERS_STATUS_ONHOLDFULL',       10200);
+define('JOBORDERS_STATUS_ALL', 10100);
+define('JOBORDERS_STATUS_ONHOLDFULL', 10200);
 define('JOBORDERS_STATUS_ACTIVEONHOLDFULL', 10300);
 
 include_once('./lib/Pipelines.php');
@@ -50,25 +50,21 @@ include_once('./lib/History.php');
 include_once('./lib/DataGrid.php');
 
 /**
- *	Job Orders Library
- *	@package    CATS
- *	@subpackage Library
+ * 	Job Orders Library
+ * 	@package    CATS
+ * 	@subpackage Library
  */
-class JobOrders
-{
+class JobOrders {
+
     public $_db;
     public $_siteID;
-
     public $extraFields;
 
-
-    public function __construct($siteID)
-    {
+    public function __construct($siteID) {
         $this->_siteID = $siteID;
         $this->_db = DatabaseConnection::getInstance();
         $this->extraFields = new ExtraFields($siteID, DATA_ITEM_JOBORDER);
     }
-
 
     /**
      * Adds a job order to the database and returns its job order ID.
@@ -92,22 +88,18 @@ class JobOrders
      * @param integer owner user
      * @return new job order ID, or -1 on failure.
      */
-    public function add($title, $companyID, $contactID, $description, $notes,
-        $duration, $maxRate, $type, $isHot, $public, $openings, $companyJobID,
-        $salary, $city, $state, $startDate, $enteredBy, $recruiter, $owner,
-        $department, $questionnaire = false)
-    {
+    public function add($title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $public, $openings, $companyJobID, $salary, $city, $state, $startDate, $enteredBy, $recruiter, $owner, $department, $questionnaire = false) {
         /* Get the department ID of the selected department. */
         // FIXME: Move this up to the UserInterface level. I don't like this
         //        tight coupling, and calling Contacts methods as static is
         //        bad.
         $departmentID = Contacts::getDepartmentIDByName(
-            $department, $companyID, $this->_db
+                        $department, $companyID, $this->_db
         );
 
         // FIXME: Is the OrNULL usage below correct? Can these fields be NULL?
         $sql = sprintf(
-            "INSERT INTO joborder (
+                "INSERT INTO joborder (
                 title,
                 client_job_id,
                 company_id,
@@ -160,36 +152,13 @@ class JobOrders
                 NOW(),
                 NOW(),
                 %s
-            )",
-            $this->_db->makeQueryString($title),
-            $this->_db->makeQueryString($companyJobID),
-            $this->_db->makeQueryInteger($companyID),
-            $this->_db->makeQueryInteger($contactID),
-            $this->_db->makeQueryString($description),
-            $this->_db->makeQueryString($notes),
-            $this->_db->makeQueryString($duration),
-            $this->_db->makeQueryString($maxRate),
-            $this->_db->makeQueryString($type),
-            ($isHot ? '1' : '0'),
-            ($public ? '1' : '0'),
-            $this->_db->makeQueryInteger($openings),
-            $this->_db->makeQueryInteger($openings),
-            $this->_db->makeQueryString($salary),
-            $this->_db->makeQueryString($city),
-            $this->_db->makeQueryString($state),
-            $this->_db->makeQueryInteger($departmentID),
-            $this->_db->makeQueryStringOrNULL($startDate),
-            $this->_db->makeQueryInteger($enteredBy),
-            $this->_db->makeQueryInteger($recruiter),
-            $this->_db->makeQueryInteger($owner),
-            $this->_siteID,
-            // Questionnaire ID or NULL if none
-            $questionnaire !== false ? $this->_db->makeQueryInteger($questionnaire) : 'NULL'
+            )", $this->_db->makeQueryString($title), $this->_db->makeQueryString($companyJobID), $this->_db->makeQueryInteger($companyID), $this->_db->makeQueryInteger($contactID), $this->_db->makeQueryString($description), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($duration), $this->_db->makeQueryString($maxRate), $this->_db->makeQueryString($type), ($isHot ? '1' : '0'), ($public ? '1' : '0'), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryString($salary), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryInteger($departmentID), $this->_db->makeQueryStringOrNULL($startDate), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryInteger($recruiter), $this->_db->makeQueryInteger($owner), $this->_siteID,
+                // Questionnaire ID or NULL if none
+                $questionnaire !== false ? $this->_db->makeQueryInteger($questionnaire) : 'NULL'
         );
 
         $queryResult = $this->_db->query($sql);
-        if (!$queryResult)
-        {
+        if (!$queryResult) {
             return -1;
         }
 
@@ -200,6 +169,82 @@ class JobOrders
         $history->storeHistoryNew(DATA_ITEM_JOBORDER, $jobOrderID);
 
         return $jobOrderID;
+    }
+
+    /**
+     * 
+     * @param type $jobOrderID
+     * @param userID $mandatoryskillname
+     * @param type $mandatoryskillnameexp
+     * @param type $optionalskillname
+     * @param type $optionalskillnameexp
+     * @param type $certificationname
+     * @param type $certificationcategory
+     * 
+     * CREATE TABLE `joborder_skills` (
+      `joborder_id` int(11) DEFAULT NULL,
+      `skilltype` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+      `skillname` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+      `skillexprience` int(11) DEFAULT NULL,
+      `entered_by` int(11) NOT NULL DEFAULT '0',
+      `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+      `date_modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
+      ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+      CREATE TABLE `joborder_certifications` (
+      `joborder_id` int(11) DEFAULT NULL,
+      `certificationname` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+      `certificationtype` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+      `entered_by` int(11) NOT NULL DEFAULT '0',
+      `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+      `date_modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
+      ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+     */
+    public function addJobSkillsCertifications(
+    $jobOrderID, $userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory) {
+
+        $rResult = true;
+        try {
+            //mandatory skills
+            $currCnt = 0;
+            foreach ($mandatoryskillname as $mskill) {
+                $sql = sprintf(
+                        "INSERT INTO `joborder_skills` (`joborder_id`,`skilltype`,`skillname`,"
+                        . "`skillexprience`,`entered_by`,`date_created`,`date_modified`) VALUES "
+                        . "(%s, 'Mandatory', %s, %s, %s, now(), now())", $this->_db->makeQueryInteger($jobOrderID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($mandatoryskillnameexp[$currCnt]), $this->_db->makeQueryInteger($userID));
+
+                $queryResult = $this->_db->query($sql);
+                $currCnt++;
+            }
+
+            //Optional skills
+            $currCnt = 0;
+            foreach ($optionalskillname as $mskill) {
+                $sql = sprintf(
+                        "INSERT INTO `joborder_skills` (`joborder_id`,`skilltype`,`skillname`,"
+                        . "`skillexprience`,`entered_by`,`date_created`,`date_modified`) VALUES "
+                        . "(%s, 'Optional', %s, %s, %s, now(), now())", $this->_db->makeQueryInteger($jobOrderID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($optionalskillnameexp[$currCnt]), $this->_db->makeQueryInteger($userID));
+
+                $queryResult = $this->_db->query($sql);
+                $currCnt++;
+            }
+
+            //Certifications
+            $currCnt = 0;
+            foreach ($certificationname as $mskill) {
+                $sql = sprintf(
+                        "INSERT INTO `joborder_certifications` (`joborder_id`,`certificationname`,"
+                        . "`certificationtype`,`entered_by`,`date_created`,`date_modified`) VALUES "
+                        . "(%s, %s, %s, %s, now(), now())", $this->_db->makeQueryInteger($jobOrderID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($certificationcategory[$currCnt]), $this->_db->makeQueryInteger($userID));
+
+                $queryResult = $this->_db->query($sql);
+                $currCnt++;
+            }
+        } catch (Exception $ex) {
+            $rResult = false;
+        }
+
+        return $rResult;
     }
 
     /**
@@ -226,22 +271,18 @@ class JobOrders
      * @param integer owner user
      * @return boolean True if successful; false otherwise.
      */
-    public function update($jobOrderID, $title, $companyJobID, $companyID,
-        $contactID, $description, $notes, $duration, $maxRate, $type, $isHot,
-        $openings, $openingsAvailable, $salary, $city, $state, $startDate, $status, $recruiter,
-        $owner, $public, $email, $emailAddress, $department, $questionnaire = false)
-    {
+    public function update($jobOrderID, $title, $companyJobID, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $openings, $openingsAvailable, $salary, $city, $state, $startDate, $status, $recruiter, $owner, $public, $email, $emailAddress, $department, $questionnaire = false) {
         /* Get the department ID of the selected department. */
         // FIXME: Move this up to the UserInterface level. I don't like this
         //        tight coupling, and calling Contacts methods as static is
         //        bad.
         $departmentID = Contacts::getDepartmentIDByName(
-            $department, $companyID, $this->_db
+                        $department, $companyID, $this->_db
         );
 
         // FIXME: Is the OrNULL usage below correct? Can these fields be NULL?
         $sql = sprintf(
-            "UPDATE
+                "UPDATE
                 joborder
              SET
                 title              = %s,
@@ -270,32 +311,9 @@ class JobOrders
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryString($title),
-            $this->_db->makeQueryString($companyJobID),
-            $this->_db->makeQueryInteger($companyID),
-            $this->_db->makeQueryInteger($contactID),
-            $this->_db->makeQueryStringOrNULL($startDate),
-            $this->_db->makeQueryString($description),
-            $this->_db->makeQueryString($notes),
-            $this->_db->makeQueryString($duration),
-            $this->_db->makeQueryString($maxRate),
-            $this->_db->makeQueryString($type),
-            ($isHot ? '1' : '0'),
-            $this->_db->makeQueryInteger($openings),
-            $this->_db->makeQueryInteger($openingsAvailable),
-            $this->_db->makeQueryString($status),
-            $this->_db->makeQueryString($salary),
-            $this->_db->makeQueryString($city),
-            $this->_db->makeQueryString($state),
-            $this->_db->makeQueryInteger($departmentID),
-            $this->_db->makeQueryInteger($recruiter),
-            $this->_db->makeQueryInteger($owner),
-            ($public ? '1' : '0'),
-            // Questionnaire ID or NULL if none
-            $questionnaire !== false ? $this->_db->makeQueryInteger($questionnaire) : 'NULL',
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryString($title), $this->_db->makeQueryString($companyJobID), $this->_db->makeQueryInteger($companyID), $this->_db->makeQueryInteger($contactID), $this->_db->makeQueryStringOrNULL($startDate), $this->_db->makeQueryString($description), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($duration), $this->_db->makeQueryString($maxRate), $this->_db->makeQueryString($type), ($isHot ? '1' : '0'), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryInteger($openingsAvailable), $this->_db->makeQueryString($status), $this->_db->makeQueryString($salary), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryInteger($departmentID), $this->_db->makeQueryInteger($recruiter), $this->_db->makeQueryInteger($owner), ($public ? '1' : '0'),
+                // Questionnaire ID or NULL if none
+                $questionnaire !== false ? $this->_db->makeQueryInteger($questionnaire) : 'NULL', $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
 
         $preHistory = $this->get($jobOrderID);
@@ -305,24 +323,19 @@ class JobOrders
         /* Store history. */
         $history = new History($this->_siteID);
         $history->storeHistoryChanges(
-            DATA_ITEM_JOBORDER, $jobOrderID, $preHistory, $postHistory
+                DATA_ITEM_JOBORDER, $jobOrderID, $preHistory, $postHistory
         );
 
-        if (!$queryResult)
-        {
+        if (!$queryResult) {
             return false;
         }
 
-        if (!empty($emailAddress))
-        {
+        if (!empty($emailAddress)) {
             /* Send e-mail notification. */
             //FIXME: Make subject configurable.
             $mailer = new Mailer($this->_siteID);
             $mailerStatus = $mailer->sendToOne(
-                array($emailAddress, ''),
-                'CATS Notification: Job Order Ownership Change',
-                $email,
-                true
+                    array($emailAddress, ''), 'CATS Notification: Job Order Ownership Change', $email, true
             );
         }
 
@@ -335,18 +348,15 @@ class JobOrders
      * @param integer job order ID
      * @return void
      */
-    public function delete($jobOrderID)
-    {
+    public function delete($jobOrderID) {
         /* Delete the job order. */
         $sql = sprintf(
-            "DELETE FROM
+                "DELETE FROM
                 joborder
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
         $this->_db->query($sql);
 
@@ -356,54 +366,46 @@ class JobOrders
 
         /* Delete pipeline entries from candidate_joborder. */
         $sql = sprintf(
-            "DELETE FROM
+                "DELETE FROM
                 candidate_joborder
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
         $this->_db->query($sql);
 
         /* Delete pipeline history from candidate_joborder_status_history. */
         $sql = sprintf(
-            "DELETE FROM
+                "DELETE FROM
                 candidate_joborder_status_history
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
         $this->_db->query($sql);
 
         /* Delete attachments. */
         $attachments = new Attachments($this->_siteID);
         $attachmentsRS = $attachments->getAll(
-            DATA_ITEM_JOBORDER, $jobOrderID
+                DATA_ITEM_JOBORDER, $jobOrderID
         );
 
-        foreach ($attachmentsRS as $rowNumber => $row)
-        {
+        foreach ($attachmentsRS as $rowNumber => $row) {
             $attachments->delete($row['attachmentID']);
         }
 
         /* Delete from saved lists. */
         $sql = sprintf(
-            "DELETE FROM
+                "DELETE FROM
                 saved_list_entry
             WHERE
                 data_item_id = %s
             AND
                 site_id = %s
             AND
-                data_item_type = %s",
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID,
-            DATA_ITEM_JOBORDER
+                data_item_type = %s", $this->_db->makeQueryInteger($jobOrderID), $this->_siteID, DATA_ITEM_JOBORDER
         );
         $this->_db->query($sql);
 
@@ -416,16 +418,14 @@ class JobOrders
      *
      * @return integer count
      */
-    public function getCount()
-    {
+    public function getCount() {
         $sql = sprintf(
-            "SELECT
+                "SELECT
                 COUNT(*) AS totalJobOrders
             FROM
                 joborder
             WHERE
-                joborder.site_id = %s",
-            $this->_siteID
+                joborder.site_id = %s", $this->_siteID
         );
 
         return $this->_db->getColumn($sql, 0, 0);
@@ -437,10 +437,9 @@ class JobOrders
      * @param integer job order ID
      * @return array job order data
      */
-    public function get($jobOrderID)
-    {
+    public function get($jobOrderID) {
         $sql = sprintf(
-            "SELECT
+                "SELECT
                 joborder.joborder_id AS jobOrderID,
                 joborder.company_id AS companyID,
                 joborder.contact_id AS contactID,
@@ -529,15 +528,11 @@ class JobOrders
             AND
                 joborder.site_id = %s
             GROUP BY
-                joborder.joborder_id",
-            $this->_db->makeQueryInteger($jobOrderID),
-            PIPELINE_STATUS_SUBMITTED,
-            $this->_siteID,
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                joborder.joborder_id", $this->_db->makeQueryInteger($jobOrderID), PIPELINE_STATUS_SUBMITTED, $this->_siteID, $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
 
-        if (!eval(Hooks::get('JO_GET_1_SQL'))) return;
+        if (!eval(Hooks::get('JO_GET_1_SQL')))
+            return;
 
         return $this->_db->getAssoc($sql);
     }
@@ -549,10 +544,9 @@ class JobOrders
      * @param integer job order ID
      * @return array job order data
      */
-    public function getForEditing($jobOrderID)
-    {
+    public function getForEditing($jobOrderID) {
         $sql = sprintf(
-            "SELECT
+                "SELECT
                 joborder.joborder_id AS jobOrderID,
                 joborder.company_id AS companyID,
                 company.name AS companyName,
@@ -589,12 +583,11 @@ class JobOrders
             WHERE
                 joborder.joborder_id = %s
             AND
-                joborder.site_id = %s",
-            $jobOrderID,
-            $this->_siteID
+                joborder.site_id = %s", $jobOrderID, $this->_siteID
         );
 
-        if (!eval(Hooks::get('JO_GET_EDIT_SQL'))) return;
+        if (!eval(Hooks::get('JO_GET_EDIT_SQL')))
+            return;
 
         $rs = $this->_db->getAssoc($sql);
 
@@ -611,75 +604,50 @@ class JobOrders
      * @param boolean only hot job orders
      * @return array job orders data
      */
-    public function getAll($status, $userID = -1, $companyID = -1,
-        $contactID = -1, $onlyHot = false, $onlyPublic = false, $allowAdministrativeHidden = false)
-    {
-        if ($userID >= 0)
-        {
+    public function getAll($status, $userID = -1, $companyID = -1, $contactID = -1, $onlyHot = false, $onlyPublic = false, $allowAdministrativeHidden = false) {
+        if ($userID >= 0) {
             $userCriterion = sprintf(
-                "AND (joborder.recruiter = %s OR joborder.owner = %s)",
-                $this->_db->makeQueryInteger($userID),
-                $this->_db->makeQueryInteger($userID)
+                    "AND (joborder.recruiter = %s OR joborder.owner = %s)", $this->_db->makeQueryInteger($userID), $this->_db->makeQueryInteger($userID)
             );
-        }
-        else
-        {
+        } else {
             $userCriterion = '';
         }
 
-        if ($companyID >= 0)
-        {
+        if ($companyID >= 0) {
             $companyCriterion = sprintf(
-                "AND company.company_id = %s",
-                $this->_db->makeQueryInteger($companyID)
+                    "AND company.company_id = %s", $this->_db->makeQueryInteger($companyID)
             );
-        }
-        else
-        {
+        } else {
             $companyCriterion = '';
         }
 
-        if ($contactID >= 0)
-        {
+        if ($contactID >= 0) {
             $contactCriterion = sprintf(
-                "AND contact.contact_id = %s",
-                $this->_db->makeQueryInteger($contactID)
+                    "AND contact.contact_id = %s", $this->_db->makeQueryInteger($contactID)
             );
-        }
-        else
-        {
+        } else {
             $contactCriterion = '';
         }
 
-        if ($onlyHot)
-        {
+        if ($onlyHot) {
             $hotCriterion = "AND joborder.is_hot = 1";
-        }
-        else
-        {
+        } else {
             $hotCriterion = '';
         }
 
-        if ($onlyPublic)
-        {
+        if ($onlyPublic) {
             $publicCriterion = "AND joborder.public = 1";
-        }
-        else
-        {
+        } else {
             $publicCriterion = '';
         }
 
-        if (!$allowAdministrativeHidden)
-        {
+        if (!$allowAdministrativeHidden) {
             $adminHiddenCriterion = 'AND joborder.is_admin_hidden = 0';
-        }
-        else
-        {
+        } else {
             $adminHiddenCriterion = '';
         }
 
-        switch ($status)
-        {
+        switch ($status) {
             case JOBORDERS_STATUS_ACTIVE:
                 $statusCriterion = "AND joborder.status = 'Active'";
                 break;
@@ -703,7 +671,7 @@ class JobOrders
         }
 
         $sql = sprintf(
-            "SELECT
+                "SELECT
                 joborder.joborder_id AS jobOrderID,
                 IF(attachment_id, 1, 0) AS attachmentPresent,
                 joborder.title AS title,
@@ -788,20 +756,11 @@ class JobOrders
                 joborder.joborder_id
             ORDER BY
                 daysOld ASC,
-                dateCreatedSort DESC",
-            PIPELINE_STATUS_SUBMITTED,
-            $this->_siteID,
-            $this->_siteID,
-            $statusCriterion,
-            $userCriterion,
-            $companyCriterion,
-            $contactCriterion,
-            $hotCriterion,
-            $publicCriterion,
-            $adminHiddenCriterion
+                dateCreatedSort DESC", PIPELINE_STATUS_SUBMITTED, $this->_siteID, $this->_siteID, $statusCriterion, $userCriterion, $companyCriterion, $contactCriterion, $hotCriterion, $publicCriterion, $adminHiddenCriterion
         );
 
-        if (!eval(Hooks::get('JO_GET_ALL_SQL'))) return;
+        if (!eval(Hooks::get('JO_GET_ALL_SQL')))
+            return;
 
         return $this->_db->getAllAssoc($sql);
     }
@@ -812,19 +771,16 @@ class JobOrders
      * @param integer job order ID
      * @return boolean True if successful; false otherwise.
      */
-    public function updateModified($jobOrderID)
-    {
+    public function updateModified($jobOrderID) {
         $sql = sprintf(
-            "UPDATE
+                "UPDATE
                 joborder
             SET
                 date_modified = NOW()
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
 
         return (boolean) $this->_db->query($sql);
@@ -837,20 +793,16 @@ class JobOrders
      * @param integer openings
      * @return boolean True if successful; false otherwise.
      */
-    public function updateOpeningsAvailable($jobOrderID, $count)
-    {
+    public function updateOpeningsAvailable($jobOrderID, $count) {
         $sql = sprintf(
-            "UPDATE
+                "UPDATE
                 joborder
             SET
                 openings_available = %s
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryInteger($count),
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryInteger($count), $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
 
         return (boolean) $this->_db->query($sql);
@@ -863,10 +815,8 @@ class JobOrders
      * @param string typecode
      * @return string human readable typecode
      */
-    public static function typeCodeToString($typeCode)
-    {
-        switch ($typeCode)
-        {
+    public static function typeCodeToString($typeCode) {
+        switch ($typeCode) {
             case 'C':
                 return 'Contract';
                 break;
@@ -898,43 +848,37 @@ class JobOrders
      * @param integer new hidden state (1 = true)
      * @return boolean query response
      */
-    public function administrativeHideShow($jobOrderID, $state)
-    {
+    public function administrativeHideShow($jobOrderID, $state) {
         $sql = sprintf(
-            "UPDATE
+                "UPDATE
                 joborder
             SET
                 is_admin_hidden = %s
             WHERE
                 joborder_id = %s
             AND
-                site_id = %s",
-            $this->_db->makeQueryInteger($state),
-            $this->_db->makeQueryInteger($jobOrderID),
-            $this->_siteID
+                site_id = %s", $this->_db->makeQueryInteger($state), $this->_db->makeQueryInteger($jobOrderID), $this->_siteID
         );
 
         return (boolean) $this->_db->query($sql);
     }
+
 }
 
+class JobOrdersDataGrid extends DataGrid {
 
-class JobOrdersDataGrid extends DataGrid
-{
     protected $_siteID;
 
-
     // FIXME: Fix ugly indenting - ~400 character lines = bad.
-    public function __construct($instanceName, $siteID, $parameters, $misc)
-    {
+    public function __construct($instanceName, $siteID, $parameters, $misc) {
         $this->_db = DatabaseConnection::getInstance();
         $this->_siteID = $siteID;
         $this->_assignedCriterion = "";
         $this->_dataItemIDColumn = 'joborder.joborder_id';
 
         $this->_classColumns = array(
-            'Attachments' => array(  'select'   => 'IF(attachment_id, 1, 0) AS attachmentPresent',
-                                     'pagerRender' => '
+            'Attachments' => array('select' => 'IF(attachment_id, 1, 0) AS attachmentPresent',
+                'pagerRender' => '
                                                     if ($rsData[\'attachmentPresent\'] == 1)
                                                     {
                                                         $return = \'<img src="images/paperclip.gif" alt="" width="16" height="16" title="Attachment Present" />\';
@@ -946,100 +890,88 @@ class JobOrdersDataGrid extends DataGrid
 
                                                     return $return;
                                                    ',
-
-                                     'pagerWidth'    => 10,
-                                     'pagerOptional' => true,
-                                     'pagerNoTitle' => true,
-                                     'sizable'  => false,
-                                     'exportable' => false,
-                                     'filterable' => false),
-
-            'ID' =>        array(     'pagerRender'    => 'return $rsData[\'jobOrderID\'];',
-                                      'sortableColumn' => 'jobOrderID',
-                                      'pagerWidth'     => 33,
-                                      'pagerOptional'  => true,
-                                      'alphaNavigation'=> false,
-                                      'exportColumnHeaderText' => 'id',
-                                      'filter'         => 'joborder.joborder_id',
-                                      'filterTypes'   => '===>=<'),
-
-            'Company Job ID'  => array ('select' => 'joborder.client_job_id AS cpyJobID',
-                                        'sortableColumn' => 'cpyJobID',
-                                        'pagerWidth'     => 65,
-                                        'pagerOptional'  => true,
-                                        'alphaNavigation'=> false,
-                                        'exportColumnHeaderText' => 'Company Job id',
-                                        'columnHeaderText' => 'Cpy Job ID',
-                                        'filter'         => 'joborder.client_job_id',
-                                        'filterTypes'   => '===>=<'),
-
-            'Title' =>       array('select'         => 'joborder.title AS title',
-                                      'pagerRender'    => 'if ($rsData[\'isHot\'] == 1) $className =  \'jobLinkHot\'; else $className = \'jobLinkCold\'; return \'<a href="'.CATSUtility::getIndexName().'?m=joborders&amp;a=show&amp;jobOrderID=\'.$rsData[\'jobOrderID\'].\'" class="\'.$className.\'">\'.htmlspecialchars($rsData[\'title\']).\'</a>\';',
-                                      'sortableColumn' => 'title',
-                                      'pagerWidth'     => 165,
-                                      'pagerOptional'  => false,
-                                      'alphaNavigation'=> true,
-                                      'filter'         => 'joborder.title'),
-
-            'Company' =>       array('select'         => 'company.name AS companyName,
+                'pagerWidth' => 10,
+                'pagerOptional' => true,
+                'pagerNoTitle' => true,
+                'sizable' => false,
+                'exportable' => false,
+                'filterable' => false),
+            'ID' => array('pagerRender' => 'return $rsData[\'jobOrderID\'];',
+                'sortableColumn' => 'jobOrderID',
+                'pagerWidth' => 33,
+                'pagerOptional' => true,
+                'alphaNavigation' => false,
+                'exportColumnHeaderText' => 'id',
+                'filter' => 'joborder.joborder_id',
+                'filterTypes' => '===>=<'),
+            'Company Job ID' => array('select' => 'joborder.client_job_id AS cpyJobID',
+                'sortableColumn' => 'cpyJobID',
+                'pagerWidth' => 65,
+                'pagerOptional' => true,
+                'alphaNavigation' => false,
+                'exportColumnHeaderText' => 'Company Job id',
+                'columnHeaderText' => 'Cpy Job ID',
+                'filter' => 'joborder.client_job_id',
+                'filterTypes' => '===>=<'),
+            'Title' => array('select' => 'joborder.title AS title',
+                'pagerRender' => 'if ($rsData[\'isHot\'] == 1) $className =  \'jobLinkHot\'; else $className = \'jobLinkCold\'; return \'<a href="' . CATSUtility::getIndexName() . '?m=joborders&amp;a=show&amp;jobOrderID=\'.$rsData[\'jobOrderID\'].\'" class="\'.$className.\'">\'.htmlspecialchars($rsData[\'title\']).\'</a>\';',
+                'sortableColumn' => 'title',
+                'pagerWidth' => 165,
+                'pagerOptional' => false,
+                'alphaNavigation' => true,
+                'filter' => 'joborder.title'),
+            'Company' => array('select' => 'company.name AS companyName,
                                                           company.company_id AS companyID',
-                                      'pagerRender'    => 'return \'<a href="'.CATSUtility::getIndexName().'?m=companies&amp;a=show&amp;companyID=\'.$rsData[\'companyID\'].\'">\'.htmlspecialchars($rsData[\'companyName\']).\'</a>\';',
-                                      'sortableColumn' => 'companyName',
-                                      'pagerWidth'     => 125,
-                                      'pagerOptional'  => true,
-                                      'alphaNavigation'=> true,
-                                      'filter'         => 'company.name'),
-
-            'Department' =>           array('select'   => 'company_department.name AS department',
-                                      'join'           => 'LEFT JOIN company_department ON company_department.company_department_id = joborder.company_department_id',
-                                      'pagerRender'    => 'return $rsData[\'department\'];',
-                                      'sortableColumn' => 'department',
-                                      'pagerWidth'     => 95,
-                                      'pagerOptional'  => true,
-                                      'alphaNavigation'=> true,
-                                      'filter'         => 'company_department.name'),
-
-            'Type' =>           array('select'         => 'joborder.type AS type',
-                                      'pagerRender'    => 'return $rsData[\'type\'];',
-                                      'sortableColumn' => 'type',
-                                      'pagerWidth'     => 45,
-                                      'pagerOptional'  => true,
-                                      'alphaNavigation'=> false,
-                                      'exportRender'   => 'return $rsData[\'type\'];',
-                                      'filter'         => 'joborder.type'),
-
-            'Status' =>         array('select'         => 'joborder.status AS status',
-                                      'pagerRender'    => 'return $rsData[\'status\'];',
-                                      'exportRender'   => 'return $rsData[\'status\'];',
-                                      'sortableColumn' => 'status',
-                                      'pagerWidth'     => 45,
-                                      'pagerOptional'  => true,
-                                      'alphaNavigation'=> false,
-                                      'filter'         => 'joborder.status'),
-
-            'Age' =>            array('select'         => 'DATEDIFF(NOW(), joborder.date_created) AS daysOld',
-                                      'pagerRender'    => 'return $rsData[\'daysOld\'];',
-                                      'sortableColumn' => 'daysOld',
-                                      'pagerWidth'     => 45,
-                                      'pagerOptional'  => true,
-                                      'alphaNavigation'=> false,
-                                      'filterHaving'  => 'daysOld',
-                                      'filterTypes'   => '===>=<'),
-
-            'Created' =>       array('select'   => 'DATE_FORMAT(joborder.date_created, \'%m-%d-%y\') AS dateCreated',
-                                     'pagerRender'      => 'return $rsData[\'dateCreated\'];',
-                                     'sortableColumn'     => 'dateCreatedSort',
-                                     'pagerWidth'    => 60,
-                                     'filterHaving' => 'DATE_FORMAT(joborder.date_created, \'%m-%d-%y\')'),
-
-            'Modified' =>      array('select'   => 'DATE_FORMAT(joborder.date_modified, \'%m-%d-%y\') AS dateModified',
-                                     'pagerRender'      => 'return $rsData[\'dateModified\'];',
-                                     'sortableColumn'     => 'dateModifiedSort',
-                                     'pagerWidth'    => 60,
-                                     'pagerOptional' => true,
-                                     'filterHaving' => 'DATE_FORMAT(joborder.date_modified, \'%m-%d-%y\')'),
-
-            'Not Contacted' => array('select'   => '(
+                'pagerRender' => 'return \'<a href="' . CATSUtility::getIndexName() . '?m=companies&amp;a=show&amp;companyID=\'.$rsData[\'companyID\'].\'">\'.htmlspecialchars($rsData[\'companyName\']).\'</a>\';',
+                'sortableColumn' => 'companyName',
+                'pagerWidth' => 125,
+                'pagerOptional' => true,
+                'alphaNavigation' => true,
+                'filter' => 'company.name'),
+            'Department' => array('select' => 'company_department.name AS department',
+                'join' => 'LEFT JOIN company_department ON company_department.company_department_id = joborder.company_department_id',
+                'pagerRender' => 'return $rsData[\'department\'];',
+                'sortableColumn' => 'department',
+                'pagerWidth' => 95,
+                'pagerOptional' => true,
+                'alphaNavigation' => true,
+                'filter' => 'company_department.name'),
+            'Type' => array('select' => 'joborder.type AS type',
+                'pagerRender' => 'return $rsData[\'type\'];',
+                'sortableColumn' => 'type',
+                'pagerWidth' => 45,
+                'pagerOptional' => true,
+                'alphaNavigation' => false,
+                'exportRender' => 'return $rsData[\'type\'];',
+                'filter' => 'joborder.type'),
+            'Status' => array('select' => 'joborder.status AS status',
+                'pagerRender' => 'return $rsData[\'status\'];',
+                'exportRender' => 'return $rsData[\'status\'];',
+                'sortableColumn' => 'status',
+                'pagerWidth' => 45,
+                'pagerOptional' => true,
+                'alphaNavigation' => false,
+                'filter' => 'joborder.status'),
+            'Age' => array('select' => 'DATEDIFF(NOW(), joborder.date_created) AS daysOld',
+                'pagerRender' => 'return $rsData[\'daysOld\'];',
+                'sortableColumn' => 'daysOld',
+                'pagerWidth' => 45,
+                'pagerOptional' => true,
+                'alphaNavigation' => false,
+                'filterHaving' => 'daysOld',
+                'filterTypes' => '===>=<'),
+            'Created' => array('select' => 'DATE_FORMAT(joborder.date_created, \'%m-%d-%y\') AS dateCreated',
+                'pagerRender' => 'return $rsData[\'dateCreated\'];',
+                'sortableColumn' => 'dateCreatedSort',
+                'pagerWidth' => 60,
+                'filterHaving' => 'DATE_FORMAT(joborder.date_created, \'%m-%d-%y\')'),
+            'Modified' => array('select' => 'DATE_FORMAT(joborder.date_modified, \'%m-%d-%y\') AS dateModified',
+                'pagerRender' => 'return $rsData[\'dateModified\'];',
+                'sortableColumn' => 'dateModifiedSort',
+                'pagerWidth' => 60,
+                'pagerOptional' => true,
+                'filterHaving' => 'DATE_FORMAT(joborder.date_modified, \'%m-%d-%y\')'),
+            'Not Contacted' => array('select' => '(
                                                               SELECT
                                                                   COUNT(*)
                                                               FROM
@@ -1047,18 +979,17 @@ class JobOrdersDataGrid extends DataGrid
                                                               WHERE
                                                                   joborder_id = joborder.joborder_id
                                                               AND
-                                                                  (status = '.PIPELINE_STATUS_NOCONTACT.' OR status = '.PIPELINE_STATUS_NOSTATUS.')
+                                                                  (status = ' . PIPELINE_STATUS_NOCONTACT . ' OR status = ' . PIPELINE_STATUS_NOSTATUS . ')
                                                               AND
-                                                                  site_id = '.$this->_siteID.'
+                                                                  site_id = ' . $this->_siteID . '
                                                           ) AS notContacted',
-                                       'pagerRender'      => 'return $rsData[\'notContacted\'];',
-                                       'sortableColumn'     => 'notContacted',
-                                       'columnHeaderText' => 'NC',
-                                       'pagerWidth'    => 25,
-                                       'filterHaving'  => 'notContacted',
-                                       'filterTypes'   => '===>=<'),
- 
-            'Submitted' =>       array('select'   => '(
+                'pagerRender' => 'return $rsData[\'notContacted\'];',
+                'sortableColumn' => 'notContacted',
+                'columnHeaderText' => 'NC',
+                'pagerWidth' => 25,
+                'filterHaving' => 'notContacted',
+                'filterTypes' => '===>=<'),
+            'Submitted' => array('select' => '(
                                                             SELECT
                                                                 COUNT(*)
                                                             FROM
@@ -1066,18 +997,17 @@ class JobOrdersDataGrid extends DataGrid
                                                             WHERE
                                                                 joborder_id = joborder.joborder_id
                                                             AND
-                                                                status_to = '.PIPELINE_STATUS_SUBMITTED.'
+                                                                status_to = ' . PIPELINE_STATUS_SUBMITTED . '
                                                             AND
-                                                                site_id = '.$this->_siteID.'
+                                                                site_id = ' . $this->_siteID . '
                                                         ) AS submitted',
-                                     'pagerRender'      => 'return $rsData[\'submitted\'];',
-                                     'sortableColumn'     => 'submitted',
-                                     'columnHeaderText' => 'S',
-                                     'pagerWidth'    => 25,
-                                     'filterHaving'  => 'submitted',
-                                     'filterTypes'   => '===>=<'),
-
-            'Pipeline' =>       array('select'   => '(
+                'pagerRender' => 'return $rsData[\'submitted\'];',
+                'sortableColumn' => 'submitted',
+                'columnHeaderText' => 'S',
+                'pagerWidth' => 25,
+                'filterHaving' => 'submitted',
+                'filterTypes' => '===>=<'),
+            'Pipeline' => array('select' => '(
                                                             SELECT
                                                                 COUNT(*)
                                                             FROM
@@ -1085,16 +1015,15 @@ class JobOrdersDataGrid extends DataGrid
                                                             WHERE
                                                                 joborder_id = joborder.joborder_id
                                                             AND
-                                                                site_id = '.$this->_siteID.'
+                                                                site_id = ' . $this->_siteID . '
                                                         ) AS pipeline',
-                                     'pagerRender'      => 'return $rsData[\'pipeline\'];',
-                                     'sortableColumn'     => 'pipeline',
-                                     'columnHeaderText' => 'P',
-                                     'pagerWidth'    => 25,
-                                     'filterHaving'  => 'pipeline',
-                                     'filterTypes'   => '===>=<'),
-
-             'Interviews' =>       array('select'   => '(
+                'pagerRender' => 'return $rsData[\'pipeline\'];',
+                'sortableColumn' => 'pipeline',
+                'columnHeaderText' => 'P',
+                'pagerWidth' => 25,
+                'filterHaving' => 'pipeline',
+                'filterTypes' => '===>=<'),
+            'Interviews' => array('select' => '(
                                                              SELECT
                                                                  COUNT(*)
                                                              FROM
@@ -1102,145 +1031,130 @@ class JobOrdersDataGrid extends DataGrid
                                                              WHERE
                                                                  joborder_id = joborder.joborder_id
                                                              AND
-                                                                 status_to = '.PIPELINE_STATUS_INTERVIEWING.'
+                                                                 status_to = ' . PIPELINE_STATUS_INTERVIEWING . '
                                                              AND
-                                                                 site_id = '.$this->_siteID.'
+                                                                 site_id = ' . $this->_siteID . '
                                                          ) AS interviewingCount',
-                                      'pagerRender'      => 'return $rsData[\'interviewingCount\'];',
-                                      'sortableColumn'     => 'interviewingCount',
-                                      'columnHeaderText' => 'I',
-                                      'pagerWidth'    => 25,
-                                      'filterHaving'  => 'interviewingCount',
-                                      'filterTypes'   => '===>=<'),
-
-            'Owner' =>         array('select'   => 'owner_user.first_name AS ownerFirstName,' .
-                                                   'owner_user.last_name AS ownerLastName,' .
-                                                   'CONCAT(owner_user.last_name, owner_user.first_name) AS ownerSort',
-                                     'join'     => 'LEFT JOIN user AS owner_user ON joborder.owner = owner_user.user_id',
-                                     'pagerRender'      => 'return StringUtility::makeInitialName($rsData[\'ownerFirstName\'], $rsData[\'ownerLastName\'], false, LAST_NAME_MAXLEN);',
-                                     'exportRender'     => 'return $rsData[\'ownerFirstName\'] . " " .$rsData[\'ownerLastName\'];',
-                                     'sortableColumn'     => 'ownerSort',
-                                     'pagerWidth'    => 75,
-                                     'alphaNavigation' => true,
-                                     'filter'         => 'CONCAT(owner_user.first_name, owner_user.last_name)'),
-
-            'Recruiter' =>     array('select'   => 'recruiter_user.first_name AS recruiterFirstName,' .
-                                                   'recruiter_user.last_name AS recruiterLastName,' .
-                                                   'CONCAT(recruiter_user.last_name, recruiter_user.first_name) AS recruiterSort',
-                                     'join'     => 'LEFT JOIN user AS recruiter_user ON joborder.recruiter = recruiter_user.user_id',
-                                     'pagerRender'      => 'return StringUtility::makeInitialName($rsData[\'recruiterFirstName\'], $rsData[\'recruiterLastName\'], false, LAST_NAME_MAXLEN);',
-                                     'exportRender'     => 'return $rsData[\'recruiterFirstName\'] . " " .$rsData[\'recruiterLastName\'];',
-                                     'sortableColumn'     => 'recruiterSort',
-                                     'pagerWidth'    => 75,
-                                     'alphaNavigation' => true,
-                                     'filter'         => 'CONCAT(recruiter_user.first_name, recruiter_user.last_name)'),
-
-            'Contact' =>       array('select'   => 'contact.first_name AS contactFirstName,' .
-                                                   'contact.last_name AS contactLastName,' .
-                                                   'CONCAT(contact.last_name, contact.first_name) AS contactSort,' .
-                                                   'contact.contact_id AS contactID',
-                                     'pagerRender'      => 'return \'<a href="'.CATSUtility::getIndexName().'?m=contacts&amp;a=show&amp;contactID=\'.$rsData[\'contactID\'].\'">\'.StringUtility::makeInitialName($rsData[\'contactFirstName\'], $rsData[\'contactLastName\'], false, LAST_NAME_MAXLEN).\'</a>\';',
-                                     'exportRender'     => 'return $rsData[\'contactFirstName\'] . " " .$rsData[\'contactLastName\'];',
-                                     'sortableColumn'     => 'contactSort',
-                                     'pagerWidth'    => 75,
-                                     'alphaNavigation' => true,
-                                     'filter'         => 'CONCAT(contact.first_name, contact.last_name)'),
-
-            'Contact Phone' => array('select'   => 'contact.phone_work AS contactPhone',
-                                     'pagerRender'      => 'return $rsData[\'contactPhone\'];',
-                                     'exportRender'     => 'return $rsData[\'contactPhone\'];',
-                                     'sortableColumn'     => 'contactPhone',
-                                     'pagerWidth'    => 85,
-                                     'alphaNavigation' => false,
-                                     'filter'         => 'contact.phone_work'),
-
-            'City'          => array('select'   => 'joborder.city AS locationCity',
-                                     'pagerRender'      => 'return $rsData[\'locationCity\'];',
-                                     'exportRender'     => 'return $rsData[\'locationCity\'];',
-                                     'sortableColumn'     => 'locationCity',
-                                     'pagerWidth'    => 65,
-                                     'alphaNavigation' => true,
-                                     'filter'         => 'joborder.city'),
-
-            'State'          => array('select'   => 'joborder.state AS locationState',
-                                     'pagerRender'      => 'return $rsData[\'locationState\'];',
-                                     'exportRender'     => 'return $rsData[\'locationState\'];',
-                                     'sortableColumn'     => 'locationState',
-                                     'pagerWidth'    => 65,
-                                     'alphaNavigation' => true,
-                                     'filter'         => 'joborder.state'),
-
-            'Max Rate'          => array('select'   => 'joborder.rate_max AS maxRate',
-                                     'pagerRender'      => 'return $rsData[\'maxRate\'];',
-                                     'exportRender'     => 'return $rsData[\'maxRate\'];',
-                                     'sortableColumn'     => 'maxRate',
-                                     'pagerWidth'    => 85,
-                                     'alphaNavigation' => false,
-                                     'filter'         => 'joborder.rate_max',
-                                     'filterTypes'   => '===>=<'),
-
-            'Salary'          => array('select'   => 'joborder.salary AS salary',
-                                     'pagerRender'      => 'return $rsData[\'salary\'];',
-                                     'exportRender'     => 'return $rsData[\'salary\'];',
-                                     'sortableColumn'     => 'salary',
-                                     'pagerWidth'    => 85,
-                                     'alphaNavigation' => false,
-                                     'filter'         => 'joborder.salary',
-                                     'filterTypes'   => '===>=<'),
-
-            'Duration'          => array('select'   => 'joborder.duration AS duration',
-                                     'pagerRender'      => 'return $rsData[\'duration\'];',
-                                     'exportRender'     => 'return $rsData[\'duration\'];',
-                                     'sortableColumn'     => 'duration',
-                                     'pagerWidth'    => 85,
-                                     'alphaNavigation' => false,
-                                     'filter'         => 'joborder.duration',
-                                     'filterTypes'   => '===>=<'),
-
-            'Openings'      => array('select'   => 'joborder.openings_available AS openingsAvailable',
-                                     'pagerRender'      => 'return $rsData[\'openingsAvailable\'];',
-                                     'exportRender'     => 'return $rsData[\'openingsAvailable\'];',
-                                     'sortableColumn'     => 'openingsAvailable',
-                                     'pagerWidth'    => 85,
-                                     'alphaNavigation' => false,
-                                     'filter'         => 'joborder.openings_available',
-                                     'filterTypes'   => '===>=<'),
-
-            'Misc Notes' =>    array('select'  => 'joborder.notes AS notes',
-                                     'sortableColumn'    => 'notes',
-                                     'pagerWidth'   => 300,
-                                     'filter'         => 'joborder.notes'),
-
-            'OwnerID' =>       array('select'    => '',
-                                     'filter'    => 'joborder.owner, joborder.recruiter',
-                                     'filterInList' => true,
-                                     'pagerOptional' => false,
-                                     'filterable' => false,
-                                     'filterDescription' => 'Only My Job Orders'),
-
-            'IsHot' =>         array('select'    => '',
-                                     'filter'    => 'joborder.is_hot',
-                                     'pagerOptional' => false,
-                                     'filterable' => false,
-                                     'filterDescription' => 'Only Hot Job Orders')
+                'pagerRender' => 'return $rsData[\'interviewingCount\'];',
+                'sortableColumn' => 'interviewingCount',
+                'columnHeaderText' => 'I',
+                'pagerWidth' => 25,
+                'filterHaving' => 'interviewingCount',
+                'filterTypes' => '===>=<'),
+            'Owner' => array('select' => 'owner_user.first_name AS ownerFirstName,' .
+                'owner_user.last_name AS ownerLastName,' .
+                'CONCAT(owner_user.last_name, owner_user.first_name) AS ownerSort',
+                'join' => 'LEFT JOIN user AS owner_user ON joborder.owner = owner_user.user_id',
+                'pagerRender' => 'return StringUtility::makeInitialName($rsData[\'ownerFirstName\'], $rsData[\'ownerLastName\'], false, LAST_NAME_MAXLEN);',
+                'exportRender' => 'return $rsData[\'ownerFirstName\'] . " " .$rsData[\'ownerLastName\'];',
+                'sortableColumn' => 'ownerSort',
+                'pagerWidth' => 75,
+                'alphaNavigation' => true,
+                'filter' => 'CONCAT(owner_user.first_name, owner_user.last_name)'),
+            'Recruiter' => array('select' => 'recruiter_user.first_name AS recruiterFirstName,' .
+                'recruiter_user.last_name AS recruiterLastName,' .
+                'CONCAT(recruiter_user.last_name, recruiter_user.first_name) AS recruiterSort',
+                'join' => 'LEFT JOIN user AS recruiter_user ON joborder.recruiter = recruiter_user.user_id',
+                'pagerRender' => 'return StringUtility::makeInitialName($rsData[\'recruiterFirstName\'], $rsData[\'recruiterLastName\'], false, LAST_NAME_MAXLEN);',
+                'exportRender' => 'return $rsData[\'recruiterFirstName\'] . " " .$rsData[\'recruiterLastName\'];',
+                'sortableColumn' => 'recruiterSort',
+                'pagerWidth' => 75,
+                'alphaNavigation' => true,
+                'filter' => 'CONCAT(recruiter_user.first_name, recruiter_user.last_name)'),
+            'Contact' => array('select' => 'contact.first_name AS contactFirstName,' .
+                'contact.last_name AS contactLastName,' .
+                'CONCAT(contact.last_name, contact.first_name) AS contactSort,' .
+                'contact.contact_id AS contactID',
+                'pagerRender' => 'return \'<a href="' . CATSUtility::getIndexName() . '?m=contacts&amp;a=show&amp;contactID=\'.$rsData[\'contactID\'].\'">\'.StringUtility::makeInitialName($rsData[\'contactFirstName\'], $rsData[\'contactLastName\'], false, LAST_NAME_MAXLEN).\'</a>\';',
+                'exportRender' => 'return $rsData[\'contactFirstName\'] . " " .$rsData[\'contactLastName\'];',
+                'sortableColumn' => 'contactSort',
+                'pagerWidth' => 75,
+                'alphaNavigation' => true,
+                'filter' => 'CONCAT(contact.first_name, contact.last_name)'),
+            'Contact Phone' => array('select' => 'contact.phone_work AS contactPhone',
+                'pagerRender' => 'return $rsData[\'contactPhone\'];',
+                'exportRender' => 'return $rsData[\'contactPhone\'];',
+                'sortableColumn' => 'contactPhone',
+                'pagerWidth' => 85,
+                'alphaNavigation' => false,
+                'filter' => 'contact.phone_work'),
+            'City' => array('select' => 'joborder.city AS locationCity',
+                'pagerRender' => 'return $rsData[\'locationCity\'];',
+                'exportRender' => 'return $rsData[\'locationCity\'];',
+                'sortableColumn' => 'locationCity',
+                'pagerWidth' => 65,
+                'alphaNavigation' => true,
+                'filter' => 'joborder.city'),
+            'State' => array('select' => 'joborder.state AS locationState',
+                'pagerRender' => 'return $rsData[\'locationState\'];',
+                'exportRender' => 'return $rsData[\'locationState\'];',
+                'sortableColumn' => 'locationState',
+                'pagerWidth' => 65,
+                'alphaNavigation' => true,
+                'filter' => 'joborder.state'),
+            'Max Rate' => array('select' => 'joborder.rate_max AS maxRate',
+                'pagerRender' => 'return $rsData[\'maxRate\'];',
+                'exportRender' => 'return $rsData[\'maxRate\'];',
+                'sortableColumn' => 'maxRate',
+                'pagerWidth' => 85,
+                'alphaNavigation' => false,
+                'filter' => 'joborder.rate_max',
+                'filterTypes' => '===>=<'),
+            'Salary' => array('select' => 'joborder.salary AS salary',
+                'pagerRender' => 'return $rsData[\'salary\'];',
+                'exportRender' => 'return $rsData[\'salary\'];',
+                'sortableColumn' => 'salary',
+                'pagerWidth' => 85,
+                'alphaNavigation' => false,
+                'filter' => 'joborder.salary',
+                'filterTypes' => '===>=<'),
+            'Duration' => array('select' => 'joborder.duration AS duration',
+                'pagerRender' => 'return $rsData[\'duration\'];',
+                'exportRender' => 'return $rsData[\'duration\'];',
+                'sortableColumn' => 'duration',
+                'pagerWidth' => 85,
+                'alphaNavigation' => false,
+                'filter' => 'joborder.duration',
+                'filterTypes' => '===>=<'),
+            'Openings' => array('select' => 'joborder.openings_available AS openingsAvailable',
+                'pagerRender' => 'return $rsData[\'openingsAvailable\'];',
+                'exportRender' => 'return $rsData[\'openingsAvailable\'];',
+                'sortableColumn' => 'openingsAvailable',
+                'pagerWidth' => 85,
+                'alphaNavigation' => false,
+                'filter' => 'joborder.openings_available',
+                'filterTypes' => '===>=<'),
+            'Misc Notes' => array('select' => 'joborder.notes AS notes',
+                'sortableColumn' => 'notes',
+                'pagerWidth' => 300,
+                'filter' => 'joborder.notes'),
+            'OwnerID' => array('select' => '',
+                'filter' => 'joborder.owner, joborder.recruiter',
+                'filterInList' => true,
+                'pagerOptional' => false,
+                'filterable' => false,
+                'filterDescription' => 'Only My Job Orders'),
+            'IsHot' => array('select' => '',
+                'filter' => 'joborder.is_hot',
+                'pagerOptional' => false,
+                'filterable' => false,
+                'filterDescription' => 'Only Hot Job Orders')
         );
 
-        if (!eval(Hooks::get('JOBORDERS_DATAGRID_COLUMNS'))) return;
+        if (!eval(Hooks::get('JOBORDERS_DATAGRID_COLUMNS')))
+            return;
 
         /* Extra fields get added as columns here. */
         $jobOrders = new JobOrders($this->_siteID);
         $extraFieldsRS = $jobOrders->extraFields->getSettings();
-        foreach ($extraFieldsRS as $index => $data)
-        {
+        foreach ($extraFieldsRS as $index => $data) {
             $fieldName = $data['fieldName'];
 
-            if (!isset($this->_classColumns[$fieldName]))
-            {
+            if (!isset($this->_classColumns[$fieldName])) {
                 $columnDefinition = $jobOrders->extraFields->getDataGridDefinition($index, $data, $this->_db);
 
                 /* Return false for extra fields that should not be columns. */
-                if ($columnDefinition !== false)
-                {
+                if ($columnDefinition !== false) {
                     $this->_classColumns[$fieldName] = $columnDefinition;
                 }
             }
@@ -1254,39 +1168,33 @@ class JobOrdersDataGrid extends DataGrid
      *
      * @return array clients data
      */
-    public function getSQL($selectSQL, $joinSQL, $whereSQL, $havingSQL, $orderSQL, $limitSQL, $distinct = '')
-    {
+    public function getSQL($selectSQL, $joinSQL, $whereSQL, $havingSQL, $orderSQL, $limitSQL, $distinct = '') {
         // FIXME: Factor out Session dependency.
-        if ($_SESSION['CATS']->isLoggedIn() && $_SESSION['CATS']->getAccessLevel() < ACCESS_LEVEL_MULTI_SA)
-        {
+        if ($_SESSION['CATS']->isLoggedIn() && $_SESSION['CATS']->getAccessLevel() < ACCESS_LEVEL_MULTI_SA) {
             $adminHiddenCriterion = 'AND joborder.is_admin_hidden = 0';
-        }
-        else
-        {
+        } else {
             $adminHiddenCriterion = '';
         }
 
-        if ($this->getMiscArgument() != 0)
-        {
+        if ($this->getMiscArgument() != 0) {
             $savedListID = (int) $this->getMiscArgument();
-            $joinSQL  .= ' INNER JOIN saved_list_entry
-                                    ON saved_list_entry.data_item_type = '.DATA_ITEM_JOBORDER.'
+            $joinSQL .= ' INNER JOIN saved_list_entry
+                                    ON saved_list_entry.data_item_type = ' . DATA_ITEM_JOBORDER . '
                                     AND saved_list_entry.data_item_id = joborder.joborder_id
-                                    AND saved_list_entry.site_id = '.$this->_siteID.'
-                                    AND saved_list_entry.saved_list_id = '.$savedListID;
-        }
-        else
-        {
-            $joinSQL  .= ' LEFT JOIN saved_list_entry
-                                    ON saved_list_entry.data_item_type = '.DATA_ITEM_JOBORDER.'
+                                    AND saved_list_entry.site_id = ' . $this->_siteID . '
+                                    AND saved_list_entry.saved_list_id = ' . $savedListID;
+        } else {
+            $joinSQL .= ' LEFT JOIN saved_list_entry
+                                    ON saved_list_entry.data_item_type = ' . DATA_ITEM_JOBORDER . '
                                     AND saved_list_entry.data_item_id = joborder.joborder_id
-                                    AND saved_list_entry.site_id = '.$this->_siteID;
+                                    AND saved_list_entry.site_id = ' . $this->_siteID;
         }
 
-        if (!eval(Hooks::get('JOBORDER_DATAGRID_GETSQL'))) return;
+        if (!eval(Hooks::get('JOBORDER_DATAGRID_GETSQL')))
+            return;
 
         $sql = sprintf(
-            "SELECT SQL_CALC_FOUND_ROWS %s
+                "SELECT SQL_CALC_FOUND_ROWS %s
                 joborder.joborder_id AS jobOrderID,
                 joborder.joborder_id AS exportID,
                 joborder.date_modified AS dateModifiedSort,
@@ -1311,22 +1219,12 @@ class JobOrdersDataGrid extends DataGrid
             GROUP BY joborder.joborder_id
             %s
             %s
-            %s",
-            $distinct,
-            $selectSQL,
-            DATA_ITEM_JOBORDER,
-            $joinSQL,
-            $this->_siteID,
-            $adminHiddenCriterion,
-            (strlen($whereSQL) > 0) ? ' AND ' . $whereSQL : '',
-            $this->_assignedCriterion,
-            (strlen($havingSQL) > 0) ? ' HAVING ' . $havingSQL : '',
-            $orderSQL,
-            $limitSQL
+            %s", $distinct, $selectSQL, DATA_ITEM_JOBORDER, $joinSQL, $this->_siteID, $adminHiddenCriterion, (strlen($whereSQL) > 0) ? ' AND ' . $whereSQL : '', $this->_assignedCriterion, (strlen($havingSQL) > 0) ? ' HAVING ' . $havingSQL : '', $orderSQL, $limitSQL
         );
 
         return $sql;
     }
+
 }
 
 ?>

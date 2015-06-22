@@ -1,4 +1,5 @@
 <?php
+
 /*
  * CATS
  * Job Orders Module
@@ -46,13 +47,11 @@ include_once('./lib/Graphs.php');
 include_once('./lib/Questionnaire.php');
 include_once('./lib/CommonErrors.php');
 
-
-class JobOrdersUI extends UserInterface
-{
-
+class JobOrdersUI extends UserInterface {
     /* Maximum number of characters of the job description to show without the
      * user clicking "[More]"
      */
+
     const DESCRIPTION_MAXLEN = 500;
 
     /* Maximum number of characters of the job notes to show without the user
@@ -70,9 +69,7 @@ class JobOrdersUI extends UserInterface
      */
     const TRUNCATE_CLIENT_NAME = 28;
 
-
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
         $this->_authenticationRequired = true;
@@ -81,20 +78,18 @@ class JobOrdersUI extends UserInterface
         $this->_moduleTabText = 'Job Orders';
         $this->_subTabs = array(
             //'Add Job Order'     => CATSUtility::getIndexName() . '?m=joborders&amp;a=add*al='.ACCESS_LEVEL_EDIT,
-            'Add Job Order' => 'javascript:void(0);*js=showPopWin(\''.CATSUtility::getIndexName().'?m=joborders&amp;a=addJobOrderPopup\', 400, 250, null);*al='.ACCESS_LEVEL_EDIT,
+            'Add Job Order' => 'javascript:void(0);*js=showPopWin(\'' . CATSUtility::getIndexName() . '?m=joborders&amp;a=addJobOrderPopup\', 400, 250, null);*al=' . ACCESS_LEVEL_EDIT,
             'Search Job Orders' => CATSUtility::getIndexName() . '?m=joborders&amp;a=search'
         );
     }
 
-
-    public function handleRequest()
-    {
+    public function handleRequest() {
         $action = $this->getAction();
 
-        if (!eval(Hooks::get('JO_HANDLE_REQUEST'))) return;
+        if (!eval(Hooks::get('JO_HANDLE_REQUEST')))
+            return;
 
-        switch ($action)
-        {
+        switch ($action) {
             case 'show':
                 $this->show();
                 break;
@@ -104,24 +99,18 @@ class JobOrdersUI extends UserInterface
                 break;
 
             case 'add':
-                if ($this->isPostBack())
-                {
+                if ($this->isPostBack()) {
                     $this->onAdd();
-                }
-                else
-                {
+                } else {
                     $this->add();
                 }
 
                 break;
 
             case 'edit':
-                if ($this->isPostBack())
-                {
+                if ($this->isPostBack()) {
                     $this->onEdit();
-                }
-                else
-                {
+                } else {
                     $this->edit();
                 }
 
@@ -134,12 +123,9 @@ class JobOrdersUI extends UserInterface
             case 'search':
                 include_once('./lib/Search.php');
 
-                if ($this->isGetBack())
-                {
+                if ($this->isGetBack()) {
                     $this->onSearch();
-                }
-                else
-                {
+                } else {
                     $this->search();
                 }
 
@@ -147,12 +133,9 @@ class JobOrdersUI extends UserInterface
 
             /* Change candidate-joborder status. */
             case 'addActivityChangeStatus':
-                if ($this->isPostBack())
-                {
+                if ($this->isPostBack()) {
                     $this->onAddActivityChangeStatus();
-                }
-                else
-                {
+                } else {
                     $this->addActivityChangeStatus();
                 }
 
@@ -165,12 +148,9 @@ class JobOrdersUI extends UserInterface
             case 'considerCandidateSearch':
                 include_once('./lib/Search.php');
 
-                if ($this->isPostBack())
-                {
+                if ($this->isPostBack()) {
                     $this->onConsiderCandidateSearch();
-                }
-                else
-                {
+                } else {
                     $this->considerCandidateSearch();
                 }
 
@@ -188,12 +168,9 @@ class JobOrdersUI extends UserInterface
              * Quick add candidate (in the modal window).
              */
             case 'addCandidateModal':
-                if ($this->isPostBack())
-                {
+                if ($this->isPostBack()) {
                     $this->onAddCandidateModal();
-                }
-                else
-                {
+                } else {
                     $this->addCandidateModal();
                 }
 
@@ -213,12 +190,9 @@ class JobOrdersUI extends UserInterface
             case 'createAttachment':
                 include_once('./lib/DocumentToText.php');
 
-                if ($this->isPostBack())
-                {
+                if ($this->isPostBack()) {
                     $this->onCreateAttachment();
-                }
-                else
-                {
+                } else {
                     $this->createAttachment();
                 }
 
@@ -245,22 +219,20 @@ class JobOrdersUI extends UserInterface
         }
     }
 
-
     /*
      * Called by handleRequest() to process loading the list / main page.
      */
-    private function listByView($errMessage = '')
-    {
+
+    private function listByView($errMessage = '') {
         $dataGridProperties = DataGrid::getRecentParamaters("joborders:JobOrdersListByViewDataGrid");
 
         /* If this is the first time we visited the datagrid this session, the recent paramaters will
          * be empty.  Fill in some default values. */
-        if ($dataGridProperties == array())
-        {
-            $dataGridProperties = array('rangeStart'    => 0,
-                                        'maxResults'    => 50,
-                                        'filter'        => 'Status==Active / OnHold / Full',
-                                        'filterVisible' => false);
+        if ($dataGridProperties == array()) {
+            $dataGridProperties = array('rangeStart' => 0,
+                'maxResults' => 50,
+                'filter' => 'Status==Active / OnHold / Full',
+                'filterVisible' => false);
         }
 
         $dataGrid = DataGrid::get("joborders:JobOrdersListByViewDataGrid", $dataGridProperties);
@@ -270,7 +242,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('userID', $_SESSION['CATS']->getUserID());
         $this->_template->assign('errMessage', $errMessage);
 
-        if (!eval(Hooks::get('JO_LIST_BY_VIEW'))) return;
+        if (!eval(Hooks::get('JO_LIST_BY_VIEW')))
+            return;
 
         $jl = new JobOrders($this->_siteID);
         $this->_template->assign('totalJobOrders', $jl->getCount());
@@ -281,21 +254,17 @@ class JobOrdersUI extends UserInterface
     /*
      * Called by handleRequest() to process loading the details page.
      */
-    private function show()
-    {
+
+    private function show() {
         /* Is this a popup? */
-        if (isset($_GET['display']) && $_GET['display'] == 'popup')
-        {
+        if (isset($_GET['display']) && $_GET['display'] == 'popup') {
             $isPopup = true;
-        }
-        else
-        {
+        } else {
             $isPopup = false;
         }
 
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             /* FIXME: fatalPopup()? */
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
@@ -307,13 +276,11 @@ class JobOrdersUI extends UserInterface
         $data = $jobOrders->get($jobOrderID);
 
         /* Bail out if we got an empty result set. */
-        if (empty($data))
-        {
+        if (empty($data)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'The specified job order ID could not be found.');
         }
 
-        if ($data['isAdminHidden'] == 1 && $this->_accessLevel < ACCESS_LEVEL_MULTI_SA)
-        {
+        if ($data['isAdminHidden'] == 1 && $this->_accessLevel < ACCESS_LEVEL_MULTI_SA) {
             $this->listByView('This Job Order is hidden - only a CATS Administrator can unlock the Job Order.');
             return;
         }
@@ -322,7 +289,7 @@ class JobOrdersUI extends UserInterface
          * the template.
          */
         $data['cityAndState'] = StringUtility::makeCityStateString(
-            $data['city'], $data['state']
+                        $data['city'], $data['state']
         );
 
         $data['description'] = trim($data['description']);
@@ -333,41 +300,34 @@ class JobOrdersUI extends UserInterface
 
         /* Convert '00-00-00' dates to empty strings. */
         $data['startDate'] = DateUtility::fixZeroDate(
-            $data['startDate']
+                        $data['startDate']
         );
 
         /* Hot jobs [can] have different title styles than normal jobs. */
-        if ($data['isHot'] == 1)
-        {
+        if ($data['isHot'] == 1) {
             $data['titleClass'] = 'jobTitleHot';
-        }
-        else
-        {
+        } else {
             $data['titleClass'] = 'jobTitleCold';
         }
 
-        if ($data['public'] == 1)
-        {
+        if ($data['public'] == 1) {
             $data['public'] = '<img src="images/public.gif" height="16" '
-                . 'width="16" title="This Job Order is marked as Public." />';
-        }
-        else
-        {
+                    . 'width="16" title="This Job Order is marked as Public." />';
+        } else {
             $data['public'] = '';
         }
 
         $attachments = new Attachments($this->_siteID);
         $attachmentsRS = $attachments->getAll(
-            DATA_ITEM_JOBORDER, $jobOrderID
+                DATA_ITEM_JOBORDER, $jobOrderID
         );
 
-        foreach ($attachmentsRS as $rowNumber => $attachmentsData)
-        {
+        foreach ($attachmentsRS as $rowNumber => $attachmentsData) {
             /* Show an attachment icon based on the document's file type. */
             $attachmentIcon = strtolower(
-                FileUtility::getAttachmentIcon(
-                    $attachmentsRS[$rowNumber]['originalFilename']
-                )
+                    FileUtility::getAttachmentIcon(
+                            $attachmentsRS[$rowNumber]['originalFilename']
+                    )
             );
 
             $attachmentsRS[$rowNumber]['attachmentIcon'] = $attachmentIcon;
@@ -376,26 +336,20 @@ class JobOrdersUI extends UserInterface
         $careerPortalSettings = new CareerPortalSettings($this->_siteID);
         $careerPortalSettingsRS = $careerPortalSettings->getAll();
 
-        if ($careerPortalSettingsRS['enabled'] == 1)
-        {
+        if ($careerPortalSettingsRS['enabled'] == 1) {
             $careerPortalEnabled = true;
-        }
-        else
-        {
+        } else {
             $careerPortalEnabled = false;
         }
 
         /* Add an MRU entry. */
         $_SESSION['CATS']->getMRU()->addEntry(
-            DATA_ITEM_JOBORDER, $jobOrderID, $data['title']
+                DATA_ITEM_JOBORDER, $jobOrderID, $data['title']
         );
 
-        if ($this->_accessLevel < ACCESS_LEVEL_DEMO)
-        {
+        if ($this->_accessLevel < ACCESS_LEVEL_DEMO) {
             $privledgedUser = false;
-        }
-        else
-        {
+        } else {
             $privledgedUser = true;
         }
 
@@ -418,15 +372,12 @@ class JobOrdersUI extends UserInterface
 
 
 
-        if ($careerPortalEnabled && $data['public'])
-        {
+        if ($careerPortalEnabled && $data['public']) {
             $isPublic = true;
-            if ($data['questionnaireID'])
-            {
+            if ($data['questionnaireID']) {
                 $questionnaire = new Questionnaire($this->_siteID);
                 $q = $questionnaire->get($data['questionnaireID']);
-                if (is_array($q) && !empty($q))
-                {
+                if (is_array($q) && !empty($q)) {
                     $questionnaireID = $q['questionnaireID'];
                     $questionnaireData = $q;
                 }
@@ -435,8 +386,7 @@ class JobOrdersUI extends UserInterface
 
         $careerPortalSettings = new CareerPortalSettings($this->_siteID);
         $cpSettings = $careerPortalSettings->getAll();
-        if (intval($cpSettings['enabled']))
-        {
+        if (intval($cpSettings['enabled'])) {
             $careerPortalURL = CATSUtility::getAbsoluteURI() . 'careers/';
         }
 
@@ -456,7 +406,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('privledgedUser', $privledgedUser);
         $this->_template->assign('sessionCookie', $_SESSION['CATS']->getCookie());
 
-        if (!eval(Hooks::get('JO_SHOW'))) return;
+        if (!eval(Hooks::get('JO_SHOW')))
+            return;
 
         $this->_template->display('./modules/joborders/Show.tpl');
     }
@@ -464,8 +415,8 @@ class JobOrdersUI extends UserInterface
     /*
      * Called by handleRequest() to render the add popup.
      */
-    private function addJobOrderPopup()
-    {
+
+    private function addJobOrderPopup() {
         $jobOrders = new JobOrders($this->_siteID);
 
         $rs = $jobOrders->getAll(JOBORDERS_STATUS_ACTIVEONHOLDFULL);
@@ -473,7 +424,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isModal', true);
         $this->_template->assign('rs', $rs);
 
-        if (!eval(Hooks::get('JO_ADD_MODAL'))) return;
+        if (!eval(Hooks::get('JO_ADD_MODAL')))
+            return;
 
         $this->_template->display('./modules/joborders/AddModalPopup.tpl');
     }
@@ -481,8 +433,8 @@ class JobOrdersUI extends UserInterface
     /*
      * Called by handleRequest() to process loading the add page.
      */
-    private function add()
-    {
+
+    private function add() {
         $users = new Users($this->_siteID);
         $usersRS = $users->getSelectList();
 
@@ -492,60 +444,47 @@ class JobOrdersUI extends UserInterface
         $jobOrders = new JobOrders($this->_siteID);
 
         /* Do we have any companies yet? */
-        if (empty($companiesRS))
-        {
+        if (empty($companiesRS)) {
             $noCompanies = true;
-        }
-        else
-        {
+        } else {
             $noCompanies = false;
         }
 
-        if (!$this->isRequiredIDValid('selected_company_id', $_GET))
-        {
+        if (!$this->isRequiredIDValid('selected_company_id', $_GET)) {
             $selectedCompanyID = false;
-        }
-        else
-        {
+        } else {
             $selectedCompanyID = $_GET['selected_company_id'];
         }
 
-        if ($_SESSION['CATS']->isHrMode())
-        {
+        if ($_SESSION['CATS']->isHrMode()) {
             $companies = new Companies($this->_siteID);
             $selectedCompanyID = $companies->getDefaultCompany();
         }
 
         /* Do we have a selected_company_id? */
-        if ($selectedCompanyID === false)
-        {
+        if ($selectedCompanyID === false) {
             $selectedCompanyContacts = array();
             $selectedCompanyLocation = array();
             $selectedDepartmentsString = '';
 
             $defaultCompanyID = $companies->getDefaultCompany();
-            if ($defaultCompanyID !== false)
-            {
+            if ($defaultCompanyID !== false) {
                 $defaultCompanyRS = $companies->get($defaultCompanyID);
-            }
-            else
-            {
+            } else {
                 $defaultCompanyRS = array();
             }
 
             $companyRS = array();
-        }
-        else
-        {
+        } else {
             $selectedCompanyContacts = $companies->getContactsArray(
-                $selectedCompanyID
+                    $selectedCompanyID
             );
             $selectedCompanyLocation = $companies->getLocationArray(
-                $selectedCompanyID
+                    $selectedCompanyID
             );
             $departmentsRS = $companies->getDepartments($selectedCompanyID);
             $selectedDepartmentsString = ListEditor::getStringFromList(
-                $departmentsRS, 'name'
+                            $departmentsRS, 'name'
             );
 
             $defaultCompanyID = false;
@@ -556,9 +495,8 @@ class JobOrdersUI extends UserInterface
 
         /* Should we prepopulate the blank JO with the contents of another JO? */
         if (isset($_GET['typeOfAdd']) &&
-            $this->isRequiredIDValid('jobOrderID', $_GET) &&
-            $_GET['typeOfAdd'] == 'existing')
-        {
+                $this->isRequiredIDValid('jobOrderID', $_GET) &&
+                $_GET['typeOfAdd'] == 'existing') {
             $jobOrderID = $_GET['jobOrderID'];
 
             $jobOrderSourceRS = $jobOrders->get($jobOrderID);
@@ -567,9 +505,7 @@ class JobOrdersUI extends UserInterface
 
             $this->_template->assign('jobOrderSourceRS', $jobOrderSourceRS);
             $this->_template->assign('jobOrderSourceExtraFields', $jobOrderSourceExtraFields);
-        }
-        else
-        {
+        } else {
             $this->_template->assign('jobOrderSourceRS', false);
             $this->_template->assign('jobOrderSourceExtraFields', false);
         }
@@ -604,7 +540,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isHrMode', $_SESSION['CATS']->isHrMode());
         $this->_template->assign('sessionCookie', $_SESSION['CATS']->getCookie());
 
-        if (!eval(Hooks::get('JO_ADD'))) return;
+        if (!eval(Hooks::get('JO_ADD')))
+            return;
 
         $this->_template->display('./modules/joborders/Add.tpl');
     }
@@ -612,46 +549,39 @@ class JobOrdersUI extends UserInterface
     /*
      * Called by handleRequest() to process saving / submitting the add page.
      */
-    private function onAdd()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_EDIT)
-        {
+
+    private function onAdd() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid company ID. */
-        if (!$this->isRequiredIDValid('companyID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('companyID', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid company ID.');
         }
 
         /* Bail out if we don't have a valid recruiter user ID. */
-        if (!$this->isRequiredIDValid('recruiter', $_POST))
-        {
+        if (!$this->isRequiredIDValid('recruiter', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid recruiter user ID.');
         }
 
         /* Bail out if we don't have a valid owner user ID. */
-        if (!$this->isRequiredIDValid('owner', $_POST))
-        {
+        if (!$this->isRequiredIDValid('owner', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid owner user ID.');
         }
 
         /* Bail out if we don't have a valid number of openings. */
-        if (!$this->isRequiredIDValid('openings', $_POST))
-        {
+        if (!$this->isRequiredIDValid('openings', $_POST)) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid number of openings.');
         }
 
         /* Bail out if we don't have a valid contact ID. */
-        if (!$this->isOptionalIDValid('contactID', $_POST))
-        {
+        if (!$this->isOptionalIDValid('contactID', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid contact ID.');
         }
 
         if (isset($_POST['openings']) && !empty($_POST['openings']) &&
-            !ctype_digit((string) $_POST['openings']))
-        {
+                !ctype_digit((string) $_POST['openings'])) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid number of openings.');
         }
 
@@ -659,16 +589,14 @@ class JobOrdersUI extends UserInterface
          * convert the date to MySQL format.
          */
         $startDate = $this->getTrimmedInput('startDate', $_POST);
-        if (!empty($startDate))
-        {
-            if (!DateUtility::validate('-', $startDate, DATE_FORMAT_MMDDYY))
-            {
+        if (!empty($startDate)) {
+            if (!DateUtility::validate('-', $startDate, DATE_FORMAT_MMDDYY)) {
                 CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid start date.');
             }
 
             /* Convert start_date to something MySQL can understand. */
             $startDate = DateUtility::convert(
-                '-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
+                            '-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
             );
         }
 
@@ -679,72 +607,89 @@ class JobOrdersUI extends UserInterface
         $isPublic = $this->isChecked('public', $_POST);
 
         /* If it is public, is a questionnaire attached? */
-        $questionnaireID =
-            // If a questionnaire is provided the field will be shown and it will != 'none'
-            isset($_POST['questionnaire']) && !empty($_POST['questionnaire']) &&
-            strcmp($_POST['questionnaire'], 'none') && $isPublic ?
-            // The result will be an ID from the questionnaire table:
-            intval($_POST['questionnaire']) :
-            // If no questionnaire exists, boolean false
-            false;
+        $questionnaireID = // If a questionnaire is provided the field will be shown and it will != 'none'
+                isset($_POST['questionnaire']) && !empty($_POST['questionnaire']) &&
+                strcmp($_POST['questionnaire'], 'none') && $isPublic ?
+                // The result will be an ID from the questionnaire table:
+                intval($_POST['questionnaire']) :
+                // If no questionnaire exists, boolean false
+                false;
 
-        $companyID   = $_POST['companyID'];
-        $contactID   = $_POST['contactID'];
-        $recruiter   = $_POST['recruiter'];
-        $owner       = $_POST['owner'];
-        $openings    = $_POST['openings'];
+        $companyID = $_POST['companyID'];
+        $contactID = $_POST['contactID'];
+        $recruiter = $_POST['recruiter'];
+        $owner = $_POST['owner'];
+        $openings = $_POST['openings'];
 
-        $title       = $this->getTrimmedInput('title', $_POST);
+        $title = $this->getTrimmedInput('title', $_POST);
         $companyJobID = $this->getTrimmedInput('companyJobID', $_POST);
-        $type        = $this->getTrimmedInput('type', $_POST);
-        $city        = $this->getTrimmedInput('city', $_POST);
-        $state       = $this->getTrimmedInput('state', $_POST);
-        $duration    = $this->getTrimmedInput('duration', $_POST);
-        $department  = $this->getTrimmedInput('department', $_POST);
-        $maxRate     = $this->getTrimmedInput('maxRate', $_POST);
-        $salary      = $this->getTrimmedInput('salary', $_POST);
+        $type = $this->getTrimmedInput('type', $_POST);
+        $city = $this->getTrimmedInput('city', $_POST);
+        $state = $this->getTrimmedInput('state', $_POST);
+        $duration = $this->getTrimmedInput('duration', $_POST);
+        $department = $this->getTrimmedInput('department', $_POST);
+        $maxRate = $this->getTrimmedInput('maxRate', $_POST);
+        $salary = $this->getTrimmedInput('salary', $_POST);
         $description = $this->getTrimmedInput('description', $_POST);
-        $notes       = $this->getTrimmedInput('notes', $_POST);
+        $notes = $this->getTrimmedInput('notes', $_POST);
 
         /* Bail out if any of the required fields are empty. */
-        if (empty($title) || empty($type) || empty($city) || empty($state))
-        {
+        if (empty($title) || empty($type) || empty($city) || empty($state)) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Required fields are missing.');
         }
 
-        if (!eval(Hooks::get('JO_ON_ADD'))) return;
+        if (!eval(Hooks::get('JO_ON_ADD')))
+            return;
 
         $jobOrders = new JobOrders($this->_siteID);
         $jobOrderID = $jobOrders->add(
-            $title, $companyID, $contactID, $description, $notes, $duration,
-            $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID,
-            $salary, $city, $state, $startDate, $this->_userID, $recruiter,
-            $owner, $department, $questionnaireID
+                $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $this->_userID, $recruiter, $owner, $department, $questionnaireID
         );
 
-        if ($jobOrderID <= 0)
-        {
+        if ($jobOrderID <= 0) {
             CommonErrors::fatal(COMMONERROR_RECORDERROR, $this, 'Failed to add job order.');
+        } else {
+            /*
+             * New changes as requested - 22nd June 2015
+
+
+              $mandatoryskillname = implode($_POST['mandatoryskillname'], ',');
+              $mandatoryskillnameexp = implode($_POST['mandatoryskillnameexp'], ',');
+              $optionalskillname = implode($_POST['optionalskillname'], ',');
+              $optionalskillnameexp = implode($_POST['optionalskillnameexp'], ',');
+              $certificationname = implode($_POST['certificationname'], ',');
+              $certificationcategory = implode($_POST['certificationcategory'], ',');
+             */
+            $mandatoryskillname = $_POST['mandatoryskillname'];
+            $mandatoryskillnameexp = $_POST['mandatoryskillnameexp'];
+            $optionalskillname = $_POST['optionalskillname'];
+            $optionalskillnameexp = $_POST['optionalskillnameexp'];
+            $certificationname = $_POST['certificationname'];
+            $certificationcategory = $_POST['certificationcategory'];
+
+            $jobOrderID = $jobOrders->addJobSkillsCertifications(
+                    $jobOrderID,$this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
+            );
         }
 
         /* Update extra fields. */
         $jobOrders->extraFields->setValuesOnEdit($jobOrderID);
 
-        if (!eval(Hooks::get('JO_ON_ADD_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_ADD_POST')))
+            return;
 
         CATSUtility::transferRelativeURI(
-            'm=joborders&a=show&jobOrderID=' . $jobOrderID
+                'm=joborders&a=show&jobOrderID=' . $jobOrderID
         );
     }
 
     /*
      * Called by handleRequest() to process loading the edit page.
      */
-    private function edit()
-    {
+
+    private function edit() {
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
@@ -755,8 +700,7 @@ class JobOrdersUI extends UserInterface
         $data = $jobOrders->getForEditing($jobOrderID);
 
         /* Bail out if we got an empty result set. */
-        if (empty($data))
-        {
+        if (empty($data)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'The specified job order ID could not be found.');
         }
 
@@ -769,39 +713,30 @@ class JobOrdersUI extends UserInterface
 
         /* Add an MRU entry. */
         $_SESSION['CATS']->getMRU()->addEntry(
-            DATA_ITEM_JOBORDER, $jobOrderID, $data['title']
+                DATA_ITEM_JOBORDER, $jobOrderID, $data['title']
         );
 
         $emailTemplates = new EmailTemplates($this->_siteID);
         $statusChangeTemplateRS = $emailTemplates->getByTag(
-            'EMAIL_TEMPLATE_OWNERSHIPASSIGNJOBORDER'
+                'EMAIL_TEMPLATE_OWNERSHIPASSIGNJOBORDER'
         );
-        if ($statusChangeTemplateRS['disabled'] == 1)
-        {
+        if ($statusChangeTemplateRS['disabled'] == 1) {
             $emailTemplateDisabled = true;
-        }
-        else
-        {
+        } else {
             $emailTemplateDisabled = false;
         }
 
-        if ($this->_accessLevel == ACCESS_LEVEL_DEMO)
-        {
+        if ($this->_accessLevel == ACCESS_LEVEL_DEMO) {
             $canEmail = false;
-        }
-        else
-        {
+        } else {
             $canEmail = true;
         }
 
         $companies = new Companies($this->_siteID);
         $defaultCompanyID = $companies->getDefaultCompany();
-        if ($defaultCompanyID !== false)
-        {
+        if ($defaultCompanyID !== false) {
             $defaultCompanyRS = $companies->get($defaultCompanyID);
-        }
-        else
-        {
+        } else {
             $defaultCompanyRS = array();
         }
 
@@ -810,14 +745,11 @@ class JobOrdersUI extends UserInterface
         $departmentsString = ListEditor::getStringFromList($departmentsRS, 'name');
 
         /* Date format for DateInput()s. */
-        if ($_SESSION['CATS']->isDateDMY())
-        {
+        if ($_SESSION['CATS']->isDateDMY()) {
             $data['startDateMDY'] = DateUtility::convert(
-                '-', $data['startDate'], DATE_FORMAT_DDMMYY, DATE_FORMAT_MMDDYY
+                            '-', $data['startDate'], DATE_FORMAT_DDMMYY, DATE_FORMAT_MMDDYY
             );
-        }
-        else
-        {
+        } else {
             $data['startDateMDY'] = $data['startDate'];
         }
 
@@ -837,15 +769,12 @@ class JobOrdersUI extends UserInterface
 
         $questionnaires = $questionnaire->getAll(false);
 
-        if ($careerPortalEnabled && $data['public'])
-        {
+        if ($careerPortalEnabled && $data['public']) {
             $isPublic = true;
-            if ($data['questionnaireID'])
-            {
+            if ($data['questionnaireID']) {
                 $questionnaire = new Questionnaire($this->_siteID);
                 $q = $questionnaire->get($data['questionnaireID']);
-                if (is_array($q) && !empty($q))
-                {
+                if (is_array($q) && !empty($q)) {
                     $questionnaireID = $q['questionnaireID'];
                     $questionnaireData = $q;
                 }
@@ -873,7 +802,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isHrMode', $_SESSION['CATS']->isHrMode());
         $this->_template->assign('sessionCookie', $_SESSION['CATS']->getCookie());
 
-        if (!eval(Hooks::get('JO_EDIT'))) return;
+        if (!eval(Hooks::get('JO_EDIT')))
+            return;
 
         $this->_template->display('./modules/joborders/Edit.tpl');
     }
@@ -881,44 +811,38 @@ class JobOrdersUI extends UserInterface
     /*
      * Called by handleRequest() to process saving / submitting the edit page.
      */
-    private function onEdit()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_EDIT)
-        {
+
+    private function onEdit() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         $jobOrders = new JobOrders($this->_siteID);
 
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         $jobOrderID = $_POST['jobOrderID'];
 
         /* Bail out if we don't have a valid company ID. */
-        if (!$this->isRequiredIDValid('companyID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('companyID', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid company ID.');
         }
 
         /* Bail out if we don't have a valid contact ID. */
-        if (!$this->isOptionalIDValid('contactID', $_POST))
-        {
+        if (!$this->isOptionalIDValid('contactID', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid contact ID.');
         }
 
         /* Bail out if we don't have a valid recruiter user ID. */
-        if (!$this->isRequiredIDValid('recruiter', $_POST))
-        {
+        if (!$this->isRequiredIDValid('recruiter', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid recruiter user ID.');
         }
 
         /* Bail out if we don't have a valid owner user ID. */
-        if (!$this->isOptionalIDValid('owner', $_POST))
-        {
+        if (!$this->isOptionalIDValid('owner', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid owner user ID.');
         }
 
@@ -926,30 +850,26 @@ class JobOrdersUI extends UserInterface
          * convert the date to MySQL format.
          */
         $startDate = $this->getTrimmedInput('startDate', $_POST);
-        if (!empty($startDate))
-        {
-            if (!DateUtility::validate('-', $startDate, DATE_FORMAT_MMDDYY))
-            {
+        if (!empty($startDate)) {
+            if (!DateUtility::validate('-', $startDate, DATE_FORMAT_MMDDYY)) {
                 CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid start date.');
                 return;
             }
 
             /* Convert start_date to something MySQL can understand. */
             $startDate = DateUtility::convert(
-                '-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
+                            '-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
             );
         }
 
         /* Bail out if we received an invalid status. */
         /* FIXME: Check actual status codes. */
-        if (!isset($_POST['status']) || empty($_POST['status']))
-        {
+        if (!isset($_POST['status']) || empty($_POST['status'])) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid status.');
         }
 
         if (isset($_POST['openings']) && !empty($_POST['openings']) &&
-            !ctype_digit((string) $_POST['openings']))
-        {
+                !ctype_digit((string) $_POST['openings'])) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid number of openings.');
         }
 
@@ -960,47 +880,41 @@ class JobOrdersUI extends UserInterface
         $public = $this->isChecked('public', $_POST);
 
         /* If it is public, is a questionnaire attached? */
-        $questionnaireID =
-            // If a questionnaire is provided the field will be shown and it will != 'none'
-            isset($_POST['questionnaire']) && !empty($_POST['questionnaire']) &&
-            strcmp($_POST['questionnaire'], 'none') && $public ?
-            // The result will be an ID from the questionnaire table:
-            intval($_POST['questionnaire']) :
-            // If no questionnaire exists, boolean false
-            false;
+        $questionnaireID = // If a questionnaire is provided the field will be shown and it will != 'none'
+                isset($_POST['questionnaire']) && !empty($_POST['questionnaire']) &&
+                strcmp($_POST['questionnaire'], 'none') && $public ?
+                // The result will be an ID from the questionnaire table:
+                intval($_POST['questionnaire']) :
+                // If no questionnaire exists, boolean false
+                false;
 
-        $companyID         = $_POST['companyID'];
-        $contactID         = $_POST['contactID'];
-        $owner             = $_POST['owner'];
-        $recruiter         = $_POST['recruiter'];
-        $openings          = $_POST['openings'];
+        $companyID = $_POST['companyID'];
+        $contactID = $_POST['contactID'];
+        $owner = $_POST['owner'];
+        $recruiter = $_POST['recruiter'];
+        $openings = $_POST['openings'];
         $openingsAvailable = $_POST['openingsAvailable'];
 
         /* Change ownership email? */
-        if ($this->isChecked('ownershipChange', $_POST) && $owner > 0)
-        {
+        if ($this->isChecked('ownershipChange', $_POST) && $owner > 0) {
             $jobOrderDetails = $jobOrders->get($jobOrderID);
 
             $users = new Users($this->_siteID);
             $ownerDetails = $users->get($_POST['owner']);
 
-            if (!empty($ownerDetails))
-            {
+            if (!empty($ownerDetails)) {
                 $emailAddress = $ownerDetails['email'];
 
                 /* Get the change status email template. */
                 $emailTemplates = new EmailTemplates($this->_siteID);
                 $statusChangeTemplateRS = $emailTemplates->getByTag(
-                    'EMAIL_TEMPLATE_OWNERSHIPASSIGNJOBORDER'
+                        'EMAIL_TEMPLATE_OWNERSHIPASSIGNJOBORDER'
                 );
 
                 if (empty($statusChangeTemplateRS) ||
-                    empty($statusChangeTemplateRS['textReplaced']))
-                {
+                        empty($statusChangeTemplateRS['textReplaced'])) {
                     $statusChangeTemplate = '';
-                }
-                else
-                {
+                } else {
                     $statusChangeTemplate = $statusChangeTemplateRS['textReplaced'];
                 }
 
@@ -1017,97 +931,88 @@ class JobOrdersUI extends UserInterface
                     $jobOrderDetails['title'],
                     $jobOrderDetails['companyName'],
                     $jobOrderID,
-                    '<a href="http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?')) . '?m=joborders&amp;a=show&amp;jobOrderID=' . $jobOrderID . '">'.
-                        'http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?')) . '?m=joborders&amp;a=show&amp;jobOrderID=' . $jobOrderID . '</a>'
+                    '<a href="http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?')) . '?m=joborders&amp;a=show&amp;jobOrderID=' . $jobOrderID . '">' .
+                    'http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?')) . '?m=joborders&amp;a=show&amp;jobOrderID=' . $jobOrderID . '</a>'
                 );
                 $statusChangeTemplate = str_replace(
-                    $stringsToFind,
-                    $replacementStrings,
-                    $statusChangeTemplate
+                        $stringsToFind, $replacementStrings, $statusChangeTemplate
                 );
 
                 $email = $statusChangeTemplate;
-            }
-            else
-            {
+            } else {
                 $email = '';
                 $emailAddress = '';
             }
-        }
-        else
-        {
+        } else {
             $email = '';
             $emailAddress = '';
         }
 
-        $title       = $this->getTrimmedInput('title', $_POST);
+        $title = $this->getTrimmedInput('title', $_POST);
         $companyJobID = $this->getTrimmedInput('companyJobID', $_POST);
-        $type        = $this->getTrimmedInput('type', $_POST);
-        $city        = $this->getTrimmedInput('city', $_POST);
-        $state       = $this->getTrimmedInput('state', $_POST);
-        $status      = $this->getTrimmedInput('status', $_POST);
-        $duration    = $this->getTrimmedInput('duration', $_POST);
-        $department  = $this->getTrimmedInput('department', $_POST);
-        $maxRate     = $this->getTrimmedInput('maxRate', $_POST);
-        $salary      = $this->getTrimmedInput('salary', $_POST);
+        $type = $this->getTrimmedInput('type', $_POST);
+        $city = $this->getTrimmedInput('city', $_POST);
+        $state = $this->getTrimmedInput('state', $_POST);
+        $status = $this->getTrimmedInput('status', $_POST);
+        $duration = $this->getTrimmedInput('duration', $_POST);
+        $department = $this->getTrimmedInput('department', $_POST);
+        $maxRate = $this->getTrimmedInput('maxRate', $_POST);
+        $salary = $this->getTrimmedInput('salary', $_POST);
         $description = $this->getTrimmedInput('description', $_POST);
-        $notes       = $this->getTrimmedInput('notes', $_POST);
+        $notes = $this->getTrimmedInput('notes', $_POST);
 
         /* Bail out if any of the required fields are empty. */
-        if (empty($title) || empty($type) || empty($city) || empty($state))
-        {
+        if (empty($title) || empty($type) || empty($city) || empty($state)) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Required fields are missing.');
         }
 
-        if (!eval(Hooks::get('JO_ON_EDIT_PRE'))) return;
+        if (!eval(Hooks::get('JO_ON_EDIT_PRE')))
+            return;
 
-        if (!$jobOrders->update($jobOrderID, $title, $companyJobID, $companyID, $contactID,
-            $description, $notes, $duration, $maxRate, $type, $isHot,
-            $openings, $openingsAvailable, $salary, $city, $state, $startDate, $status, $recruiter,
-            $owner, $public, $email, $emailAddress, $department, $questionnaireID))
-        {
+        if (!$jobOrders->update($jobOrderID, $title, $companyJobID, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $openings, $openingsAvailable, $salary, $city, $state, $startDate, $status, $recruiter, $owner, $public, $email, $emailAddress, $department, $questionnaireID)) {
             CommonErrors::fatal(COMMONERROR_RECORDERROR, $this, 'Failed to update job order.');
         }
 
         /* Update extra fields. */
         $jobOrders->extraFields->setValuesOnEdit($jobOrderID);
 
-        if (!eval(Hooks::get('JO_ON_EDIT_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_EDIT_POST')))
+            return;
 
         CATSUtility::transferRelativeURI(
-            'm=joborders&a=show&jobOrderID=' . $jobOrderID
+                'm=joborders&a=show&jobOrderID=' . $jobOrderID
         );
     }
 
     /*
      * Called by handleRequest() to process deleting a job order.
      */
-    private function onDelete()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_DELETE)
-        {
+
+    private function onDelete() {
+        if ($this->_accessLevel < ACCESS_LEVEL_DELETE) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         $jobOrderID = $_GET['jobOrderID'];
 
-        if (!eval(Hooks::get('JO_ON_DELETE_PRE'))) return;
+        if (!eval(Hooks::get('JO_ON_DELETE_PRE')))
+            return;
 
         $joborders = new JobOrders($this->_siteID);
         $joborders->delete($jobOrderID);
 
         /* Delete the MRU entry if present. */
         $_SESSION['CATS']->getMRU()->removeEntry(
-            DATA_ITEM_JOBORDER, $jobOrderID
+                DATA_ITEM_JOBORDER, $jobOrderID
         );
 
-        if (!eval(Hooks::get('JO_ON_DELETE_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_DELETE_POST')))
+            return;
 
         CATSUtility::transferRelativeURI('m=joborders&a=listByView');
     }
@@ -1116,17 +1021,17 @@ class JobOrdersUI extends UserInterface
      * Called by handleRequest() to handle loading the "Add candidate to this
      * Job Order Pipeline" initial search page in the modal dialog.
      */
-    private function considerCandidateSearch()
-    {
+
+    private function considerCandidateSearch() {
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         $jobOrderID = $_GET['jobOrderID'];
 
-        if (!eval(Hooks::get('JO_CONSIDER_CANDIDATE_SEARCH'))) return;
+        if (!eval(Hooks::get('JO_CONSIDER_CANDIDATE_SEARCH')))
+            return;
 
         $this->_template->assign('isFinishedMode', false);
         $this->_template->assign('isResultsMode', false);
@@ -1139,19 +1044,17 @@ class JobOrdersUI extends UserInterface
      * this Job Order Pipeline" search and displaying the results in the
      * modal dialog.
      */
-    private function onConsiderCandidateSearch()
-    {
+
+    private function onConsiderCandidateSearch() {
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_POST)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         /* Bail out to prevent an error if the POST string doesn't even contain
          * a field named 'wildCardString' at all.
          */
-        if (!isset($_POST['wildCardString']))
-        {
+        if (!isset($_POST['wildCardString'])) {
             CommonErrors::fatal(COMMONERROR_WILDCARDSTRING, $this, 'No wild card string specified.');
         }
 
@@ -1164,8 +1067,7 @@ class JobOrdersUI extends UserInterface
 
         /* Execute the search. */
         $search = new SearchCandidates($this->_siteID);
-        switch ($mode)
-        {
+        switch ($mode) {
             case 'searchByFullName':
                 $rs = $search->byFullName($query, 'lastName', 'ASC');
                 break;
@@ -1179,23 +1081,15 @@ class JobOrdersUI extends UserInterface
         $pipelines = new Pipelines($this->_siteID);
         $pipelinesRS = $pipelines->getJobOrderPipeline($jobOrderID);
 
-        foreach ($rs as $rowIndex => $row)
-        {
-            if (ResultSetUtility::findRowByColumnValue($pipelinesRS,
-                'candidateID', $row['candidateID']) !== false)
-            {
+        foreach ($rs as $rowIndex => $row) {
+            if (ResultSetUtility::findRowByColumnValue($pipelinesRS, 'candidateID', $row['candidateID']) !== false) {
                 $rs[$rowIndex]['inPipeline'] = true;
-            }
-            else
-            {
+            } else {
                 $rs[$rowIndex]['inPipeline'] = false;
             }
 
             $rs[$rowIndex]['ownerAbbrName'] = StringUtility::makeInitialName(
-                $row['ownerFirstName'],
-                $row['ownerLastName'],
-                false,
-                LAST_NAME_MAXLEN
+                            $row['ownerFirstName'], $row['ownerLastName'], false, LAST_NAME_MAXLEN
             );
         }
 
@@ -1204,7 +1098,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isResultsMode', true);
         $this->_template->assign('jobOrderID', $jobOrderID);
 
-        if (!eval(Hooks::get('JO_ON_CONSIDER_CANDIDATE_SEARCH'))) return;
+        if (!eval(Hooks::get('JO_ON_CONSIDER_CANDIDATE_SEARCH')))
+            return;
 
         $this->_template->display('./modules/joborders/ConsiderSearchModal.tpl');
     }
@@ -1213,54 +1108,47 @@ class JobOrdersUI extends UserInterface
      * Called by handleRequest() to process adding a candidate to the pipeline
      * in the modal dialog.
      */
-    private function onAddToPipeline()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_EDIT)
-        {
+
+    private function onAddToPipeline() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('candidateID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('candidateID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
         }
 
-        $jobOrderID  = $_GET['jobOrderID'];
+        $jobOrderID = $_GET['jobOrderID'];
         $candidateID = $_GET['candidateID'];
 
-        if (!eval(Hooks::get('JO_ON_ADD_PIPELINE'))) return;
+        if (!eval(Hooks::get('JO_ON_ADD_PIPELINE')))
+            return;
 
         $pipelines = new Pipelines($this->_siteID);
-        if (!$pipelines->add($candidateID, $jobOrderID, $this->_userID))
-        {
+        if (!$pipelines->add($candidateID, $jobOrderID, $this->_userID)) {
             CommonErrors::fatal(COMMONERROR_RECORDERROR, $this, 'Failed to add candidate to pipeline.');
         }
 
         $activityEntries = new ActivityEntries($this->_siteID);
         $activityID = $activityEntries->add(
-            $candidateID,
-            DATA_ITEM_CANDIDATE,
-            400,
-            'Added candidate to pipeline.',
-            $this->_userID,
-            $jobOrderID
+                $candidateID, DATA_ITEM_CANDIDATE, 400, 'Added candidate to pipeline.', $this->_userID, $jobOrderID
         );
 
         $this->_template->assign('isFinishedMode', true);
         $this->_template->assign('jobOrderID', $jobOrderID);
         $this->_template->assign('candidateID', $candidateID);
 
-        if (!eval(Hooks::get('JO_ON_ADD_PIPELINE_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_ADD_PIPELINE_POST')))
+            return;
 
         $this->_template->display(
-            './modules/joborders/ConsiderSearchModal.tpl'
+                './modules/joborders/ConsiderSearchModal.tpl'
         );
     }
 
@@ -1268,11 +1156,10 @@ class JobOrdersUI extends UserInterface
      * Called by handleRequest() to handle loading the quick add candidate form
      * in the modal dialog.
      */
-    private function addCandidateModal($contents = '', $fields = array())
-    {
+
+    private function addCandidateModal($contents = '', $fields = array()) {
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
@@ -1294,8 +1181,7 @@ class JobOrdersUI extends UserInterface
         $EEOSettingsRS = $EEOSettings->getAll();
 
         if (is_array($parsingStatus = LicenseUtility::getParsingStatus()) &&
-            isset($parsingStatus['parseLimit']))
-        {
+                isset($parsingStatus['parseLimit'])) {
             $parsingStatus['parseLimit'] = $parsingStatus['parseLimit'] - 1;
         }
 
@@ -1324,7 +1210,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('associatedFileResume', false);
         $this->_template->assign('EEOSettingsRS', $EEOSettingsRS);
 
-        if (!eval(Hooks::get('JO_ADD_CANDIDATE_MODAL'))) return;
+        if (!eval(Hooks::get('JO_ADD_CANDIDATE_MODAL')))
+            return;
 
         /* REMEMBER TO ALSO UPDATE CandidatesUI::add() IF APPLICABLE. */
         $this->_template->display('./modules/candidates/Add.tpl');
@@ -1334,16 +1221,14 @@ class JobOrdersUI extends UserInterface
      * Called by handleRequest() to handle processing the quick add candidate
      * form in the modal dialog.
      */
-    private function onAddCandidateModal()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_EDIT)
-        {
+
+    private function onAddCandidateModal() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_POST)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
@@ -1351,49 +1236,43 @@ class JobOrdersUI extends UserInterface
 
         /* URI to transfer after candidate is successfully added. */
         $transferURI = sprintf(
-            'm=candidates&a=addToPipeline&candidateID=%s&jobOrderID=%s',
-            '__CANDIDATE_ID__',
-            $jobOrderID
+                'm=candidates&a=addToPipeline&candidateID=%s&jobOrderID=%s', '__CANDIDATE_ID__', $jobOrderID
         );
 
-        if (!eval(Hooks::get('JO_ON_ADD_CANDIDATE_MODAL'))) return;
+        if (!eval(Hooks::get('JO_ON_ADD_CANDIDATE_MODAL')))
+            return;
 
         include_once('./modules/candidates/CandidatesUI.php');
         $candidatesUI = new CandidatesUI();
 
-        if (is_array($mp = $candidatesUI->checkParsingFunctions()))
-        {
+        if (is_array($mp = $candidatesUI->checkParsingFunctions())) {
             return $this->addCandidateModal($mp[0], $mp[1]);
         }
 
         $candidatesUI->publicAddCandidate(
-            true, $transferURI, $this->_moduleDirectory
+                true, $transferURI, $this->_moduleDirectory
         );
     }
 
-    private function addActivityChangeStatus()
-    {
+    private function addActivityChangeStatus() {
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('candidateID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('candidateID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
         }
 
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         $candidateID = $_GET['candidateID'];
-        $jobOrderID  = $_GET['jobOrderID'];
+        $jobOrderID = $_GET['jobOrderID'];
 
         $candidates = new Candidates($this->_siteID);
         $candidateData = $candidates->get($candidateID);
 
         /* Bail out if we got an empty result set. */
-        if (empty($candidateData))
-        {
+        if (empty($candidateData)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'The specified candidate ID could not be found.');
         }
 
@@ -1401,8 +1280,7 @@ class JobOrdersUI extends UserInterface
         $pipelineData = $pipelines->get($candidateID, $jobOrderID);
 
         /* Bail out if we got an empty result set. */
-        if (empty($pipelineData))
-        {
+        if (empty($pipelineData)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'The specified pipeline entry could not be found.');
         }
 
@@ -1416,24 +1294,20 @@ class JobOrdersUI extends UserInterface
 
         $candidateJoborderStatusSendsMessage = unserialize($mailerSettingsRS['candidateJoborderStatusSendsMessage']);
 
-        foreach ($statusRS as $index => $status)
-        {
+        foreach ($statusRS as $index => $status) {
             $statusRS[$index]['triggersEmail'] = $candidateJoborderStatusSendsMessage[$status['statusID']];
         }
 
         /* Get the change status email template. */
         $emailTemplates = new EmailTemplates($this->_siteID);
         $statusChangeTemplateRS = $emailTemplates->getByTag(
-            'EMAIL_TEMPLATE_STATUSCHANGE'
+                'EMAIL_TEMPLATE_STATUSCHANGE'
         );
         if (empty($statusChangeTemplateRS) ||
-            empty($statusChangeTemplateRS['textReplaced']))
-        {
+                empty($statusChangeTemplateRS['textReplaced'])) {
             $statusChangeTemplate = '';
             $emailDisabled = $statusChangeTemplateRS['disabled'];
-        }
-        else
-        {
+        } else {
             $statusChangeTemplate = $statusChangeTemplateRS['textReplaced'];
             $emailDisabled = $statusChangeTemplateRS['disabled'];
         }
@@ -1452,20 +1326,15 @@ class JobOrdersUI extends UserInterface
             $candidateData['firstName'] . ' ' . $candidateData['lastName']
         );
         $statusChangeTemplate = str_replace(
-            $stringsToFind,
-            $replacementStrings,
-            $statusChangeTemplate
+                $stringsToFind, $replacementStrings, $statusChangeTemplate
         );
 
         $calendar = new Calendar($this->_siteID);
         $calendarEventTypes = $calendar->getAllEventTypes();
 
-        if (SystemUtility::isSchedulerEnabled() && !$_SESSION['CATS']->isDemo())
-        {
+        if (SystemUtility::isSchedulerEnabled() && !$_SESSION['CATS']->isDemo()) {
             $allowEventReminders = true;
-        }
-        else
-        {
+        } else {
             $allowEventReminders = false;
         }
 
@@ -1483,34 +1352,33 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isFinishedMode', false);
         $this->_template->assign('isJobOrdersMode', true);
 
-        if (!eval(Hooks::get('JO_ADD_ACTIVITY_CHANGE_STATUS'))) return;
+        if (!eval(Hooks::get('JO_ADD_ACTIVITY_CHANGE_STATUS')))
+            return;
 
         $this->_template->display(
-            './modules/candidates/AddActivityChangeStatusModal.tpl'
+                './modules/candidates/AddActivityChangeStatusModal.tpl'
         );
     }
 
-    private function onAddActivityChangeStatus()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_EDIT)
-        {
+    private function onAddActivityChangeStatus() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid regarding job order ID. */
-        if (!$this->isRequiredIDValid('regardingID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('regardingID', $_POST)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         $regardingID = $_POST['regardingID'];
 
-        if (!eval(Hooks::get('JO_ON_ADD_ACTIVITY_CHANGE_STATUS'))) return;
+        if (!eval(Hooks::get('JO_ON_ADD_ACTIVITY_CHANGE_STATUS')))
+            return;
 
         include_once('./modules/candidates/CandidatesUI.php');
         $candidatesUI = new CandidatesUI();
         $candidatesUI->publicAddActivityChangeStatus(
-            true, $regardingID, $this->_moduleDirectory
+                true, $regardingID, $this->_moduleDirectory
         );
     }
 
@@ -1518,45 +1386,44 @@ class JobOrdersUI extends UserInterface
      * Called by handleRequest() to process removing a candidate from the
      * pipeline for  a job order.
      */
-    private function onRemoveFromPipeline()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_DELETE)
-        {
+
+    private function onRemoveFromPipeline() {
+        if ($this->_accessLevel < ACCESS_LEVEL_DELETE) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('candidateID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('candidateID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
         }
 
         /* Bail out if we don't have a valid job order ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
         $candidateID = $_GET['candidateID'];
-        $jobOrderID  = $_GET['jobOrderID'];
+        $jobOrderID = $_GET['jobOrderID'];
 
-        if (!eval(Hooks::get('JO_ON_REMOVE_PIPELINE'))) return;
+        if (!eval(Hooks::get('JO_ON_REMOVE_PIPELINE')))
+            return;
 
         $pipelines = new Pipelines($this->_siteID);
         $pipelines->remove($candidateID, $jobOrderID);
 
-        if (!eval(Hooks::get('JO_ON_REMOVE_PIPELINE_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_REMOVE_PIPELINE_POST')))
+            return;
 
         CATSUtility::transferRelativeURI(
-            'm=joborders&a=show&jobOrderID=' . $jobOrderID
+                'm=joborders&a=show&jobOrderID=' . $jobOrderID
         );
     }
 
     /*
      * Called by handleRequest() to process loading the search page.
      */
-    private function search()
-    {
+
+    private function search() {
         $savedSearches = new SavedSearches($this->_siteID);
         $savedSearchRS = $savedSearches->get(DATA_ITEM_JOBORDER);
 
@@ -1569,7 +1436,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('wildCardString_jobTitle', '');
         $this->_template->assign('mode', '');
 
-        if (!eval(Hooks::get('JO_SEARCH'))) return;
+        if (!eval(Hooks::get('JO_SEARCH')))
+            return;
 
         $this->_template->display('./modules/joborders/Search.tpl');
     }
@@ -1577,16 +1445,15 @@ class JobOrdersUI extends UserInterface
     /*
      * Called by handleRequest() to process displaying the search results.
      */
-    private function onSearch()
-    {
+
+    private function onSearch() {
         $query_jobTitle = '';
         $query_companyName = '';
 
         /* Bail out to prevent an error if the GET string doesn't even contain
          * a field named 'wildCardString' at all.
          */
-        if (!isset($_GET['wildCardString']))
-        {
+        if (!isset($_GET['wildCardString'])) {
             $this->listByView('No wild card string specified.');
             return;
         }
@@ -1594,39 +1461,30 @@ class JobOrdersUI extends UserInterface
         $query = trim($_GET['wildCardString']);
 
         /* Set up sorting. */
-        if ($this->isRequiredIDValid('page', $_GET))
-        {
+        if ($this->isRequiredIDValid('page', $_GET)) {
             $currentPage = $_GET['page'];
-        }
-        else
-        {
+        } else {
             $currentPage = 1;
         }
 
         $searchPager = new SearchPager(
-            CANDIDATES_PER_PAGE, $currentPage, $this->_siteID, $_GET
+                CANDIDATES_PER_PAGE, $currentPage, $this->_siteID, $_GET
         );
 
-        if ($searchPager->isSortByValid('sortBy', $_GET))
-        {
+        if ($searchPager->isSortByValid('sortBy', $_GET)) {
             $sortBy = $_GET['sortBy'];
-        }
-        else
-        {
+        } else {
             $sortBy = 'title';
         }
 
-        if ($searchPager->isSortDirectionValid('sortDirection', $_GET))
-        {
+        if ($searchPager->isSortDirectionValid('sortDirection', $_GET)) {
             $sortDirection = $_GET['sortDirection'];
-        }
-        else
-        {
+        } else {
             $sortDirection = 'ASC';
         }
 
         $baseURL = CATSUtility::getFilteredGET(
-            array('sortBy', 'sortDirection', 'page'), '&amp;'
+                        array('sortBy', 'sortDirection', 'page'), '&amp;'
         );
         $searchPager->setSortByParameters($baseURL, $sortBy, $sortDirection);
 
@@ -1635,8 +1493,7 @@ class JobOrdersUI extends UserInterface
 
         /* Execute the search. */
         $search = new SearchJobOrders($this->_siteID);
-        switch ($mode)
-        {
+        switch ($mode) {
             case 'searchByJobTitle':
                 $query_jobTitle = $query;
                 $rs = $search->byTitle($query, $sortBy, $sortDirection, false);
@@ -1653,44 +1510,31 @@ class JobOrdersUI extends UserInterface
                 break;
         }
 
-        foreach ($rs as $rowIndex => $row)
-        {
+        foreach ($rs as $rowIndex => $row) {
             /* Convert '00-00-00' dates to empty strings. */
             $rs[$rowIndex]['startDate'] = DateUtility::fixZeroDate(
-                $row['startDate']
+                            $row['startDate']
             );
 
-            if ($row['isHot'] == 1)
-            {
+            if ($row['isHot'] == 1) {
                 $rs[$rowIndex]['linkClass'] = 'jobLinkHot';
-            }
-            else
-            {
+            } else {
                 $rs[$rowIndex]['linkClass'] = 'jobLinkCold';
             }
 
             $rs[$rowIndex]['recruiterAbbrName'] = StringUtility::makeInitialName(
-                $row['recruiterFirstName'],
-                $row['recruiterLastName'],
-                false,
-                LAST_NAME_MAXLEN
+                            $row['recruiterFirstName'], $row['recruiterLastName'], false, LAST_NAME_MAXLEN
             );
 
             $rs[$rowIndex]['ownerAbbrName'] = StringUtility::makeInitialName(
-                $row['ownerFirstName'],
-                $row['ownerLastName'],
-                false,
-                LAST_NAME_MAXLEN
+                            $row['ownerFirstName'], $row['ownerLastName'], false, LAST_NAME_MAXLEN
             );
         }
 
         /* Save the search. */
         $savedSearches = new SavedSearches($this->_siteID);
         $savedSearches->add(
-            DATA_ITEM_JOBORDER,
-            $query,
-            $_SERVER['REQUEST_URI'],
-            false
+                DATA_ITEM_JOBORDER, $query, $_SERVER['REQUEST_URI'], false
         );
 
         $savedSearchRS = $savedSearches->get(DATA_ITEM_JOBORDER);
@@ -1699,7 +1543,7 @@ class JobOrdersUI extends UserInterface
 
         $jobOderIDs = implode(',', ResultSetUtility::getColumnValues($rs, 'jobOrderID'));
         $exportForm = ExportUtility::getForm(
-            DATA_ITEM_JOBORDER, $jobOderIDs, 29, 5
+                        DATA_ITEM_JOBORDER, $jobOderIDs, 29, 5
         );
 
         $this->_template->assign('active', $this);
@@ -1715,7 +1559,8 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isResultsMode', true);
         $this->_template->assign('mode', $mode);
 
-        if (!eval(Hooks::get('JO_ON_SEARCH'))) return;
+        if (!eval(Hooks::get('JO_ON_SEARCH')))
+            return;
 
         $this->_template->display('./modules/joborders/Search.tpl');
     }
@@ -1724,11 +1569,10 @@ class JobOrdersUI extends UserInterface
      * Called by handleRequest() to process loading the create attachment
      * modal dialog.
      */
-    private function createAttachment()
-    {
+
+    private function createAttachment() {
         /* Bail out if we don't have a valid joborder ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid joborder ID.');
         }
 
@@ -1737,108 +1581,103 @@ class JobOrdersUI extends UserInterface
         $this->_template->assign('isFinishedMode', false);
         $this->_template->assign('jobOrderID', $jobOrderID);
 
-        if (!eval(Hooks::get('JO_CREATE_ATTACHMENT'))) return;
+        if (!eval(Hooks::get('JO_CREATE_ATTACHMENT')))
+            return;
 
         $this->_template->display(
-            './modules/joborders/CreateAttachmentModal.tpl'
+                './modules/joborders/CreateAttachmentModal.tpl'
         );
     }
 
     /*
      * Called by handleRequest() to process creating an attachment.
      */
-    private function onCreateAttachment()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_EDIT)
-        {
+
+    private function onCreateAttachment() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid joborder ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_POST))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_POST)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid joborder ID.');
         }
 
         $jobOrderID = $_POST['jobOrderID'];
 
-        if (!eval(Hooks::get('JO_ON_CREATE_ATTACHMENT_PRE'))) return;
+        if (!eval(Hooks::get('JO_ON_CREATE_ATTACHMENT_PRE')))
+            return;
 
         $attachmentCreator = new AttachmentCreator($this->_siteID);
         $attachmentCreator->createFromUpload(
-            DATA_ITEM_JOBORDER, $jobOrderID, 'file', false, false
+                DATA_ITEM_JOBORDER, $jobOrderID, 'file', false, false
         );
 
-        if ($attachmentCreator->isError())
-        {
+        if ($attachmentCreator->isError()) {
             CommonErrors::fatalModal(COMMONERROR_FILEERROR, $this, $attachmentCreator->getError());
         }
 
-        if (!eval(Hooks::get('JO_ON_CREATE_ATTACHMENT_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_CREATE_ATTACHMENT_POST')))
+            return;
 
         $this->_template->assign('isFinishedMode', true);
         $this->_template->assign('jobOrderID', $jobOrderID);
 
         $this->_template->display(
-            './modules/joborders/CreateAttachmentModal.tpl'
+                './modules/joborders/CreateAttachmentModal.tpl'
         );
     }
 
     /*
      * Called by handleRequest() to process deleting an attachment.
      */
-    private function onDeleteAttachment()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_DELETE)
-        {
+
+    private function onDeleteAttachment() {
+        if ($this->_accessLevel < ACCESS_LEVEL_DELETE) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid attachment ID. */
-        if (!$this->isRequiredIDValid('attachmentID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('attachmentID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid attachment ID.');
         }
 
         /* Bail out if we don't have a valid joborder ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid Job Order ID.');
         }
 
-        $jobOrderID  = $_GET['jobOrderID'];
+        $jobOrderID = $_GET['jobOrderID'];
         $attachmentID = $_GET['attachmentID'];
 
-        if (!eval(Hooks::get('JO_ON_DELETE_ATTACHMENT_PRE'))) return;
+        if (!eval(Hooks::get('JO_ON_DELETE_ATTACHMENT_PRE')))
+            return;
 
         $attachments = new Attachments($this->_siteID);
         $attachments->delete($attachmentID);
 
-        if (!eval(Hooks::get('JO_ON_DELETE_ATTACHMENT_POST'))) return;
+        if (!eval(Hooks::get('JO_ON_DELETE_ATTACHMENT_POST')))
+            return;
 
         CATSUtility::transferRelativeURI(
-            'm=joborders&a=show&jobOrderID=' . $jobOrderID
+                'm=joborders&a=show&jobOrderID=' . $jobOrderID
         );
     }
 
     //Only accessable by MSA users - hides this job order from everybody by
     // FIXME: Document me.
-    private function administrativeHideShow()
-    {
-        if ($this->_accessLevel < ACCESS_LEVEL_MULTI_SA)
-        {
+    private function administrativeHideShow() {
+        if ($this->_accessLevel < ACCESS_LEVEL_MULTI_SA) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
 
         /* Bail out if we don't have a valid joborder ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid Job Order ID.');
         }
 
         /* Bail out if we don't have a valid status ID. */
-        if (!$this->isRequiredIDValid('state', $_GET, true))
-        {
+        if (!$this->isRequiredIDValid('state', $_GET, true)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid state ID.');
         }
 
@@ -1850,7 +1689,7 @@ class JobOrdersUI extends UserInterface
         $joborders = new JobOrders($this->_siteID);
         $joborders->administrativeHideShow($jobOrderID, $state);
 
-        CATSUtility::transferRelativeURI('m=joborders&a=show&jobOrderID='.$jobOrderID);
+        CATSUtility::transferRelativeURI('m=joborders&a=show&jobOrderID=' . $jobOrderID);
     }
 
     /**
@@ -1860,92 +1699,69 @@ class JobOrdersUI extends UserInterface
      * @param array result set from listByView()
      * @return array formatted result set
      */
-    private function _formatListByViewResults($resultSet)
-    {
-        if (empty($resultSet))
-        {
+    private function _formatListByViewResults($resultSet) {
+        if (empty($resultSet)) {
             return $resultSet;
         }
 
-        foreach ($resultSet as $rowIndex => $row)
-        {
+        foreach ($resultSet as $rowIndex => $row) {
             /* Get info strings for popup titles */
             $resultSet[$rowIndex]['jobOrderInfo'] = InfoString::make(
-                DATA_ITEM_JOBORDER,
-                $resultSet[$rowIndex]['jobOrderID'],
-                $this->_siteID
+                            DATA_ITEM_JOBORDER, $resultSet[$rowIndex]['jobOrderID'], $this->_siteID
             );
             $resultSet[$rowIndex]['companyInfo'] = InfoString::make(
-                DATA_ITEM_COMPANY,
-                $resultSet[$rowIndex]['companyID'],
-                $this->_siteID
+                            DATA_ITEM_COMPANY, $resultSet[$rowIndex]['companyID'], $this->_siteID
             );
 
             /* Truncate job order title. */
-            if (strlen($resultSet[$rowIndex]['title']) > self::TRUNCATE_JOBORDER_TITLE)
-            {
+            if (strlen($resultSet[$rowIndex]['title']) > self::TRUNCATE_JOBORDER_TITLE) {
                 $resultSet[$rowIndex]['title'] = substr(
-                    $resultSet[$rowIndex]['title'],
-                    0,
-                    self::TRUNCATE_JOBORDER_TITLE
-                ) . "...";
+                                $resultSet[$rowIndex]['title'], 0, self::TRUNCATE_JOBORDER_TITLE
+                        ) . "...";
             }
 
             /* Truncate company name. */
-            if (strlen($resultSet[$rowIndex]['companyName']) > self::TRUNCATE_CLIENT_NAME)
-            {
+            if (strlen($resultSet[$rowIndex]['companyName']) > self::TRUNCATE_CLIENT_NAME) {
                 $resultSet[$rowIndex]['companyName'] = substr(
-                    $resultSet[$rowIndex]['companyName'],
-                    0,
-                    self::TRUNCATE_CLIENT_NAME
-                ) . "...";
+                                $resultSet[$rowIndex]['companyName'], 0, self::TRUNCATE_CLIENT_NAME
+                        ) . "...";
             }
 
             /* Convert '00-00-00' dates to empty strings. */
             $resultSet[$rowIndex]['startDate'] = DateUtility::fixZeroDate(
-                $resultSet[$rowIndex]['startDate']
+                            $resultSet[$rowIndex]['startDate']
             );
 
             /* Hot jobs [can] have different title styles than normal
              * jobs.
              */
-            if ($resultSet[$rowIndex]['isHot'] == 1)
-            {
+            if ($resultSet[$rowIndex]['isHot'] == 1) {
                 $resultSet[$rowIndex]['linkClass'] = 'jobLinkHot';
-            }
-            else
-            {
+            } else {
                 $resultSet[$rowIndex]['linkClass'] = 'jobLinkCold';
             }
 
             $resultSet[$rowIndex]['recruiterAbbrName'] = StringUtility::makeInitialName(
-                $resultSet[$rowIndex]['recruiterFirstName'],
-                $resultSet[$rowIndex]['recruiterLastName'],
-                false,
-                LAST_NAME_MAXLEN
+                            $resultSet[$rowIndex]['recruiterFirstName'], $resultSet[$rowIndex]['recruiterLastName'], false, LAST_NAME_MAXLEN
             );
 
             $resultSet[$rowIndex]['ownerAbbrName'] = StringUtility::makeInitialName(
-                $resultSet[$rowIndex]['ownerFirstName'],
-                $resultSet[$rowIndex]['ownerLastName'],
-                false,
-                LAST_NAME_MAXLEN
+                            $resultSet[$rowIndex]['ownerFirstName'], $resultSet[$rowIndex]['ownerLastName'], false, LAST_NAME_MAXLEN
             );
 
-            if ($resultSet[$rowIndex]['attachmentPresent'] == 1)
-            {
+            if ($resultSet[$rowIndex]['attachmentPresent'] == 1) {
                 $resultSet[$rowIndex]['iconTag'] = '<img src="images/paperclip.gif" alt="" width="16" height="16" />';
-            }
-            else
-            {
+            } else {
                 $resultSet[$rowIndex]['iconTag'] = '&nbsp;';
             }
         }
 
-        if (!eval(Hooks::get('JO_FORMAT_LIST_BY_VIEW_RESULTS'))) return;
+        if (!eval(Hooks::get('JO_FORMAT_LIST_BY_VIEW_RESULTS')))
+            return;
 
         return $resultSet;
     }
+
 }
 
 ?>
