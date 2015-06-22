@@ -2479,6 +2479,20 @@ class CandidatesUI extends UserInterface
         if ($candidateID <= 0)
         {
             return $candidateID;
+        }else{
+             /*
+             * New changes as requested - 22nd June 2015
+             */
+            $mandatoryskillname = $_POST['mandatoryskillname'];
+            $mandatoryskillnameexp = $_POST['mandatoryskillnameexp'];
+            $optionalskillname = $_POST['optionalskillname'];
+            $optionalskillnameexp = $_POST['optionalskillnameexp'];
+            $certificationname = $_POST['certificationname'];
+            $certificationcategory = $_POST['certificationcategory'];
+
+            $jobOrderID = $candidates->addJobSkillsCertifications(
+                    $candidateID,$this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
+            );
         }
 
         /* Update extra fields. */
