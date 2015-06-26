@@ -668,7 +668,7 @@ class JobOrdersUI extends UserInterface {
             $certificationcategory = $_POST['certificationcategory'];
 
             $jobOrderID = $jobOrders->addJobSkillsCertifications(
-                    $jobOrderID,$this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
+                    $jobOrderID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
             );
         }
 
@@ -1165,6 +1165,15 @@ class JobOrdersUI extends UserInterface {
 
         $jobOrderID = $_GET['jobOrderID'];
 
+        /*
+         * Get JobOrder Skills & Certifications
+         */
+        if ($jobOrderID > 0) {
+             $jOrders = new JobOrders($this->_siteID);
+             $jobOrderSkills = $jOrders->getJobOrderSkills($jobOrderID);
+             $jobOrderCertifications = $jOrders->getJobOrderCertifications($jobOrderID);
+        }
+
         $candidates = new Candidates($this->_siteID);
 
         /* Get possible sources. */
@@ -1209,6 +1218,9 @@ class JobOrdersUI extends UserInterface {
         $this->_template->assign('associatedTextResume', false);
         $this->_template->assign('associatedFileResume', false);
         $this->_template->assign('EEOSettingsRS', $EEOSettingsRS);
+        $this->_template->assign('jobOrderSkills', $jobOrderSkills);
+        $this->_template->assign('jobOrderCertifications', $jobOrderCertifications);
+        //$this->_template->assign('MyTestData', 'content added at addCandidateModal-JobOrderUI.php');
 
         if (!eval(Hooks::get('JO_ADD_CANDIDATE_MODAL')))
             return;

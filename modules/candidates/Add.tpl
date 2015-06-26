@@ -1,51 +1,12 @@
 <?php /* $Id: Add.tpl 3746 2007-11-28 20:28:21Z andrew $ */ ?>
 <?php if ($this->isModal): ?>
-<?php TemplateUtility::printModalHeader('Candidates', array('modules/candidates/validator.js', 'js/addressParser.js', 'js/listEditor.js',  'js/candidate.js', 'js/candidateParser.js'), 'Add New Candidate to This Job Order Pipeline'); ?>
+<?php TemplateUtility::printModalHeader('Candidates', array('modules/candidates/validator.js', 'modules/candidates/dynamicskillscertificates.js','js/addressParser.js', 'js/listEditor.js',  'js/candidate.js', 'js/candidateParser.js'), 'Add New Candidate to This Job Order Pipeline'); ?>
 <?php else: ?>
-<?php TemplateUtility::printHeader('Candidates', array('modules/candidates/validator.js', 'js/addressParser.js', 'js/listEditor.js',  'js/candidate.js', 'js/candidateParser.js')); ?>
+<?php TemplateUtility::printHeader('Candidates', array('modules/candidates/validator.js', 'modules/candidates/dynamicskillscertificates.js', 'js/addressParser.js', 'js/listEditor.js',  'js/candidate.js', 'js/candidateParser.js')); ?>
 <?php TemplateUtility::printHeaderBlock(); ?>
 <?php TemplateUtility::printTabs($this->active, $this->subActive); ?>
-<script type="text/javascript">
-    var clone1, clone2, clone3;
-    function mytab1addRow(but) {
-        var tbo1 = but.parentNode.parentNode.parentNode;
-        tbo1.appendChild(clone1);
-        var rows1 = tbo1.getElementsByTagName('tr');
-        clone1 = rows1[rows1.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-
-    function mytab2addRow(but) {
-        var tbo2 = but.parentNode.parentNode.parentNode;
-        tbo2.appendChild(clone2);
-        var rows2 = tbo2.getElementsByTagName('tr');
-        clone2 = rows2[rows2.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-
-    function mytab3addRow(but) {
-        var tbo3 = but.parentNode.parentNode.parentNode;
-        tbo3.appendChild(clone3);
-        var rows3 = tbo3.getElementsByTagName('tr');
-        clone3 = rows3[rows3.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-
-    function removeRow(but) {
-        var thisRow = but.parentNode.parentNode;
-        var tbo = thisRow.parentNode;
-        tbo.removeChild(thisRow);
-        //var rows = tbo.getElementsByTagName('tr');
-        //orderNames(rows);
-    }
-
-    onload = function () {
-        clone1 = document.getElementById('mytab1').getElementsByTagName('tr')[0].cloneNode(true);
-        clone2 = document.getElementById('mytab2').getElementsByTagName('tr')[0].cloneNode(true);
-        clone3 = document.getElementById('mytab3').getElementsByTagName('tr')[0].cloneNode(true);
-    }
-</script>
 <div id="main">
+
     <?php TemplateUtility::printQuickSearch(); ?>
 
     <div id="contents">
@@ -324,7 +285,10 @@
             </table>
 
             <br>
-            <p class="note">Candidate Experience</p>
+            <?php 
+            if ($this->jobOrderID<=0) {
+            ?>
+            <p class="note">Candidate Experience </p>
 
             <table class="editTable" width="925">
                 <tr>
@@ -498,6 +462,155 @@
                 </tr>               
             </table>
             <br>
+            <?php 
+            }
+            else{
+            ?>
+            <p class="note">Key Skills: </p>
+
+            <table class="editTable" width="750">
+                <tr>
+                    <td colspan="4" class="tdVertical">
+                        <br>
+                        <input type="button" class="button" name="btnoptionalskills"  value="Add additional skillset (if any)"  />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="tdVertical">
+                        <!-- Skills added in JobOrder -->
+                        <table class="editTable" width="900">
+                            <?php
+                            foreach ($this->jobOrderSkills as $emp_option) {
+                            ?>
+                            <tr>
+                                <td class="tdData">
+                                    <input type="text" tabindex="14" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
+                                           style="width: 150px;" value="<?php echo $emp_option; ?>">
+                                </td>                               
+                                <td class="tdData">
+                                    <select tabindex="3" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 100px;">
+                                        <option value="-1">-Select from List-</option>
+                                        <option value="1"><1</option>
+                                        <option value="2"><2</option>
+                                        <option value="3"><3</option>
+                                        <option value="4"><4</option>
+                                        <option value="5"><5</option>
+                                        <option value="6"><6</option>
+                                        <option value="7"><7</option>
+                                        <option value="8"><8</option>
+                                        <option value="9"><9</option>
+                                        <option value="10"><10</option>
+                                        <option value="11">>10</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <?php
+                            }
+                            ?>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="tdVertical">
+                        <div style="margin-left: 5px;">
+                            <table class="editTable" width="750" id="mytab21">
+                                <tr>
+                                    <td class="tdVertical">
+                                        <label id="durationLabel" for="duration">Skill 1</label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="14" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
+                                               style="width: 150px;" value="">
+                                    </td>
+                                    <td class="tdVertical">
+                                        <label id="openingsIDLabel" for="openingsID">Exp.</label>
+                                    </td>
+                                    <td class="tdData">
+                                        <select tabindex="3" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
+                                            <option value="-1">-Select from List-</option>
+                                            <option value="1"><1</option>
+                                            <option value="2"><2</option>
+                                            <option value="3"><3</option>
+                                            <option value="4"><4</option>
+                                            <option value="5"><5</option>
+                                            <option value="6"><6</option>
+                                            <option value="7"><7</option>
+                                            <option value="8"><8</option>
+                                            <option value="9"><9</option>
+                                            <option value="10"><10</option>
+                                            <option value="11">>10</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input  type="button" class="button" value="Add" onclick="mytab21addRow(this)">
+                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this)">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <p class="note">Certifications</p>
+            <table class="editTable" width="750">                
+                <tr>
+                    <td colspan="4" class="tdVertical">
+                        <br>
+                        <input type="button" width=250px" class="button" name="btnmandatoryskills"  value="Add Certifications (if any)"  />                        
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="tdVertical">
+                        <!-- Certifications added in JobOrder -->
+                        <table class="editTable" width="900">
+                            <?php
+                            foreach ($this->jobOrderCertifications as $emp_option) {
+                            ?>
+                            <tr>
+                                <td class="tdData">
+                                    <label id="openingsIDLabel" for="openingsID"><?php echo $emp_option; ?></label>
+                                </td>
+                            </tr>
+                            <?php
+                            }
+                            ?>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="tdVertical">
+                        <div style="margin-left: 5px;">
+                            <table class="editTable" width="750" id="mytab31">
+                                <tr>
+                                    <td class="tdVertical">
+                                        <label id="durationLabel" for="duration">Certification 1</label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="14" class="inputbox" id="certificationname" name="certificationname[]" 
+                                               style="width: 150px;" value="">
+                                    </td>
+                                    <td class="tdVertical">
+
+                                    </td>
+                                    <td class="tdData">
+
+                                    </td>
+                                    <td>
+                                        <input type="button" class="button" value="Add" onclick="mytab31addRow(this)">
+                                        <input type="button" class="button" value="Remove" onclick="removeRow(this)">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>               
+            </table>
+            <br>
+            <?php 
+            //echo $this->MyTestData;
+            }
+            ?>
             <?php if (!$this->isParsingEnabled || $this->associatedAttachment != 0): ?>
             <p class="note<?php if ($this->isModal): ?>Unsized<?php endif; ?>" style="margin-top: 5px;">Resume</p>
 

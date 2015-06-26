@@ -252,6 +252,50 @@ class Candidates {
     }
 
     /**
+     * 
+     * @param type $candidateID
+     * @param type $userID
+     * @param type $optionalskillname
+     * @param type $optionalskillnameexp
+     * @param type $certificationname
+     * @return boolean
+     */
+    public function addJobOrderJobSkillsCertifications(
+    $candidateID, $userID, $optionalskillname, $optionalskillnameexp, $certificationname) {
+
+        $rResult = true;
+        try {
+            //mandatory skills
+            $currCnt = 0;
+            foreach ($optionalskillname as $mskill) {
+                $sql = sprintf(
+                        "INSERT INTO `candidate_skills` (`candidate_id`,`skilltype`,`skillname`,"
+                        . "`skillexprience`,`entered_by`,`date_created`,`date_modified`) VALUES "
+                        . "(%s, 'Mandatory', %s, %s, %s, now(), now())", $this->_db->makeQueryInteger($candidateID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($optionalskillnameexp[$currCnt]), $this->_db->makeQueryInteger($userID));
+
+                $queryResult = $this->_db->query($sql);
+                $currCnt++;
+            }
+
+            //Certifications
+            $currCnt = 0;
+            foreach ($certificationname as $mskill) {
+                $sql = sprintf(
+                        "INSERT INTO `candidate_certifications` (`candidate_id`,`certificationname`,"
+                        . "`certificationtype`,`entered_by`,`date_created`,`date_modified`) VALUES "
+                        . "(%s, %s, 0, %s, now(), now())", $this->_db->makeQueryInteger($candidateID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryInteger($userID));
+
+                $queryResult = $this->_db->query($sql);
+                $currCnt++;
+            }
+        } catch (Exception $ex) {
+            $rResult = false;
+        }
+
+        return $rResult;
+    }
+
+    /**
      * Updates a candidate.
      *
      * @param integer Candidate ID to update.

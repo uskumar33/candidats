@@ -67,6 +67,48 @@ class JobOrders {
     }
 
     /**
+     * 
+     * @param type $jOrderID
+     * @return type
+     */
+    public function getJobOrderSkills($jOrderID) {
+        $sql = sprintf(
+                "select skillname from joborder_skills where joborder_id = %s order by skilltype", $jOrderID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+
+        $panel = array();
+        $cnt = 0;
+        foreach ($skls as $emp_option) {
+            $panel[$cnt] = $emp_option["skillname"];
+            $cnt = $cnt + 1;
+        }
+        return $panel;
+    }
+
+    /**
+     * 
+     * @param type $jOrderID
+     * @return type
+     */
+    public function getJobOrderCertifications($jOrderID) {
+        $sql = sprintf(
+                "select certificationname from joborder_certifications where joborder_id = %s order by certificationname", $jOrderID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+
+        $panel = array();
+        $cnt = 0;
+        foreach ($skls as $emp_option) {
+            $panel[$cnt] = $emp_option["certificationname"];
+            $cnt = $cnt + 1;
+        }
+        return $panel;
+    }
+
+    /**
      * Adds a job order to the database and returns its job order ID.
      *
      * @param string title
