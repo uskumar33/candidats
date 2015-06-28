@@ -168,7 +168,7 @@
                                     <label id="lastNameLabel" for="lastName">Last Name:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="2" name="lastName" id="lastName" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
+                                    <input type="text" tabindex="3" name="lastName" id="lastName" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
                                 </td>
                             </tr>
 
@@ -177,7 +177,7 @@
                                     <label id="sexlabel" for="sex">Sex:</label>
                                 </td>
                                 <td class="tdData">
-                                    <select tabindex="3" id="sex" name="sex" class="inputbox" style="width: 150px;">
+                                    <select tabindex="4" id="sex" name="sex" class="inputbox" style="width: 150px;">
                                         <option value="M">Male</option>
                                         <option value="F">Female</option>
                                         <option value="O">Others</option>
@@ -190,7 +190,7 @@
                                     <label id="doblabel" for="dob">DOB:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="2" name="dob" id="dob" class="inputbox" style="width: 150px" value="" />
+                                    <input type="text" tabindex="5" name="dob" id="dob" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
 
@@ -199,7 +199,7 @@
                                     <label id="emailLabel" for="email1">E-Mail:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="3" name="email1" id="email1" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['email'])) $this->_($this->preassignedFields['email']); elseif (isset($this->preassignedFields['email1'])) $this->_($this->preassignedFields['email1']); ?>" onchange="checkEmailAlreadyInSystem(this.value);" />
+                                    <input type="text" tabindex="6" name="email1" id="email1" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['email'])) $this->_($this->preassignedFields['email']); elseif (isset($this->preassignedFields['email1'])) $this->_($this->preassignedFields['email1']); ?>" onchange="checkEmailAlreadyInSystem(this.value);" />
                                 </td>
                             </tr>
 
@@ -208,7 +208,7 @@
                                     <label id="email2Label" for="email2">2nd E-Mail:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="4" name="email2" id="email2" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['email2'])) $this->_($this->preassignedFields['email2']); ?>" />
+                                    <input type="text" tabindex="7" name="email2" id="email2" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['email2'])) $this->_($this->preassignedFields['email2']); ?>" />
                                 </td>
                             </tr>
 
@@ -217,7 +217,7 @@
                                     <label id="webSiteLabel" for="webSite">Web Site:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="5" name="webSite" id="webSite" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['webSite'])) $this->_($this->preassignedFields['webSite']); ?>" />
+                                    <input type="text" tabindex="8" name="webSite" id="webSite" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['webSite'])) $this->_($this->preassignedFields['webSite']); ?>" />
                                 </td>
                             </tr>
 
@@ -226,7 +226,7 @@
                                     <label id="phoneCellLabel" for="phoneCell">Cell Phone:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="7" name="phoneCell" id="phoneCell" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneCell'])) $this->_($this->preassignedFields['phoneCell']); ?>" />
+                                    <input type="text" tabindex="9" name="phoneCell" id="phoneCell" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneCell'])) $this->_($this->preassignedFields['phoneCell']); ?>" />
                                 </td>
                             </tr>
 
@@ -235,7 +235,7 @@
                                     <label id="phoneHomeLabel" for="phoneHome">Home Phone:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="6" name="phoneHome" id="phoneHome" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneHome'])) $this->_($this->preassignedFields['phoneHome']); ?>" />
+                                    <input type="text" tabindex="10" name="phoneHome" id="phoneHome" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneHome'])) $this->_($this->preassignedFields['phoneHome']); ?>" />
                                     <?php if ($this->isParsingEnabled): ?>
                                     <?php if ($this->parsingStatus['parseLimit'] >= 0 && $this->parsingStatus['parseUsed'] >= $this->parsingStatus['parseLimit']): ?>
                                     &nbsp;
@@ -244,7 +244,7 @@
                                     <img id="transfer" src="images/parser/transfer<?php echo ($this->contents != '' ? '' : '_grey'); ?>.gif" <?php echo ($this->contents != '' ? 'style="cursor: pointer;"' : ''); ?> border="0" alt="Import Resume" onclick="parseDocumentFileContents();" />
                                          <?php endif; ?>
                                          <?php else: ?>
-                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="arrowButton" tabindex="91" align="middle" type="button" value="&lt;--" class="arrowbutton" onclick="AddressParser_parse('addressBlock', 'person', 'addressParserIndicator', 'arrowButton');
+                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="arrowButton" tabindex="11" align="middle" type="button" value="&lt;--" class="arrowbutton" onclick="AddressParser_parse('addressBlock', 'person', 'addressParserIndicator', 'arrowButton');
                                                  document.addCandidateForm.firstName.focus();" />
                                     <?php endif; ?>
                                 </td>
@@ -255,7 +255,7 @@
                                     <label id="phoneWorkLabel" for="phoneWork">Work Phone:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="8" name="phoneWork" id="phoneWork" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['phoneWork'])) $this->_($this->preassignedFields['phoneWork']); ?>" />
+                                    <input type="text" tabindex="12" name="phoneWork" id="phoneWork" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['phoneWork'])) $this->_($this->preassignedFields['phoneWork']); ?>" />
                                 </td>
                             </tr>
 
@@ -264,7 +264,7 @@
                                     <label id="skypeidlabel" for="skypeid">Skype ID:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="8" name="skypeid" id="skypeid" class="inputbox" style="width: 150px" value="" />
+                                    <input type="text" tabindex="13" name="skypeid" id="skypeid" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
 
@@ -273,7 +273,7 @@
                                     <label id="panlabel" for="pan">PAN:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="8" name="pan" id="pan" class="inputbox" style="width: 150px" value="" />
+                                    <input type="text" tabindex="14" name="pan" id="pan" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
 
@@ -282,7 +282,7 @@
                                     <label id="addressLabel" for="address">Address:</label>
                                 </td>
                                 <td class="tdData">
-                                    <textarea tabindex="9" name="address" id="address" rows="2" cols="40" class="inputbox" style="width: 150px"><?php if(isset($this->preassignedFields['address'])) $this->_($this->preassignedFields['address']); if(isset($this->preassignedFields['address2'])) $this->_("\n" . $this->preassignedFields['address2']); ?></textarea>
+                                    <textarea tabindex="15" name="address" id="address" rows="2" cols="40" class="inputbox" style="width: 150px"><?php if(isset($this->preassignedFields['address'])) $this->_($this->preassignedFields['address']); if(isset($this->preassignedFields['address2'])) $this->_("\n" . $this->preassignedFields['address2']); ?></textarea>
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/indicator2.gif" id="addressParserIndicator" alt="" style="visibility: hidden; margin-left: 10px;" height="16" width="16" />
                                 </td>
                             </tr>
@@ -292,7 +292,7 @@
                                     <label id="cityLabel" for="city">City:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="11" name="city" id="city" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['city'])) $this->_($this->preassignedFields['city']); ?>" />
+                                    <input type="text" tabindex="16" name="city" id="city" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['city'])) $this->_($this->preassignedFields['city']); ?>" />
                                 </td>
                             </tr>
 
@@ -301,7 +301,7 @@
                                     <label id="stateLabel" for="state">State:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="12" name="state" id="state" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['state'])) $this->_($this->preassignedFields['state']); ?>" />
+                                    <input type="text" tabindex="17" name="state" id="state" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['state'])) $this->_($this->preassignedFields['state']); ?>" />
                                 </td>
                             </tr>
 
@@ -310,8 +310,8 @@
                                     <label id="zipLabel" for="zip">Postal Code:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="13" name="zip" id="zip" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['zip'])) $this->_($this->preassignedFields['zip']); ?>" />&nbsp;
-                                    <input type="button" tabindex="92" onclick="CityState_populate('zip', 'ajaxIndicator');" value="Lookup" />
+                                    <input type="text" tabindex="18" name="zip" id="zip" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['zip'])) $this->_($this->preassignedFields['zip']); ?>" />&nbsp;
+                                    <input type="button" tabindex="19" onclick="CityState_populate('zip', 'ajaxIndicator');" value="Lookup" />
                                     <img src="images/indicator2.gif" alt="AJAX" id="ajaxIndicator" style="vertical-align: middle; visibility: hidden; margin-left: 5px;" />
                                 </td>
                             </tr>
@@ -321,11 +321,11 @@
                                     <label id="stateLabel" for="state">Best Time to Call:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="13" name="bestTimeToCall" id="bestTimeToCall" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['bestTimeToCall'])) $this->_($this->preassignedFields['bestTimeToCall']); ?>" />
+                                    <input type="text" tabindex="20" name="bestTimeToCall" id="bestTimeToCall" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['bestTimeToCall'])) $this->_($this->preassignedFields['bestTimeToCall']); ?>" />
                                 </td>
                             </tr>
 
-                            <?php $tabIndex = 15; ?>
+                            <?php $tabIndex = 21; ?>
                         </table>
                     </Td>
                     <Td class="tdVertical"  width="<?php if ($this->isModal): ?>50%<?php else: ?>450<?php endif; ?>">
@@ -337,7 +337,7 @@
                                     <label id="totalexplabel" for="totalexp">Total Exp:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="2" name="totalexp" id="totalexp" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['middleName'])) $this->_($this->preassignedFields['middleName']); ?>" />
+                                    <input type="text" tabindex="22" name="totalexp" id="totalexp" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['middleName'])) $this->_($this->preassignedFields['middleName']); ?>" />
                                 </td>
                             </tr>
 
@@ -346,7 +346,7 @@
                                     <label id="currentlocationLabel" for="currentlocation">Current Location:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="2" name="currentlocation" id="currentlocation" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
+                                    <input type="text" tabindex="23" name="currentlocation" id="currentlocation" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
                                 </td>
                             </tr>
 
@@ -355,7 +355,7 @@
                                     <label id="prefferedlocationLabel" for="prefferedlocation">Preffered Location:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="2" name="prefferedlocation" id="prefferedlocation" class="inputbox" style="width: 150px" value="" />
+                                    <input type="text" tabindex="24" name="prefferedlocation" id="prefferedlocation" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
 
@@ -364,7 +364,7 @@
                                     <label id="currentdesignationLabel" for="currentdesignation">Current Designation:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="2" name="currentdesignation" id="currentdesignation" class="inputbox" style="width: 150px" value="" />
+                                    <input type="text" tabindex="25" name="currentdesignation" id="currentdesignation" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
 
@@ -373,7 +373,7 @@
                                     <label id="employeetypelabel" for="employeetype">Employee Type:</label>
                                 </td>
                                 <td class="tdData">
-                                    <select tabindex="3" id="employeetype" name="employeetype" class="inputbox" style="width: 150px;">
+                                    <select tabindex="26" id="employeetype" name="employeetype" class="inputbox" style="width: 150px;">
                                         <option value="-1">-Select from List-</option>
                                         <option value="FullTime">FullTime</option>
                                         <option value="PartTime">PartTime</option>
@@ -387,7 +387,7 @@
                                     <label id="noticeperiodlabel" for="noticeperiod">Notice Period:</label>
                                 </td>
                                 <td class="tdData">
-                                    <select tabindex="3" id="noticeperiod" name="noticeperiod" class="inputbox" style="width: 150px;">
+                                    <select tabindex="27" id="noticeperiod" name="noticeperiod" class="inputbox" style="width: 150px;">
                                         <option value="-1">-Select from List-</option>
                                         <option value="1 Month">1 Month</option>
                                         <option value="2 Month">2 Month</option>
@@ -405,7 +405,7 @@
                                     <label id="reasonsforchangelabel" for="reasonsforchange">Reasons for change:</label>
                                 </td>
                                 <td class="tdData">
-                                    <select tabindex="3" id="reasonsforchange" name="reasonsforchange" class="inputbox" style="width: 150px;">
+                                    <select tabindex="28" id="reasonsforchange" name="reasonsforchange" class="inputbox" style="width: 150px;">
                                         <option value="-1">-Select from List-</option>
                                         <option value="For better exposure">For better exposure</option>
                                         <option value="Others">Others</option>
@@ -418,7 +418,7 @@
                                     <label id="anyoffersinhandlabel" for="anyoffersinhand">Any Offers in hand:</label>
                                 </td>
                                 <td class="tdData">
-                                    <select tabindex="3" id="anyoffersinhand" name="anyoffersinhand" class="inputbox" style="width: 150px;">
+                                    <select tabindex="29" id="anyoffersinhand" name="anyoffersinhand" class="inputbox" style="width: 150px;">
                                         <option value="-1">-Select from List-</option>
                                         <option value="Y">Yes</option>
                                         <option value="N">No</option>
@@ -431,7 +431,7 @@
                                     <label id="currentemployerlabel" for="currentemployer">Current Employer:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="6" name="currentemployer" id="currentemployer" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneHome'])) $this->_($this->preassignedFields['phoneHome']); ?>" />
+                                    <input type="text" tabindex="30" name="currentemployer" id="currentemployer" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneHome'])) $this->_($this->preassignedFields['phoneHome']); ?>" />
                                 </td>
                             </tr>               
 
@@ -440,7 +440,7 @@
                                     <label id="currentctclabel" for="currentctc">Current CTC:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="8" name="currentCTC" id="currentCTC" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['phoneWork'])) $this->_($this->preassignedFields['phoneWork']); ?>" />
+                                    <input type="text" tabindex="31" name="currentCTC" id="currentCTC" class="inputbox" style="width: 150px" value="<?php if (isset($this->preassignedFields['phoneWork'])) $this->_($this->preassignedFields['phoneWork']); ?>" />
                                 </td>
                             </tr>
 
@@ -449,7 +449,7 @@
                                     <label id="expectedctclabel" for="expectedctc">Expected CTC:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="8" name="expectedCTC" id="expectedCTC" class="inputbox" style="width: 150px" value="" />
+                                    <input type="text" tabindex="32" name="expectedCTC" id="expectedCTC" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
 
@@ -473,7 +473,7 @@
                         <label id="durationLabel" for="duration">Total years of Exp.</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="expyearsstartID" name="expyearsstart" class="inputbox" style="width: 150px;">
+                        <select tabindex="33" id="expyearsstartID" name="expyearsstart" class="inputbox" style="width: 150px;">
                             <option value="0">0</option>
                             <option value="10">10</option>
                             <option value="20">20</option>
@@ -490,7 +490,7 @@
                         <label id="openingsIDLabel" for="openingsID">To:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="expyearsendID" name="expyearsend" class="inputbox" style="width: 150px;">
+                        <select tabindex="34" id="expyearsendID" name="expyearsend" class="inputbox" style="width: 150px;">
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
@@ -519,14 +519,14 @@
                                         <label id="durationLabel" for="duration">Skill 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
+                                        <input type="text" tabindex="35" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="mandatoryskillnameexp" name="mandatoryskillnameexp[]" class="inputbox" style="width: 100px;">
+                                        <select tabindex="36" id="mandatoryskillnameexp" name="mandatoryskillnameexp[]" class="inputbox" style="width: 100px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
                                             <option value="2"><2</option>
@@ -565,14 +565,14 @@
                                         <label id="durationLabel" for="duration">Skill 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
+                                        <input type="text" tabindex="37" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
+                                        <select tabindex="38" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
                                             <option value="2"><2</option>
@@ -615,14 +615,14 @@
                                         <label id="durationLabel" for="duration">Certification 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="certificationname" name="certificationname[]" 
+                                        <input type="text" tabindex="39" class="inputbox" id="certificationname" name="certificationname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID"></label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="certificationcategory" name="certificationcategory[]" class="inputbox" style="width: 150px;">
+                                        <select tabindex="40" id="certificationcategory" name="certificationcategory[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1">Mandatory</option>
                                             <option value="0">Optional</option>
@@ -661,11 +661,11 @@
                             ?>
                             <tr>
                                 <td class="tdData">
-                                    <input type="text" tabindex="14" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
+                                    <input type="text" tabindex="41" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
                                            style="width: 150px;" value="<?php echo $emp_option; ?>">
                                 </td>                               
                                 <td class="tdData">
-                                    <select tabindex="3" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 100px;">
+                                    <select tabindex="42" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 100px;">
                                         <option value="-1">-Select from List-</option>
                                         <option value="1"><1</option>
                                         <option value="2"><2</option>
@@ -696,14 +696,14 @@
                                         <label id="durationLabel" for="duration">Skill 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
+                                        <input type="text" tabindex="43" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
+                                        <select tabindex="44" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
                                             <option value="2"><2</option>
@@ -764,7 +764,7 @@
                                         <label id="durationLabel" for="duration">Certification 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="certificationname" name="certificationname[]" 
+                                        <input type="text" tabindex="45" class="inputbox" id="certificationname" name="certificationname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
@@ -831,7 +831,7 @@
                         <div id="textResumeTD" <?php if($this->associatedTextResume === false): ?>style="display:none;"<?php endif; ?>>
                              <p class="freeformtop" style="width: 700px;">Cut and paste resume text here.</p>
 
-                            &nbsp;<textarea class="inputbox" tabindex="90" name="textResumeBlock" id="textResumeBlock" rows="5" cols="60" style="width: 700px; height: 300px;"><?php if ($this->associatedTextResume !== false) $this->_($this->associatedTextResume); ?></textarea>
+                            &nbsp;<textarea class="inputbox" tabindex="46" name="textResumeBlock" id="textResumeBlock" rows="5" cols="60" style="width: 700px; height: 300px;"><?php if ($this->associatedTextResume !== false) $this->_($this->associatedTextResume); ?></textarea>
 
                             <p class="freeformtop" style="width: 700px;">Cut and paste resume text here.</p>
                         </div>

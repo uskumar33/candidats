@@ -127,7 +127,7 @@
                         <label id="typeLabel" for="type">Job Type:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="7" id="type" name="type" class="inputbox" onChange="whenJobTypeChange()" style="width: 150px;">
+                        <select tabindex="2" id="type" name="type" class="inputbox" onChange="whenJobTypeChange()" style="width: 150px;">
                             <option value="H"   <?php if(isset($this->jobOrderSourceRS['type']) && $this->jobOrderSourceRS['type'] == 'H') echo('selected'); ?>>H (Hire)</option>
                             <option value="C2H" <?php if(isset($this->jobOrderSourceRS['type']) && $this->jobOrderSourceRS['type'] == 'C2H') echo('selected'); ?>>C2H (Contract to Hire)</option>
                             <option value="C"   <?php if(isset($this->jobOrderSourceRS['type']) && $this->jobOrderSourceRS['type'] == 'C') echo('selected'); ?>>C (Contract)</option>
@@ -146,9 +146,9 @@
 
                         <?php if ($this->defaultCompanyID !== false): ?>
                         <input type="radio" name="typeCompany" checked onchange="document.getElementById('companyName').disabled = false; if (oldCompanyID != - 1) document.getElementById('companyID').value = oldCompanyID;">
-                        <input type="text" name="companyName" id="companyName" tabindex="2" value="<?php if ($this->selectedCompanyID !== false) { $this->_($this->companyRS['name']); } ?><?php if(isset($this->jobOrderSourceRS['companyName']) && $this->selectedCompanyID == false ): ?><?php $this->_($this->jobOrderSourceRS['companyName']); ?><?php endif; ?>" class="inputbox" style="width: 125px" onFocus="suggestListActivate('getCompanyNames', 'companyName', 'CompanyResults', 'companyID', 'ajaxTextEntryHover', 0, '<?php echo($this->sessionCookie); ?>', 'helpShim');" <?php if ($this->selectedCompanyID !== false) { echo('disabled'); } ?>/>&nbsp;*
+                        <input type="text" name="companyName" id="companyName" tabindex="3" value="<?php if ($this->selectedCompanyID !== false) { $this->_($this->companyRS['name']); } ?><?php if(isset($this->jobOrderSourceRS['companyName']) && $this->selectedCompanyID == false ): ?><?php $this->_($this->jobOrderSourceRS['companyName']); ?><?php endif; ?>" class="inputbox" style="width: 125px" onFocus="suggestListActivate('getCompanyNames', 'companyName', 'CompanyResults', 'companyID', 'ajaxTextEntryHover', 0, '<?php echo($this->sessionCookie); ?>', 'helpShim');" <?php if ($this->selectedCompanyID !== false) { echo('disabled'); } ?>/>&nbsp;*
                                <?php else: ?>
-                               <input type="text" name="companyName" id="companyName" tabindex="2" value="<?php if ($this->selectedCompanyID !== false) { $this->_($this->companyRS['name']); } ?><?php if(isset($this->jobOrderSourceRS['companyName']) && $this->selectedCompanyID == false ): ?><?php $this->_($this->jobOrderSourceRS['companyName']); ?><?php endif; ?>" class="inputbox" style="width: 150px" onFocus="suggestListActivate('getCompanyNames', 'companyName', 'CompanyResults', 'companyID', 'ajaxTextEntryHover', 0, '<?php echo($this->sessionCookie); ?>', 'helpShim');" <?php if ($this->selectedCompanyID !== false) { echo('disabled'); } ?>/>&nbsp;*
+                               <input type="text" name="companyName" id="companyName" tabindex="4" value="<?php if ($this->selectedCompanyID !== false) { $this->_($this->companyRS['name']); } ?><?php if(isset($this->jobOrderSourceRS['companyName']) && $this->selectedCompanyID == false ): ?><?php $this->_($this->jobOrderSourceRS['companyName']); ?><?php endif; ?>" class="inputbox" style="width: 150px" onFocus="suggestListActivate('getCompanyNames', 'companyName', 'CompanyResults', 'companyID', 'ajaxTextEntryHover', 0, '<?php echo($this->sessionCookie); ?>', 'helpShim');" <?php if ($this->selectedCompanyID !== false) { echo('disabled'); } ?>/>&nbsp;*
                                <?php endif; ?>
                                <br />
                         <iframe id="helpShim" src="javascript:void(0);" scrolling="no" frameborder="0" style="position:absolute; display:none;"></iframe>
@@ -164,7 +164,7 @@
                         <label id="durationLabel" for="duration">CTC Range(in Lakhs):</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="ctcStartID" name="ctcStart" class="inputbox" style="width: 50px;">
+                        <select tabindex="5" id="ctcStartID" name="ctcStart" class="inputbox" style="width: 50px;">
                             <option value="0">0</option>
                             <option value="10">10</option>
                             <option value="20">20</option>
@@ -177,7 +177,7 @@
                             <option value="90">90</option>
                         </select>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To :  
-                        <select tabindex="3" id="ctcEndID" name="ctcEnd" class="inputbox" style="width: 50px;">
+                        <select tabindex="6" id="ctcEndID" name="ctcEnd" class="inputbox" style="width: 50px;">
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
@@ -195,7 +195,7 @@
                                             <label id="durationLabel" for="duration">Duration:</label>
                                         </td>
                                         <td class="tdData">
-                                            <input type="text" tabindex="11" class="inputbox" id="duration" name="duration" style="width: 150px;" <?php if(isset($this->jobOrderSourceRS['duration'])): ?>value="<?php $this->_($this->jobOrderSourceRS['duration']); ?>"<?php endif; ?> />
+                                            <input type="text" tabindex="7" class="inputbox" id="duration" name="duration" style="width: 150px;" <?php if(isset($this->jobOrderSourceRS['duration'])): ?>value="<?php $this->_($this->jobOrderSourceRS['duration']); ?>"<?php endif; ?> />
                                         </td>
                     -->
                 </tr>    
@@ -218,7 +218,7 @@
                         <label id="maxRateLabel" for="maxRate">Maximum Rate:</label>
                     </td>
                     <td class="tdData">
-                        <input type="text" tabindex="12" class="inputbox" id="maxRate" name="maxRate" style="width: 150px;" <?php if(isset($this->jobOrderSourceRS['maxRate'])): ?>value="<?php $this->_($this->jobOrderSourceRS['maxRate']); ?>"<?php endif; ?>/>
+                        <input type="text" tabindex="8" class="inputbox" id="maxRate" name="maxRate" style="width: 150px;" <?php if(isset($this->jobOrderSourceRS['maxRate'])): ?>value="<?php $this->_($this->jobOrderSourceRS['maxRate']); ?>"<?php endif; ?>/>
                     </td>
                 </tr>
                 -->
@@ -227,7 +227,7 @@
                         <label id="contactIDLabel" for="contactID">Contact:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="contactID" name="contactID" class="inputbox" style="width: 150px;">
+                        <select tabindex="7" id="contactID" name="contactID" class="inputbox" style="width: 150px;">
                             <option value="-1">None</option>
 
                             <?php if ($this->selectedCompanyID !== false): ?>
@@ -243,7 +243,7 @@
                         <label id="openingsIDLabel" for="openingsID">Openings:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="openingsID" name="openings" class="inputbox" style="width: 100px;">
+                        <select tabindex="8" id="openingsID" name="openings" class="inputbox" style="width: 100px;">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -259,9 +259,9 @@
                     </td>
                     <td class="tdData">
                         <?php if ($this->selectedCompanyID !== false): ?>
-                        <input type="text" tabindex="4" class="inputbox" id="city" name="city" value="<?php $this->_($this->selectedCompanyLocation['city']); ?>" style="width: 150px;" />&nbsp;*
+                        <input type="text" tabindex="9" class="inputbox" id="city" name="city" value="<?php $this->_($this->selectedCompanyLocation['city']); ?>" style="width: 150px;" />&nbsp;*
                         <?php else: ?>
-                        <input type="text" tabindex="4" class="inputbox" id="city" name="city" style="width: 150px;" />&nbsp;*
+                        <input type="text" tabindex="9" class="inputbox" id="city" name="city" style="width: 150px;" />&nbsp;*
                         <?php endif; ?>
                     </td>
 
@@ -270,7 +270,7 @@
                     </td>
                     <td class="tdData">
 
-                        <select tabindex="3" id="noticeperiodID" name="noticeperiod" class="inputbox" style="width: 100px;">
+                        <select tabindex="10" id="noticeperiodID" name="noticeperiod" class="inputbox" style="width: 100px;">
                             <option value="0">-None-</option>
                             <option value="1">1 Month</option>
                             <option value="2">2 Months</option>
@@ -288,9 +288,9 @@
                     </td>
                     <td class="tdData">
                         <?php if ($this->selectedCompanyID !== false): ?>
-                        <input type="text" tabindex="5" class="inputbox" id="state" name="state" value="<?php $this->_($this->selectedCompanyLocation['state']); ?>" style="width: 150px;" />&nbsp;*
+                        <input type="text" tabindex="11" class="inputbox" id="state" name="state" value="<?php $this->_($this->selectedCompanyLocation['state']); ?>" style="width: 150px;" />&nbsp;*
                         <?php else: ?>
-                        <input type="text" tabindex="5" class="inputbox" id="state" name="state" style="width: 150px;" />&nbsp;*
+                        <input type="text" tabindex="11" class="inputbox" id="state" name="state" style="width: 150px;" />&nbsp;*
                         <?php endif; ?>
                     </td>
 
@@ -298,7 +298,7 @@
                         <label id="clientnameLabel" for="openings">Client Name:</label>
                     </td>
                     <td class="tdData">
-                        <input type="text" tabindex="14" class="inputbox" id="clientnameID" name="clientname" 
+                        <input type="text" tabindex="12" class="inputbox" id="clientnameID" name="clientname" 
                                style="width: 150px;" value="">
                     </td>
                 </tr>
@@ -308,7 +308,7 @@
                         <label id="recruiterLabel" for="recruiter">Recruiter:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="6" id="recruiter" name="recruiter" class="inputbox" style="width: 150px;">
+                        <select tabindex="13" id="recruiter" name="recruiter" class="inputbox" style="width: 150px;">
                             <option value="">(Select a User)</option>
 
                             <?php foreach ($this->usersRS as $rowNumber => $usersData): ?>
@@ -335,7 +335,7 @@
                         <label id="ownerLabel" for="owner">Owner:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="6" id="owner" name="owner" class="inputbox" style="width: 150px;">
+                        <select tabindex="15" id="owner" name="owner" class="inputbox" style="width: 150px;">
                             <option value="">(Select a User)</option>
 
                             <?php foreach ($this->usersRS as $rowNumber => $usersData): ?>
@@ -351,7 +351,7 @@
                         <label id="clientnameLabel" for="openings">Monthly Rate:</label>
                     </td>
                     <td class="tdData">
-                        <input type="text" tabindex="14" class="inputbox" id="monthlyrateID" name="monthlyrate" 
+                        <input type="text" tabindex="16" class="inputbox" id="monthlyrateID" name="monthlyrate" 
                                style="width: 150px;" value="">
                     </td>
                 </tr>
@@ -361,7 +361,7 @@
                         <label id="isHotLabel" for="isHot">Hot:</label>
                     </td>
                     <td class="tdData">
-                        <input type="checkbox" tabindex="16" id="isHot" name="isHot" />&nbsp;
+                        <input type="checkbox" tabindex="17" id="isHot" name="isHot" />&nbsp;
                         <img title="Checking this box indicates that the job order is 'hot', and shows up highlighted throughout the system." src="images/information.gif" alt="" width="16" height="16" />
                     </td>
                     <td class="tdVertical">
@@ -376,7 +376,7 @@
                         <label id="publicLabel" for="public">Public:</label>
                     </td>
                     <td class="tdData">
-                        <input type="checkbox" tabindex="17" id="public" name="public" onchange="checkPublic(this);" onclick="checkPublic(this);" onkeydown="checkPublic(this);" />&nbsp;
+                        <input type="checkbox" tabindex="18" id="public" name="public" onchange="checkPublic(this);" onclick="checkPublic(this);" onkeydown="checkPublic(this);" />&nbsp;
                         <img title="Checking this box indicates that the job order is public. Job orders flaged as public will be able to be viewed by anonymous users." src="images/information.gif" alt="" width="16" height="16" />
                     </td>
                     <td class="tdVertical">
@@ -396,7 +396,7 @@
                         <label id="durationLabel" for="duration">Total years of Exp.</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="expyearsstartID" name="expyearsstart" class="inputbox" style="width: 150px;">
+                        <select tabindex="19" id="expyearsstartID" name="expyearsstart" class="inputbox" style="width: 150px;">
                             <option value="0">0</option>
                             <option value="10">10</option>
                             <option value="20">20</option>
@@ -413,7 +413,7 @@
                         <label id="openingsIDLabel" for="openingsID">To:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="3" id="expyearsendID" name="expyearsend" class="inputbox" style="width: 150px;">
+                        <select tabindex="20" id="expyearsendID" name="expyearsend" class="inputbox" style="width: 150px;">
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
@@ -442,14 +442,14 @@
                                         <label id="durationLabel" for="duration">Skill 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
+                                        <input type="text" tabindex="21" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="mandatoryskillnameexp" name="mandatoryskillnameexp[]" class="inputbox" style="width: 100px;">
+                                        <select tabindex="22" id="mandatoryskillnameexp" name="mandatoryskillnameexp[]" class="inputbox" style="width: 100px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
                                             <option value="2"><2</option>
@@ -488,14 +488,14 @@
                                         <label id="durationLabel" for="duration">Skill 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
+                                        <input type="text" tabindex="23" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
+                                        <select tabindex="24" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
                                             <option value="2"><2</option>
@@ -538,14 +538,14 @@
                                         <label id="durationLabel" for="duration">Certification 1</label>
                                     </td>
                                     <td class="tdData">
-                                        <input type="text" tabindex="14" class="inputbox" id="certificationname" name="certificationname[]" 
+                                        <input type="text" tabindex="25" class="inputbox" id="certificationname" name="certificationname[]" 
                                                style="width: 150px;" value="">
                                     </td>
                                     <td class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID"></label>
                                     </td>
                                     <td class="tdData">
-                                        <select tabindex="3" id="certificationcategory" name="certificationcategory[]" class="inputbox" style="width: 150px;">
+                                        <select tabindex="26" id="certificationcategory" name="certificationcategory[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1">Mandatory</option>
                                             <option value="0">Optional</option>
@@ -582,7 +582,7 @@
                         <label id="descriptionLabel" for="description">Description:</label>
                     </td>
                     <td class="tdData">
-                        <textarea tabindex="18" class="mceEditor" name="description" id="description" rows="15" style="width: 500px;"><?php if(isset($this->jobOrderSourceRS['description'])): ?><?php $this->_($this->jobOrderSourceRS['description']); ?><?php endif; ?></textarea>
+                        <textarea tabindex="27" class="mceEditor" name="description" id="description" rows="15" style="width: 500px;"><?php if(isset($this->jobOrderSourceRS['description'])): ?><?php $this->_($this->jobOrderSourceRS['description']); ?><?php endif; ?></textarea>
                     </td>
                 </tr>
 
@@ -591,7 +591,7 @@
                         <label id="notesLabel" for="notes">Internal Notes:</label>
                     </td>
                     <td class="tdData">
-                        <textarea tabindex="19" class="mceEditor" name="notes" id="notes" rows="5" style="width: 500px;"><?php if(isset($this->jobOrderSourceRS['notes'])): ?><?php $this->_($this->jobOrderSourceRS['notes']); ?><?php endif; ?></textarea>
+                        <textarea tabindex="28" class="mceEditor" name="notes" id="notes" rows="5" style="width: 500px;"><?php if(isset($this->jobOrderSourceRS['notes'])): ?><?php $this->_($this->jobOrderSourceRS['notes']); ?><?php endif; ?></textarea>
                     </td>
                 </tr>
 
@@ -615,9 +615,9 @@
                     <?php endif; ?>
                 </tr>
             </table>
-            <input type="submit" tabindex="20" class="button" name="submit" value="Add Job Order" />&nbsp;
-            <input type="reset"  tabindex="21" class="button" name="reset"  value="Reset" />&nbsp;
-            <input type="button" tabindex="22" class="button" name="back"   value="Back to Job Orders" onclick="javascript:goToURL('<?php echo(CATSUtility::getIndexName()); ?>?m=joborders&amp;a=listByView');" />
+            <input type="submit" tabindex="29" class="button" name="submit" value="Add Job Order" />&nbsp;
+            <input type="reset"  tabindex="30" class="button" name="reset"  value="Reset" />&nbsp;
+            <input type="button" tabindex="31" class="button" name="back"   value="Back to Job Orders" onclick="javascript:goToURL('<?php echo(CATSUtility::getIndexName()); ?>?m=joborders&amp;a=listByView');" />
         </form>
 
         <script type="text/javascript">
