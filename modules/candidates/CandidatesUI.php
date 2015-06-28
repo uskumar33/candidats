@@ -77,7 +77,7 @@ class CandidatesUI extends UserInterface {
     public function handleRequest() {
         if (!eval(Hooks::get('CANDIDATES_HANDLE_REQUEST')))
             return;
-        
+
         $action = $this->getAction();
         switch ($action) {
             case 'show':
@@ -624,6 +624,7 @@ class CandidatesUI extends UserInterface {
         $this->_template->assign('associatedFileResume', $associatedFileResume);
         $this->_template->assign('EEOSettingsRS', $EEOSettingsRS);
         $this->_template->assign('isModal', false);
+        $this->_template->assign('jobOrderID', '0');
 
         /* REMEMBER TO ALSO UPDATE JobOrdersUI::addCandidateModal() IF
          * APPLICABLE.
@@ -2016,7 +2017,7 @@ class CandidatesUI extends UserInterface {
      * @return integer candidate ID
      */
     private function _addCandidate($isModal, $directoryOverride = '') {
-        
+
         /* Module directory override for fatal() calls. */
         if ($directoryOverride != '') {
             $moduleDirectory = $directoryOverride;
@@ -2098,6 +2099,26 @@ class CandidatesUI extends UserInterface {
         $veteran = $this->getTrimmedInput('veteran', $_POST);
         $disability = $this->getTrimmedInput('disability', $_POST);
 
+        /*
+         * New added columns
+         */
+        $sex = $this->getTrimmedInput('sex', $_POST);
+        $dob = $this->getTrimmedInput('dob', $_POST);
+        $skypeid = $this->getTrimmedInput('skypeid', $_POST);
+        $pan = $this->getTrimmedInput('pan', $_POST);
+        $totalexp = $this->getTrimmedInput('totalexp', $_POST);
+        $currentlocation = $this->getTrimmedInput('currentlocation', $_POST);
+        $prefferedlocation = $this->getTrimmedInput('prefferedlocation', $_POST);
+        $currentdesignation = $this->getTrimmedInput('currentdesignation', $_POST);
+        $employeetype = $this->getTrimmedInput('employeetype', $_POST);
+        $noticeperiod = $this->getTrimmedInput('noticeperiod', $_POST);
+        $reasonsforchange = $this->getTrimmedInput('reasonsforchange', $_POST);
+        $anyoffersinhand = $this->getTrimmedInput('anyoffersinhand', $_POST);
+        $currentemployer = $this->getTrimmedInput('currentemployer', $_POST);
+        $currentCTC = $this->getTrimmedInput('currentCTC', $_POST);
+        $expectedCTC = $this->getTrimmedInput('expectedCTC', $_POST);
+
+
         /* Candidate source list editor. */
         $sourceCSV = $this->getTrimmedInput('sourceCSV', $_POST);
 
@@ -2118,7 +2139,7 @@ class CandidatesUI extends UserInterface {
 
         $candidates = new Candidates($this->_siteID);
         $candidateID = $candidates->add(
-                $firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $this->_userID, $this->_userID, $gender, $race, $veteran, $disability
+                $firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $this->_userID, $this->_userID, $gender, $race, $veteran, $disability, $sex, $dob, $skypeid, $pan, $totalexp, $currentlocation, $prefferedlocation, $currentdesignation, $employeetype, $noticeperiod, $reasonsforchange, $anyoffersinhand, $currentemployer, $currentCTC, $expectedCTC
         );
 
         if ($candidateID <= 0) {
@@ -2138,18 +2159,16 @@ class CandidatesUI extends UserInterface {
                 $jobOrderID = $candidates->addJobSkillsCertifications(
                         $candidateID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
                 );
-            }
-            else
-            {
-                 /*
+            } else {
+                /*
                  * New changes as requested - 22nd June 2015
                  */
                 $optionalskillname = $_POST['optionalskillname'];
                 $optionalskillnameexp = $_POST['optionalskillnameexp'];
                 $certificationname = $_POST['certificationname'];
-                
-                 $jobOrderID = $candidates->addJobOrderJobSkillsCertifications(
-                        $candidateID, $this->_userID,  $optionalskillname, $optionalskillnameexp, $certificationname
+
+                $jobOrderID = $candidates->addJobOrderJobSkillsCertifications(
+                        $candidateID, $this->_userID, $optionalskillname, $optionalskillnameexp, $certificationname
                 );
             }
         }
@@ -2644,6 +2663,248 @@ class CandidatesUI extends UserInterface {
         );
     }
 
+    /**
+     * 
+     * @param type $CandidateID
+     * @return string
+     */
+    private function getCandidateProfileForEmail($CandidateID) {
+        $candidates = new Candidates($this->_siteID);
+        $cData = $candidates->get($CandidateID);
+        $cskillsData = $candidates->getCandidateSkills($CandidateID);
+        $ccertificationsData = $candidates->getCandidateCertifications($CandidateID);
+
+        $candidateskilltable = "";
+        $candidatecertificatetable = "";
+
+        foreach ($cskillsData as $cskillsData1) {
+            $candidateskilltable = $candidateskilltable . sprintf("<tr valign='top'><td><div align='left'>%s</div></td><td><div align='left'>%s</div></td></tr>", $cskillsData1['skillname'], $cskillsData1['skillexprience']);
+        }
+
+        foreach ($ccertificationsData as $ccertificationsData1) {
+            $candidatecertificatetable = $candidatecertificatetable . sprintf("<tr valign='top'><td><div align='left'>%s</div></td></tr>", $ccertificationsData1['certificationname']);
+        }
+
+        $candidateProfileSummary = "<table width='900' border='0' cellpadding='0' cellspacing=' 0' bgcolor='#c0c0c0'>
+        <tr valign='top'>
+            <td width='450'>
+                <h3>
+                    Contact Details
+                </h3>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b> Mobile NO:</b></font></div>
+                            </font>
+                        </td>
+                        <td bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Email ID</b></font></div>
+                            </font>
+                        </td>
+                        <td bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Skype ID</b></font></div>
+                            </font>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <td>
+                            " . $cData['phoneCell'] . "
+                        </td>
+                        <td>
+                           " . $cData['email1'] . "
+                        </td>
+                        <td>
+                           " . $cData['skypeid'] . "
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td width='450'>
+                <h3>
+                    &nbsp;
+                </h3>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='100%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div align='center'><div><font size=3 color='#ffffff'><b> Total Years of Exprience</b></font></div></div>
+                            </font>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <td>
+                            <div align='center'>" . $cData['totalexp'] . "</div>
+                        </td>
+
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr valign='top'>
+            <td>
+                <h3>
+                    Current Employment Details
+                </h3>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b> Employer</b></font></div>
+                            </font>
+                        </td>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Employment Typ</b></font></div>
+                            </font>
+                        </td>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Location</b></font></div>
+                            </font>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <td>
+                            " . $cData['currentemployer'] . "
+                        </td>
+                        <td>
+                            " . $cData['employeetype'] . "
+                        </td>
+                        <td>
+                            " . $cData['currentlocation'] . "
+                        </td>
+                    </tr>
+                </table>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b> Current CTC</b></font></div>
+                            </font>
+                        </td>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Expcted CTC</b></font></div>
+                            </font>
+                        </td>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Notice Period</b></font></div>
+                            </font>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <td>
+                            " . $cData['currentCTC'] . "
+                        </td>
+                        <td>
+                            " . $cData['expectedCTC'] . "
+                        </td>
+                        <td>
+                            " . $cData['noticeperiod'] . "
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <h3>
+                    &nbsp;
+                </h3>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='100%' colspan='2' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div align='center'><div><font size=3 color='#ffffff'><b> Skillset & Relevent Exprience</b></font></div></div>
+                            </font>
+                        </td>
+                    </tr>
+                    " . $candidateskilltable . "
+                </table>
+            </td>
+        </tr>
+        <tr valign='top'>
+            <td>
+                <h3>
+                    Personal Details
+                </h3>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b> Gender</b></font></div>
+                            </font>
+                        </td>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>DOB</b></font></div>
+                            </font>
+                        </td>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>PAN</b></font></div>
+                            </font>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <td>
+                            " . $cData['sex'] . "
+                        </td>
+                        <td>
+                            " . $cData['dob'] . "
+                        </td>
+                        <td>
+                            " . $cData['pan'] . "
+                        </td>
+                    </tr>
+                </table>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='33%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b> Offers in Hand</b></font></div>
+                            </font>
+                        </td>
+                        <td width='77%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div><font size=3 color='#ffffff'><b>Reasons for Change</b></font></div>
+                            </font>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <td>
+                           " . $cData['anyoffersinhand'] . "
+                        </td>
+                        <td>
+                            " . $cData['reasonsforchange'] . "
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <h3>
+                    &nbsp;
+                </h3>
+                <table width='400px' border='1' cellpadding='0' bordercolor='#000000' cellspacing='0' bgcolor='#ffffff'>
+                    <tr valign='top'>
+                        <td width='100%' bgcolor='#808080'>
+                            <font size=2 color='#000000' face='Arial'>
+                                <div align='center'><div><font size=3 color='#ffffff'><b> Certifications</b></font></div></div>
+                            </font>
+                        </td>
+                    </tr>
+                   " . $candidatecertificatetable . "
+                </table>
+            </td>
+        </tr>
+        <tr><td colspan='2'>&nbsp;</td></tr>
+    </table>";
+
+        return $candidateProfileSummary;
+    }
+
     /*
      * Sends mass emails from the datagrid
      */
@@ -2653,41 +2914,94 @@ class CandidatesUI extends UserInterface {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Sorry, but demo accounts are not allowed to send e-mails.');
         }
 
+        $fromShowCandidate = true;
+        $CandidateProfileForEmail = "";
+
         if (isset($_POST['postback'])) {
             $emailTo = $_POST['emailTo'];
             $emailSubject = $_POST['emailSubject'];
             $emailBody = $_POST['emailBody'];
 
+            //Recipients
             $tmpDestination = explode(', ', $emailTo);
             $destination = array();
             foreach ($tmpDestination as $emailDest) {
                 $destination[] = array($emailDest, $emailDest);
             }
 
+            //CC
+            $emailcc1 = $_POST['emailcc'];
+            $temailcc2 = explode(', ', $emailcc1);
+            $emailcc = array();
+            foreach ($temailcc2 as $temailcc3) {
+                $emailcc[] = array($temailcc3, $temailcc3);
+            }
+
+            //BCC
+            $emailbcc1 = $_POST['emailbcc'];
+            $emailbcc2 = explode(', ', $emailbcc1);
+            $emailbcc = array();
+            foreach ($emailbcc2 as $emailbcc3) {
+                $emailbcc[] = array($emailbcc2, $emailbcc2);
+            }
+
             $mailer = new Mailer(CATS_ADMIN_SITE);
-            // FIXME: Use sendToOne()?
-            $mailerStatus = $mailer->send(
-                    array($_SESSION['CATS']->getEmail(), $_SESSION['CATS']->getEmail()), $destination, $emailSubject, $emailBody, true, true
-            );
+
+            $CurrCandidateID = $_POST['candidate_id'];
+            if ($CurrCandidateID >= 0 && $CurrCandidateID != false) {
+                $CandidateProfileForEmail = $this->getCandidateProfileForEmail($CurrCandidateID);
+
+                $emailfrom = $_POST['emailfrom'];
+                $emailBody = sprintf("%s %s", $emailBody, $CandidateProfileForEmail);
+
+                /*
+                  $mailerStatus = $mailer->SendWithCCandBCC(
+                  array($emailfrom, $emailfrom), $destination, $emailcc, $emailbcc, $emailSubject, $emailBody, true, true
+                  );
+                 */
+                $mailerStatus = $mailer->SendWithCCandBCC(
+                        array($_SESSION['CATS']->getEmail(), $_SESSION['CATS']->getEmail()), $destination, $emailcc, $emailbcc, $emailSubject, $emailBody, true, true
+                );
+            } else {
+                // FIXME: Use sendToOne()?
+                $mailerStatus = $mailer->send(
+                        array($_SESSION['CATS']->getEmail(), $_SESSION['CATS']->getEmail()), $destination, $emailSubject, $emailBody, true, true
+                );
+            }
 
             $this->_template->assign('active', $this);
             $this->_template->assign('success', true);
             $this->_template->assign('success_to', $emailTo);
+            $this->_template->assign('fromShowCandidate', $fromShowCandidate);
+            $this->_template->assign('CandidateProfileForEmail', $CandidateProfileForEmail);
+            $this->_template->assign('candidate_id', $CurrCandidateID);
             $this->_template->display('./modules/candidates/SendEmail.tpl');
         } else {
-            $dataGrid = DataGrid::getFromRequest();
+            /*
+             * If True condition is a new change
+             */
+            $CurrCandidateID = isset($_GET[$id = 'candidateID']) ? $_GET[$id] : false;
+            if ($CurrCandidateID >= 0 && $CurrCandidateID != false) {
+                $CandidateProfileForEmail = $this->getCandidateProfileForEmail($CurrCandidateID);
+                $db_str = $CurrCandidateID;
+                $fromShowCandidate = true;
+            } else {
+                $fromShowCandidate = false;
+                $dataGrid = DataGrid::getFromRequest();
 
-            $candidateIDs = $dataGrid->getExportIDs();
+                $candidateIDs = $dataGrid->getExportIDs();
 
-            /* Validate each ID */
-            foreach ($candidateIDs as $index => $candidateID) {
-                if (!$this->isRequiredIDValid($index, $candidateIDs)) {
-                    CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
-                    return;
+                /* Validate each ID */
+                foreach ($candidateIDs as $index => $candidateID) {
+                    if (!$this->isRequiredIDValid($index, $candidateIDs)) {
+                        CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
+                        return;
+                    }
                 }
+
+                $db_str = implode(", ", $candidateIDs);
             }
 
-            $db_str = implode(", ", $candidateIDs);
 
             $db = DatabaseConnection::getInstance();
 
@@ -2701,6 +3015,9 @@ class CandidatesUI extends UserInterface {
             $this->_template->assign('active', $this);
             $this->_template->assign('success', false);
             $this->_template->assign('recipients', $rs);
+            $this->_template->assign('fromShowCandidate', $fromShowCandidate);
+            $this->_template->assign('CandidateProfileForEmail', $CandidateProfileForEmail);
+            $this->_template->assign('candidate_id', $CurrCandidateID);
             $this->_template->display('./modules/candidates/SendEmail.tpl');
         }
     }

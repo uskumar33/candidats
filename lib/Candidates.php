@@ -86,8 +86,94 @@ class Candidates {
      * @param string EEO disability status, or '' to not specify.
      * @param boolean Skip creating a history entry?
      * @return integer Candidate ID of new candidate, or -1 on failure.
+
+      public function add($firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $enteredBy, $owner, $gender = '', $race = '', $veteran = '', $disability = '', $skipHistory = false) {
+      $sql = sprintf(
+      "INSERT INTO candidate (
+      first_name,
+      middle_name,
+      last_name,
+      email1,
+      email2,
+      phone_home,
+      phone_cell,
+      phone_work,
+      address,
+      city,
+      state,
+      zip,
+      source,
+      key_skills,
+      date_available,
+      current_employer,
+      can_relocate,
+      current_pay,
+      desired_pay,
+      notes,
+      web_site,
+      best_time_to_call,
+      entered_by,
+      is_hot,
+      owner,
+      site_id,
+      date_created,
+      date_modified,
+      eeo_ethnic_type_id,
+      eeo_veteran_type_id,
+      eeo_disability_status,
+      eeo_gender
+      )
+      VALUES (
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      %s,
+      0,
+      %s,
+      %s,
+      NOW(),
+      NOW(),
+      %s,
+      %s,
+      %s,
+      %s
+      )", $this->_db->makeQueryString($firstName), $this->_db->makeQueryString($middleName), $this->_db->makeQueryString($lastName), $this->_db->makeQueryString($email1), $this->_db->makeQueryString($email2), $this->_db->makeQueryString($phoneHome), $this->_db->makeQueryString($phoneCell), $this->_db->makeQueryString($phoneWork), $this->_db->makeQueryString($address), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($zip), $this->_db->makeQueryString($source), $this->_db->makeQueryString($keySkills), $this->_db->makeQueryStringOrNULL($dateAvailable), $this->_db->makeQueryString($currentEmployer), ($canRelocate ? '1' : '0'), $this->_db->makeQueryString($currentPay), $this->_db->makeQueryString($desiredPay), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($webSite), $this->_db->makeQueryString($bestTimeToCall), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryInteger($owner), $this->_siteID, $this->_db->makeQueryInteger($race), $this->_db->makeQueryInteger($veteran), $this->_db->makeQueryString($disability), $this->_db->makeQueryString($gender)
+      );
+      $queryResult = $this->_db->query($sql);
+      if (!$queryResult) {
+      return -1;
+      }
+
+      $candidateID = $this->_db->getLastInsertID();
+
+      if (!$skipHistory) {
+      $history = new History($this->_siteID);
+      $history->storeHistoryNew(DATA_ITEM_CANDIDATE, $candidateID);
+      }
+
+      return $candidateID;
+      }
      */
-    public function add($firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $enteredBy, $owner, $gender = '', $race = '', $veteran = '', $disability = '', $skipHistory = false) {
+    public function add($firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $enteredBy, $owner, $gender = '', $race = '', $veteran = '', $disability = '', $sex, $dob, $skypeid, $pan, $totalexp, $currentlocation, $prefferedlocation, $currentdesignation, $employeetype, $noticeperiod, $reasonsforchange, $anyoffersinhand, $currentemployer, $currentCTC, $expectedCTC, $skipHistory = false) {
         $sql = sprintf(
                 "INSERT INTO candidate (
                 first_name,
@@ -121,7 +207,22 @@ class Candidates {
                 eeo_ethnic_type_id,
                 eeo_veteran_type_id,
                 eeo_disability_status,
-                eeo_gender
+                eeo_gender,
+                sex,
+                dob,
+                skypeid,
+                pan,
+                totalexp ,
+                currentlocation ,
+                prefferedlocation ,
+                currentdesignation ,
+                employeetype ,
+                noticeperiod ,
+                reasonsforchange ,
+                anyoffersinhand ,
+                currentemployer ,
+                currentCTC ,
+                expectedCTC
             )
             VALUES (
                 %s,
@@ -155,8 +256,23 @@ class Candidates {
                 %s,
                 %s,
                 %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
                 %s
-            )", $this->_db->makeQueryString($firstName), $this->_db->makeQueryString($middleName), $this->_db->makeQueryString($lastName), $this->_db->makeQueryString($email1), $this->_db->makeQueryString($email2), $this->_db->makeQueryString($phoneHome), $this->_db->makeQueryString($phoneCell), $this->_db->makeQueryString($phoneWork), $this->_db->makeQueryString($address), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($zip), $this->_db->makeQueryString($source), $this->_db->makeQueryString($keySkills), $this->_db->makeQueryStringOrNULL($dateAvailable), $this->_db->makeQueryString($currentEmployer), ($canRelocate ? '1' : '0'), $this->_db->makeQueryString($currentPay), $this->_db->makeQueryString($desiredPay), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($webSite), $this->_db->makeQueryString($bestTimeToCall), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryInteger($owner), $this->_siteID, $this->_db->makeQueryInteger($race), $this->_db->makeQueryInteger($veteran), $this->_db->makeQueryString($disability), $this->_db->makeQueryString($gender)
+            )", $this->_db->makeQueryString($firstName), $this->_db->makeQueryString($middleName), $this->_db->makeQueryString($lastName), $this->_db->makeQueryString($email1), $this->_db->makeQueryString($email2), $this->_db->makeQueryString($phoneHome), $this->_db->makeQueryString($phoneCell), $this->_db->makeQueryString($phoneWork), $this->_db->makeQueryString($address), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($zip), $this->_db->makeQueryString($source), $this->_db->makeQueryString($keySkills), $this->_db->makeQueryStringOrNULL($dateAvailable), $this->_db->makeQueryString($currentEmployer), ($canRelocate ? '1' : '0'), $this->_db->makeQueryString($currentPay), $this->_db->makeQueryString($desiredPay), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($webSite), $this->_db->makeQueryString($bestTimeToCall), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryInteger($owner), $this->_siteID, $this->_db->makeQueryInteger($race), $this->_db->makeQueryInteger($veteran), $this->_db->makeQueryString($disability), $this->_db->makeQueryString($gender), $this->_db->makeQueryString($sex), $this->_db->makeQueryString($dob), $this->_db->makeQueryString($skypeid), $this->_db->makeQueryString($pan), $this->_db->makeQueryString($totalexp), $this->_db->makeQueryString($currentlocation), $this->_db->makeQueryString($prefferedlocation), $this->_db->makeQueryString($currentdesignation), $this->_db->makeQueryString($employeetype), $this->_db->makeQueryString($noticeperiod), $this->_db->makeQueryString($reasonsforchange), $this->_db->makeQueryString($anyoffersinhand), $this->_db->makeQueryString($currentemployer), $this->_db->makeQueryString($currentCTC), $this->_db->makeQueryString($expectedCTC)
         );
         $queryResult = $this->_db->query($sql);
         if (!$queryResult) {
@@ -542,7 +658,22 @@ class Candidates {
                     IF (candidate.eeo_gender = 'f',
                         'Female',
                         ''))
-                     AS eeoGenderText
+                     AS eeoGenderText,
+                    candidate.sex,
+                    candidate.dob,
+                    candidate.skypeid,
+                    candidate.pan,
+                    candidate.totalexp ,
+                    candidate.currentlocation ,
+                    candidate.prefferedlocation, 
+                    candidate.currentdesignation, 
+                    candidate.employeetype ,
+                    candidate.noticeperiod ,
+                    candidate.reasonsforchange ,
+                    candidate.anyoffersinhand ,
+                    candidate.currentemployer ,
+                    candidate.currentCTC ,
+                    candidate.expectedCTC
             FROM
                 candidate
             LEFT JOIN user AS entered_by_user
@@ -1022,6 +1153,34 @@ class Candidates {
         );
 
         return (boolean) $this->_db->query($sql);
+    }
+
+    /**
+     * 
+     * @param type $CandidateID
+     * @return type
+     */
+    public function getCandidateSkills($CandidateID) {
+        $sql = sprintf(
+                "select skillname, skillexprience from candidate_skills where candidate_id = %s order by skillname", $CandidateID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+        return $skls;
+    }
+
+    /**
+     * 
+     * @param type $CandidateID
+     * @return type
+     */
+    public function getCandidateCertifications($CandidateID) {
+        $sql = sprintf(
+                "select certificationname from candidate_certifications where candidate_id = %s order by certificationname", $CandidateID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+        return $skls;
     }
 
 }
