@@ -48,6 +48,7 @@ include_once('./lib/CommonErrors.php');
 include_once('./lib/License.php');
 include_once('./lib/ParseUtility.php');
 include_once('./lib/Questionnaire.php');
+include_once('./lib/MailerNew.php');
 
 class CandidatesUI extends UserInterface {
     /* Maximum number of characters of the candidate notes to show without the
@@ -2942,10 +2943,10 @@ class CandidatesUI extends UserInterface {
             $emailbcc2 = explode(', ', $emailbcc1);
             $emailbcc = array();
             foreach ($emailbcc2 as $emailbcc3) {
-                $emailbcc[] = array($emailbcc2, $emailbcc2);
+                $emailbcc[] = array($emailbcc3, $emailbcc3);
             }
 
-            $mailer = new Mailer(CATS_ADMIN_SITE);
+            $mailer = new MailerNew(CATS_ADMIN_SITE);
 
             $CurrCandidateID = $_POST['candidate_id'];
             if ($CurrCandidateID >= 0 && $CurrCandidateID != false) {

@@ -199,6 +199,7 @@ define('MAIL_SMTP_PORT', 465);
 define('MAIL_SMTP_AUTH', true);
 define('MAIL_SMTP_USER', "deltatestuser@deltaintech.com");
 define('MAIL_SMTP_PASS', "Delta@3456");
+define('MAIL_SMTP_SECURE', "ssl");
 
 /* Event reminder E-Mail Template. */
 $GLOBALS['eventReminderEmail'] = <<<EOF

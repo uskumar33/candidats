@@ -29,6 +29,7 @@
 
 include_once('./lib/SystemInfo.php');
 include_once('./lib/Mailer.php');
+include_once('./lib/MailerNew.php');
 include_once('./lib/Site.php');
 include_once('./lib/NewVersionCheck.php');
 include_once('./lib/Wizard.php');
