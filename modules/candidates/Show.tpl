@@ -624,6 +624,55 @@
             <?php endif; ?>
             <img src="images/indicator2.gif" id="addActivityIndicator" alt="" style="visibility: hidden; margin-left: 5px;" height="16" width="16" />
         </div>
+        
+        <br clear="all" />
+        <br />
+
+        <p class="note">Client Activity</p>
+         <table id="activityTable" class="sortable" width="925">
+            <tr>
+                <th align="left" width="125">Date</th>
+                <th align="left" width="90">Type</th>
+                <th align="left" width="90">Entered</th>
+                <th align="left" width="250">Regarding</th>
+                <th align="left">Notes</th>
+                <?php if (!$this->isPopup): ?>
+                <th align="left" width="40">Action</th>
+                <?php endif; ?>
+            </tr>
+
+            <?php foreach ($this->clientactivityRS as $rowNumber => $activityData): ?>
+            <tr class="<?php TemplateUtility::printAlternatingRowClass($rowNumber); ?>">
+                <td align="left" valign="top" id="activityDate<?php echo($activityData['activityID']); ?>"><?php $this->_($activityData['dateCreated']) ?></td>
+                <td align="left" valign="top" id="activityType<?php echo($activityData['activityID']); ?>"><?php $this->_($activityData['typeDescription']) ?></td>
+                <td align="left" valign="top"><?php $this->_($activityData['enteredByAbbrName']) ?></td>
+                <td align="left" valign="top" id="activityRegarding<?php echo($activityData['activityID']); ?>"><?php $this->_($activityData['regarding']) ?></td>
+                <td align="left" valign="top" id="activityNotes<?php echo($activityData['activityID']); ?>"><?php echo($activityData['notes']); ?></td>
+                <?php if (!$this->isPopup): ?>
+                <td align="center" >
+                    <?php if ($this->accessLevel >= ACCESS_LEVEL_EDIT): ?>
+                    <a href="#" id="editActivity<?php echo($activityData['activityID']); ?>" onclick="Activity_editEntry( < ?php echo($activityData['activityID']); ? > , < ?php echo($this - > candidateID); ? > , < ?php echo(DATA_ITEM_CANDIDATE); ? > , '<?php echo($this->sessionCookie); ?>'); return false;">
+                        <img src="images/actions/edit.gif" width="16" height="16" class="absmiddle" alt="" border="0" title="Edit" />
+                    </a>
+                    <?php endif; ?>
+                    <?php if ($this->accessLevel >= ACCESS_LEVEL_DELETE): ?>
+                    <a href="#" id="deleteActivity<?php echo($activityData['activityID']); ?>" onclick="Activity_deleteEntry( < ?php echo($activityData['activityID']); ? > , '<?php echo($this->sessionCookie); ?>'); return false;">
+                        <img src="images/actions/delete.gif" width="16" height="16" class="absmiddle" alt="" border="0" title="Delete" />
+                    </a>
+                    <?php endif; ?>
+                </td>
+                <?php endif; ?>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <div id="addClientActivityDiv">
+            <?php if ($this->accessLevel >= ACCESS_LEVEL_EDIT): ?>
+            <a href="#" id="addClientActivityLink" onclick="showPopWin('<?php echo(CATSUtility::getIndexName()); ?>?m=candidates&amp;a=addActivityChangeClientStatus&amp;candidateID=<?php echo($this->candidateID); ?>&amp;jobOrderID=-1', 600, 480, null); return false;">
+                <img src="images/new_activity_inline.gif" width="16" height="16" class="absmiddle" title="Log Client Activity" alt="Log Client Activity" border="0" />&nbsp;Log Client Activity
+            </a>
+            <?php endif; ?>
+            <img src="images/indicator2.gif" id="addClientActivityIndicator" alt="" style="visibility: hidden; margin-left: 5px;" height="16" width="16" />
+        </div>
     </div>
 </div>
 

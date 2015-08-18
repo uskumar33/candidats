@@ -4,11 +4,10 @@
 <?php elseif ($this->onlyScheduleEvent): ?>
 <?php TemplateUtility::printModalHeader('Candidates', array('modules/candidates/activityvalidator.js', 'js/activity.js'), 'Candidates: Schedule Event'); ?>
 <?php else: ?>
-<?php TemplateUtility::printModalHeader('Candidates', array('modules/candidates/activityvalidator.js', 'js/activity.js'), 'Candidates: Log Activity'); ?>
+<?php TemplateUtility::printModalHeader('Candidates', array('modules/candidates/activityvalidator.js', 'js/activity.js'), 'Candidates: Log Client Activity'); ?>
 <?php endif; ?>
 
 <?php if (!$this->isFinishedMode): ?>
-
 <script type="text/javascript">
     < ?php if ($this - > isJobOrdersMode): ? >
             statusesArray = new Array(1);
@@ -39,9 +38,107 @@
             statusTriggersEmailArray = new Array( < ?php echo(count($this - > statusRS)); ? > );
             < ?php foreach ($this - > statusRS as $rowNumber = > $statusData): ? >
             statusTriggersEmailArray[ < ?php echo($rowNumber); ? > ] = < ?php echo($statusData['triggersEmail']); ? > ;
-            < ?php endforeach; ? ></script>
-
-<form name="changePipelineStatusForm" id="changePipelineStatusForm" action="<?php echo(CATSUtility::getIndexName()); ?>?m=<?php if ($this->isJobOrdersMode): ?>joborders<?php else: ?>candidates<?php endif; ?>&amp;a=addActivityChangeStatus<?php if ($this->onlyScheduleEvent): ?>&amp;onlyScheduleEvent=true<?php endif; ?>" method="post" onsubmit="return checkActivityForm(document.changePipelineStatusForm);" autocomplete="off">
+            < ?php endforeach; ? >
+</script>
+    <script type="text/javascript">
+    
+   var profileActivityType=["Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
+   var interviewActivityType=["Shortlisted", "Interview Rejected", "Interview Rescheduled", "Awaiting Feedback", "On Hold"];
+   var hrActivityType=["Offered", "Rejected", "Declined", "Withdrawn", "Joined", "On Hold"];
+   
+   var interviewRejected=["Technically NotFit", "Fake", "Salary", "Attitude", "Exprience", "Qualification", "Communication"];
+   var interviewRescheduled=["By Candidate", "By Company"];
+   
+   function statusIDChanged(cstatusID)
+   {  
+      var selectAType = document.getElementById('activityTypeID');
+      var ln = selectAType.length - 1;
+      while (ln > 0)
+      { 
+        selectAType.remove(1);  //Remove all but "Select State"
+        ln--;
+      }
+      
+      var ActivityType1 = document.getElementById('activitySubTypeID');
+      var ln = ActivityType1.length - 1;
+      while (ln > 0)
+      { 
+        ActivityType1.remove(1);  //Remove all but "Select City"
+        ln--;
+      }    
+      
+      var ActivityType0;
+      
+      switch(cstatusID)
+      {
+        case "Profile":
+            ActivityType0=profileActivityType
+            break;
+        case "Interview":
+            ActivityType0=interviewActivityType
+            break;
+        case "HR":
+            ActivityType0=hrActivityType
+            break;
+        default:
+      }      
+          
+      for (i = 0; i < ActivityType0.length; i++)
+      {
+        var option = document.createElement('option'); 
+        option.text = ActivityType0[i];
+        option.value = ActivityType0[i];
+        selectAType.add(option);
+      }      
+  }
+  
+  function stateChanged(state)
+  {  
+     var ActivityType2 = document.getElementById('activitySubTypeID');
+     var ln = ActivityType2.length - 1;
+     while (ln > 0)
+     { 
+       ActivityType2.remove(1);  //Remove all but "Select City"
+       ln--;
+     }    
+     
+	 //document.getElementById("activitySubTypeID").style.display = "block";
+     var cityArray;
+     
+     switch(state)
+     {
+       case "Interview Rejected":
+           cityArray=interviewRejected
+           break;
+       case "Interview Rescheduled":
+           cityArray=interviewRescheduled
+           break;         
+       default:
+			//document.getElementById("activitySubTypeID").style.display = "none";
+			//break;
+     }   
+      
+     for (i = 0; i < cityArray.length; i++)
+     {
+       var option = document.createElement('option'); 
+       option.text = cityArray[i];
+       option.value = cityArray[i];
+       ActivityType2.add(option);
+     }      
+  }
+  
+ function cityChanged(city)
+  {  
+     /*switch(city)
+     {
+       case "test":
+           alert("test text") 
+           break;                
+       default:
+     } */
+  } 
+  </script>
+<form name="changePipelineStatusForm" id="changePipelineStatusForm" action="<?php echo(CATSUtility::getIndexName()); ?>?m=<?php if ($this->isJobOrdersMode): ?>joborders<?php else: ?>candidates<?php endif; ?>&amp;a=addActivityChangeClientStatus<?php if ($this->onlyScheduleEvent): ?>&amp;onlyScheduleEvent=true<?php endif; ?>" method="post" onsubmit="return checkActivityForm(document.changePipelineStatusForm);" autocomplete="off">
     <input type="hidden" name="postback" id="postback" value="postback" />
     <input type="hidden" id="candidateID" name="candidateID" value="<?php echo($this->candidateID); ?>" />
     <?php if ($this->isJobOrdersMode): ?>
@@ -69,30 +166,24 @@
                     <?php endforeach; ?>
                 </select>
                 <?php endif; ?>
-            </td>
+            </td>           
         </tr>
 
-        <tr id="statusTR" <?php if ($this->onlyScheduleEvent): ?>style="display:none;"<?php endif; ?>>
+        <tr id="statusTR" >
             <td class="tdVertical">
-                <label id="statusIDLabel" for="statusID">Status:</label>
+                <label id="statusIDLabel" for="statusID">Client Activity:</label>
             </td>
             <td class="tdData">
-                <input type="checkbox" name="changeStatus" id="changeStatus" style="margin-left: 0px" onclick="AS_onChangeStatusChange('changeStatus', 'statusID', 'changeStatusSpanB');"<?php if ($this->selectedJobOrderID == -1 || $this->onlyScheduleEvent): ?> disabled<?php endif; ?> />
-                       <span id="changeStatusSpanA"<?php if ($this->selectedJobOrderID == -1): ?> style="color: #aaaaaa;"<?php endif;?>>Change Status</span><br />
-
+                <div style="display:none;">
+                    <input type="checkbox" name="changeStatus" id="changeStatus" style="margin-left: 0px" onclick="AS_onChangeStatusChange('changeStatus', 'statusID', 'changeStatusSpanB');"<?php if ($this->selectedJobOrderID == -1 || $this->onlyScheduleEvent): ?> disabled<?php endif; ?> />
+                           <span id="changeStatusSpanA"<?php if ($this->selectedJobOrderID == -1): ?> style="color: #aaaaaa;"<?php endif;?>>Change Status</span><br />
+                </div>
                 <div id="changeStatusDiv" style="margin-top: 4px;">
-                    <select id="statusID" name="statusID" class="inputbox" style="width: 150px;" onchange="AS_onStatusChange(statusesArray, jobOrdersArray, 'regardingID', 'statusID', 'sendEmailCheckTR', 'triggerEmailSpan', 'activityNote', 'activityTypeID', < ?php if ($this - > isJobOrdersMode): echo $this - > selectedJobOrderID; else: ? > null < ?php endif; ? > , 'customMessage', 'origionalCustomMessage', 'triggerEmail', statusesArrayString, jobOrdersArrayStringTitle, jobOrdersArrayStringCompany, statusTriggersEmailArray, 'emailIsDisabled');" disabled>
-                        <option value="-1">(Select a Status)</option>
-
-                        <?php if ($this->selectedStatusID == -1): ?>
-                        <?php foreach ($this->statusRS as $rowNumber => $statusData): ?>
-                        <option value="<?php $this->_($statusData['statusID']) ?>"><?php $this->_($statusData['status']) ?></option>
-                        <?php endforeach; ?>
-                        <?php else: ?>
-                        <?php foreach ($this->statusRS as $rowNumber => $statusData): ?>
-                        <option <?php if ($this->selectedStatusID == $statusData['statusID']): ?>selected <?php endif; ?>value="<?php $this->_($statusData['statusID']) ?>"><?php $this->_($statusData['status']) ?></option>
-                        <?php endforeach; ?>
-                        <?php endif; ?>
+                    <select id="statusID" name="statusID" class="inputbox" style="width: 150px;" onchange='statusIDChanged(this.value);' >
+                        <option selected="selected" value="-1">(Select Client Activity)</option>
+                        <option value="Profile">Profile</option>
+                        <option value="Interview">Interview</option>
+                        <option value="HR">HR</option>
                     </select>
                     <span id="changeStatusSpanB" style="color: #aaaaaa;">&nbsp;*</span>&nbsp;&nbsp;
                     <span id="triggerEmailSpan" style="display: none;"><input type="checkbox" name="triggerEmail" id="triggerEmail" onclick="AS_onSendEmailChange('triggerEmail', 'sendEmailCheckTR', 'visibleTR');" />Send E-Mail Notification to Candidate</span>
@@ -113,28 +204,42 @@
         </tr>
         <tr id="addActivityTR" <?php if ($this->onlyScheduleEvent): ?>style="display:none;"<?php endif; ?>>
             <td class="tdVertical">
-                <label id="addActivityLabel" for="addActivity">Activity:</label>
+                <label id="addActivityLabel" for="addActivity">Activity Type:</label>
             </td>
             <td class="tdData">
-                <input type="checkbox" name="addActivity" id="addActivity" style="margin-left: 0px;"<?php if (!$this->onlyScheduleEvent): ?> checked="checked"<?php endif; ?> onclick="AS_onAddActivityChange('addActivity', 'activityTypeID', 'activityNote', 'addActivitySpanA', 'addActivitySpanB');" />Log an Activity<br />
+                <div style="display:none;">
+                    <input type="checkbox" name="addActivity" id="addActivity" style="margin-left: 0px;"<?php if (!$this->onlyScheduleEvent): ?> checked="checked"<?php endif; ?> onclick="AS_onAddActivityChange('addActivity', 'activityTypeID', 'activityNote', 'addActivitySpanA', 'addActivitySpanB');" />Log an Activity<br />
+                </div>
                 <div id="activityNoteDiv" style="margin-top: 4px;">
-                    <span id="addActivitySpanA">Activity Type</span><br />
-                    <select id="activityTypeID" name="activityTypeID" class="inputbox" style="width: 150px; margin-bottom: 4px;">
-                        <option selected="selected" value="<?php echo(ACTIVITY_CALL); ?>">Call</option>
-                        <option value="<?php echo(ACTIVITY_CALL_TALKED); ?>">Call (Talked)</option>
-                        <option value="<?php echo(ACTIVITY_CALL_LVM); ?>">Call (LVM)</option>
-                        <option value="<?php echo(ACTIVITY_CALL_MISSED); ?>">Call (Missed)</option>
-                        <option value="<?php echo(ACTIVITY_EMAIL); ?>">E-Mail</option>
-                        <option value="<?php echo(ACTIVITY_MEETING); ?>">Meeting</option>
-                        <option value="<?php echo(ACTIVITY_OTHER); ?>">Other</option>
-                    </select><br />
-                    <span id="addActivitySpanB">Activity Notes</span><br />
-                    <textarea name="activityNote" id="activityNote" cols="50" style="margin-bottom: 4px;" class="inputbox"></textarea>
+                    <select id="activityTypeID" name="activityTypeID" onchange='stateChanged(this.value);' class="inputbox" style="width: 150px; margin-bottom: 4px;">
+                        <option value=''>Select Activity Type</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <tr id="addActivitysubTR" <?php if ($this->onlyScheduleEvent): ?>style="display:none;"<?php endif; ?>>
+            <td class="tdVertical">
+                <label id="addActivitySubLabel" for="addActivity">Activity Sub Type:</label>
+            </td>
+            <td class="tdData">
+                <div id="activitySubNoteDiv" style="margin-top: 4px;">
+                    <select id="activitySubTypeID" name="activitySubTypeID" onchange='cityChanged(this.value);' class="inputbox" style="width: 150px; margin-bottom: 4px;">
+                        <option value=''>Select Activity SubType</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <tr id="addActivityNotesTR" >
+            <td class="tdVertical">
+                <label id="addActivityLabel" for="addActivity">Activity Notes:</label>
+            </td>
+            <td class="tdData">
+                <textarea name="activityNote" id="activityNote" cols="50" style="margin-bottom: 4px;" class="inputbox"></textarea>
                 </div>
             </td>
         </tr>
 
-        <tr id="scheduleEventTR">
+        <tr id="scheduleEventTR" style="display: none;">
             <td class="tdVertical">
                 <label id="scheduleEventLabel" for="scheduleEvent">Schedule Event:</label>
             </td>

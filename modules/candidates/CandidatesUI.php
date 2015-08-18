@@ -153,6 +153,15 @@ class CandidatesUI extends UserInterface {
 
                 break;
 
+            /* Change candidate-joborder status. */
+            case 'addActivityChangeClientStatus':
+                if ($this->isPostBack()) {
+                    $this->onAddClientActivityChangeStatus();
+                } else {
+                    $this->addActivityChangeClientStatus();
+                }
+
+                break;
             /* Remove a candidate from a pipeline. */
             case 'removeFromPipeline':
                 $this->onRemoveFromPipeline();
@@ -436,6 +445,27 @@ class CandidatesUI extends UserInterface {
             }
         }
 
+        /*
+         * Client Activites
+         */
+        $clientactivityRS = $activityEntries->getClientAllByDataItem($candidateID, DATA_ITEM_CANDIDATE);
+        if (!empty($clientactivityRS)) {
+            foreach ($clientactivityRS as $rowIndex => $row) {
+                if (empty($clientactivityRS[$rowIndex]['notes'])) {
+                    $clientactivityRS[$rowIndex]['notes'] = '(No Notes)';
+                }
+
+                if (empty($clientactivityRS[$rowIndex]['jobOrderID']) ||
+                        empty($clientactivityRS[$rowIndex]['regarding'])) {
+                    $clientactivityRS[$rowIndex]['regarding'] = 'General';
+                }
+
+                $clientactivityRS[$rowIndex]['enteredByAbbrName'] = StringUtility::makeInitialName(
+                                $clientactivityRS[$rowIndex]['enteredByFirstName'], $clientactivityRS[$rowIndex]['enteredByLastName'], false, LAST_NAME_MAXLEN
+                );
+            }
+        }
+
         /* Get upcoming calendar entries. */
         $calendarRS = $candidates->getUpcomingEvents($candidateID);
         if (!empty($calendarRS)) {
@@ -492,6 +522,7 @@ class CandidatesUI extends UserInterface {
         $this->_template->assign('attachmentsRS', $attachmentsRS);
         $this->_template->assign('pipelinesRS', $pipelinesRS);
         $this->_template->assign('activityRS', $activityRS);
+        $this->_template->assign('clientactivityRS', $clientactivityRS);
         $this->_template->assign('calendarRS', $calendarRS);
         $this->_template->assign('extraFieldRS', $extraFieldRS);
         $this->_template->assign('candidateID', $candidateID);
@@ -1412,6 +1443,111 @@ class CandidatesUI extends UserInterface {
         );
     }
 
+    private function addActivityChangeClientStatus() {
+        /* Bail out if we don't have a valid candidate ID. */
+        if (!$this->isRequiredIDValid('candidateID', $_GET)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
+        }
+
+        /* Bail out if we don't have a valid job order ID. */
+        if (!$this->isOptionalIDValid('jobOrderID', $_GET)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
+        }
+
+        $selectedJobOrderID = $_GET['jobOrderID'];
+        $candidateID = $_GET['candidateID'];
+
+        $candidates = new Candidates($this->_siteID);
+        $candidateData = $candidates->get($candidateID);
+
+        /* Bail out if we got an empty result set. */
+        if (empty($candidateData)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this);
+            return;
+            /* $this->fatalModal(
+              'The specified candidate ID could not be found.'
+              ); */
+        }
+
+        $pipelines = new Pipelines($this->_siteID);
+        $pipelineRS = $pipelines->getCandidatePipeline($candidateID);
+
+        $statusRS = $pipelines->getStatusesForPicking();
+
+        if ($selectedJobOrderID != -1) {
+            $selectedStatusID = ResultSetUtility::getColumnValueByIDValue(
+                            $pipelineRS, 'jobOrderID', $selectedJobOrderID, 'statusID'
+            );
+        } else {
+            $selectedStatusID = -1;
+        }
+
+        /* Get the change status email template. */
+        $emailTemplates = new EmailTemplates($this->_siteID);
+        $statusChangeTemplateRS = $emailTemplates->getByTag(
+                'EMAIL_TEMPLATE_STATUSCHANGE'
+        );
+        if (empty($statusChangeTemplateRS) ||
+                empty($statusChangeTemplateRS['textReplaced'])) {
+            $statusChangeTemplate = '';
+            $emailDisabled = '1';
+        } else {
+            $statusChangeTemplate = $statusChangeTemplateRS['textReplaced'];
+            $emailDisabled = $statusChangeTemplateRS['disabled'];
+        }
+
+        /* Replace e-mail template variables. '%CANDSTATUS%', '%JBODTITLE%',
+         * '%JBODCLIENT%' are replaced by JavaScript.
+         */
+        $stringsToFind = array(
+            '%CANDOWNER%',
+            '%CANDFIRSTNAME%',
+            '%CANDFULLNAME%'
+        );
+        $replacementStrings = array(
+            $candidateData['ownerFullName'],
+            $candidateData['firstName'],
+            $candidateData['firstName'] . ' ' . $candidateData['lastName'],
+            $candidateData['firstName'],
+            $candidateData['firstName']
+        );
+        $statusChangeTemplate = str_replace(
+                $stringsToFind, $replacementStrings, $statusChangeTemplate
+        );
+
+        /* Are we in "Only Schedule Event" mode? */
+        $onlyScheduleEvent = $this->isChecked('onlyScheduleEvent', $_GET);
+
+        $calendar = new Calendar($this->_siteID);
+        $calendarEventTypes = $calendar->getAllEventTypes();
+
+        if (!eval(Hooks::get('CANDIDATE_ADD_ACTIVITY_CHANGE_STATUS')))
+            return;
+
+        if (SystemUtility::isSchedulerEnabled() && !$_SESSION['CATS']->isDemo()) {
+            $allowEventReminders = true;
+        } else {
+            $allowEventReminders = false;
+        }
+
+        $this->_template->assign('candidateID', $candidateID);
+        $this->_template->assign('pipelineRS', $pipelineRS);
+        $this->_template->assign('statusRS', $statusRS);
+        $this->_template->assign('selectedJobOrderID', $selectedJobOrderID);
+        $this->_template->assign('selectedStatusID', $selectedStatusID);
+        $this->_template->assign('allowEventReminders', $allowEventReminders);
+        $this->_template->assign('userEmail', $_SESSION['CATS']->getEmail());
+        $this->_template->assign('calendarEventTypes', $calendarEventTypes);
+        $this->_template->assign('statusChangeTemplate', $statusChangeTemplate);
+        $this->_template->assign('onlyScheduleEvent', $onlyScheduleEvent);
+        $this->_template->assign('emailDisabled', $emailDisabled);
+        $this->_template->assign('isFinishedMode', false);
+        $this->_template->assign('isJobOrdersMode', false);
+        $this->_template->display(
+                './modules/candidates/addActivityChangeClientStatusModal.tpl'
+        );
+    }
+
     private function onAddActivityChangeStatus() {
         if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
@@ -1425,6 +1561,21 @@ class CandidatesUI extends UserInterface {
         $regardingID = $_POST['regardingID'];
 
         $this->_addActivityChangeStatus(false, $regardingID);
+    }
+
+    private function onAddClientActivityChangeStatus() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
+            CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
+        }
+
+        /* Bail out if we don't have a valid regardingjob order ID. */
+        if (!$this->isOptionalIDValid('regardingID', $_POST)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
+        }
+
+        $regardingID = $_POST['regardingID'];
+
+        $this->_addActivityChangeStatus(false, $regardingID, "", "1");
     }
 
     /*
@@ -2357,7 +2508,7 @@ class CandidatesUI extends UserInterface {
      * @param string module directory
      * @return void
      */
-    private function _addActivityChangeStatus($isJobOrdersMode, $regardingID, $directoryOverride = '') {
+    private function _addActivityChangeStatus($isJobOrdersMode, $regardingID, $directoryOverride = '', $isClientActivity = '') {
         $notificationHTML = '';
 
         $pipelines = new Pipelines($this->_siteID);
@@ -2376,11 +2527,11 @@ class CandidatesUI extends UserInterface {
         }
 
         /* Do we have a valid status ID. */
-        if (!$this->isOptionalIDValid('statusID', $_POST)) {
-            $statusID = -1;
-        } else {
+        //if (!$this->isOptionalIDValid('statusID', $_POST)) {
+        //    $statusID = -1;
+        //} else {
             $statusID = $_POST['statusID'];
-        }
+        //}
 
         $candidateID = $_POST['candidateID'];
 
@@ -2388,12 +2539,13 @@ class CandidatesUI extends UserInterface {
             return;
 
         if ($this->isChecked('addActivity', $_POST)) {
-            /* Bail out if we don't have a valid job order ID. */
+            /* Bail out if we don't have a valid job order ID. 
             if (!$this->isOptionalIDValid('activityTypeID', $_POST)) {
                 CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid activity type ID.');
-            }
+            }*/
 
             $activityTypeID = $_POST['activityTypeID'];
+            $activitySubTypeID = $_POST['activitySubTypeID'];
 
             $activityNote = $this->getTrimmedInput('activityNote', $_POST);
 
@@ -2410,9 +2562,20 @@ class CandidatesUI extends UserInterface {
 
             /* Add the activity entry. */
             $activityEntries = new ActivityEntries($this->_siteID);
-            $activityID = $activityEntries->add(
-                    $candidateID, DATA_ITEM_CANDIDATE, $activityTypeID, $activityNote, $this->_userID, $regardingID
-            );
+            if ($isClientActivity == "1") {
+                $activityID = $activityEntries->addClientActivity(
+                        $candidateID, 
+                        DATA_ITEM_CANDIDATE, 
+                        $statusID, 
+                        $activityTypeID, 
+                        $activitySubTypeID, 
+                        $activityNote, $this->_userID, $regardingID
+                );
+            } else {
+                $activityID = $activityEntries->add(
+                        $candidateID, DATA_ITEM_CANDIDATE, $activityTypeID, $activityNote, $this->_userID, $regardingID
+                );
+            }
             $activityTypes = $activityEntries->getTypes();
             $activityTypeDescription = ResultSetUtility::getColumnValueByIDValue(
                             $activityTypes, 'typeID', $activityTypeID, 'type'
