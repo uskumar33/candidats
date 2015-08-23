@@ -2270,6 +2270,11 @@ class CandidatesUI extends UserInterface {
         $currentCTC = $this->getTrimmedInput('currentCTC', $_POST);
         $expectedCTC = $this->getTrimmedInput('expectedCTC', $_POST);
 
+        $passportValid = $this->getTrimmedInput('ValidPassport', $_POST);
+$othercertifications = $this->getTrimmedInput('othercertifications', $_POST);
+$othercommunication = $this->getTrimmedInput('othercommunications', $_POST);
+$clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
+
 
         /* Candidate source list editor. */
         $sourceCSV = $this->getTrimmedInput('sourceCSV', $_POST);
@@ -2291,30 +2296,33 @@ class CandidatesUI extends UserInterface {
 
         $candidates = new Candidates($this->_siteID);
         $candidateID = $candidates->add(
-                $firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $this->_userID, $this->_userID, $gender, $race, $veteran, $disability, $sex, $dob, $skypeid, $pan, $totalexp, $currentlocation, $prefferedlocation, $currentdesignation, $employeetype, $noticeperiod, $reasonsforchange, $anyoffersinhand, $currentemployer, $currentCTC, $expectedCTC
+                $firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $this->_userID, $this->_userID, $gender, $race, $veteran, $disability, $sex, $dob, $skypeid, $pan, $totalexp, $currentlocation, $prefferedlocation, $currentdesignation, $employeetype, $noticeperiod, $reasonsforchange, $anyoffersinhand, $currentemployer, $currentCTC, $expectedCTC, $passportValid, $othercertifications, $othercommunication, $clientinteraction
         );
 
         if ($candidateID <= 0) {
             return $candidateID;
         } else {
-            if ($isModal != true) {
+            //if ($isModal != true) {
                 /*
                  * New changes as requested - 22nd June 2015
                  */
                 $mandatoryskillname = $_POST['mandatoryskillname'];
-                $mandatoryskillnameexp = $_POST['mandatoryskillnameexp'];
-                $optionalskillname = $_POST['optionalskillname'];
-                $optionalskillnameexp = $_POST['optionalskillnameexp'];
-                $certificationname = $_POST['certificationname'];
-                $certificationcategory = $_POST['certificationcategory'];
+                $mandatoryskillnameexp = $_POST['projectshandled'];
+                $mandatoryskillduration = $_POST['duration'];
+                
+                $optionalskillname = $_POST['domainname'];
+                $optionalskillnameexp = $_POST['clientname'];
+                $optionalskillduration = $_POST['domainduration'];
+                
+                //$certificationname = $_POST['certificationname'];
+                //$certificationcategory = $_POST['certificationcategory'];
 
                 $jobOrderID = $candidates->addJobSkillsCertifications(
-                        $candidateID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
+                        $candidateID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $mandatoryskillduration, 
+                        $optionalskillname, $optionalskillnameexp, $optionalskillduration
                 );
-            } else {
-                /*
-                 * New changes as requested - 22nd June 2015
-                 */
+            /*} else {
+                 // New changes as requested - 22nd June 2015
                 $optionalskillname = $_POST['optionalskillname'];
                 $optionalskillnameexp = $_POST['optionalskillnameexp'];
                 $certificationname = $_POST['certificationname'];
@@ -2322,7 +2330,7 @@ class CandidatesUI extends UserInterface {
                 $jobOrderID = $candidates->addJobOrderJobSkillsCertifications(
                         $candidateID, $this->_userID, $optionalskillname, $optionalskillnameexp, $certificationname
                 );
-            }
+            } */
         }
 
         /* Update extra fields. */

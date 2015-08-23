@@ -47,12 +47,16 @@ function mytab31addRow(but) {
     //orderNames(rows);
 }
 
-function removeRow(but) {
-    var thisRow = but.parentNode.parentNode;
-    var tbo = thisRow.parentNode;
-    tbo.removeChild(thisRow);
-    //var rows = tbo.getElementsByTagName('tr');
-    //orderNames(rows);
+function removeRow(but, cTable) {
+    //dont remove 1st row
+    var totalrows = document.getElementById(cTable).getElementsByTagName('tr');
+    if(totalrows.length > 1){
+        var thisRow = but.parentNode.parentNode;
+        var tbo = thisRow.parentNode;
+        tbo.removeChild(thisRow);
+        //var rows = tbo.getElementsByTagName('tr');
+        //orderNames(rows);
+    }
 }
 
 onload = function () {
