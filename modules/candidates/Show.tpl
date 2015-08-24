@@ -62,7 +62,7 @@
                                 </a>
                             </td>
                         </tr>
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">2nd E-Mail:</td>
                             <td class="data">
                                 <a href="mailto:<?php $this->_($this->data['email2']); ?>">
@@ -71,7 +71,7 @@
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Home Phone:</td>
                             <td class="data"><?php $this->_($this->data['phoneHome']); ?></td>
                         </tr>
@@ -81,22 +81,22 @@
                             <td class="data"><?php $this->_($this->data['phoneCell']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Work Phone:</td>
                             <td class="data"><?php $this->_($this->data['phoneWork']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Best Time To Call:</td>
                             <td class="data"><?php $this->_($this->data['bestTimeToCall']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Address:</td>
                             <td class="data"><?php echo(nl2br(htmlspecialchars($this->data['address']))); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">&nbsp;</td>
                             <td class="data">
                                 <?php $this->_($this->data['cityAndState']); ?>
@@ -104,7 +104,7 @@
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Web Site:</td>
                             <td class="data">
                                 <?php if (!empty($this->data['webSite'])): ?>
@@ -113,7 +113,7 @@
                             </td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Source:</td>
                             <td class="data"><?php $this->_($this->data['source']); ?></td>
                         </tr>
@@ -175,7 +175,7 @@
                             <td class="data"><?php $this->_($this->data['dateAvailable']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Current Employer:</td>
                             <td class="data"><?php $this->_($this->data['currentEmployer']); ?></td>
                         </tr>
@@ -190,22 +190,22 @@
                             <td class="data"><?php $this->_($this->data['canRelocate']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Current Pay:</td>
                             <td class="data"><?php $this->_($this->data['currentPay']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Desired Pay:</td>
                             <td class="data"><?php $this->_($this->data['desiredPay']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Pipeline:</td>
                             <td class="data"><?php $this->_($this->data['pipeline']); ?></td>
                         </tr>
 
-                        <tr>
+                        <tr style="display: none;">
                             <td class="vertical">Submitted:</td>
                             <td class="data"><?php $this->_($this->data['submitted']); ?></td>
                         </tr>
@@ -220,7 +220,7 @@
                             <td class="data"><?php $this->_($this->data['ownerFullName']); ?></td>
                         </tr>
 
-                         <tr>
+                         <tr style="display: none;">
                             <td class="vertical">Employee Type:</td>
                             <td class="data"><?php $this->_($this->data['employeetype']); ?></td>
                         </tr> <tr>
@@ -472,6 +472,10 @@
         &nbsp;&nbsp;&nbsp;&nbsp;
         <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=candidates&amp;a=emailCandidates&amp;candidateID=<?php echo($this->candidateID); ?>&amp;state=1">
             <img src="images/resume_preview_inline.gif" width="16" height="16" class="absmiddle" alt="sendemail" border="0" />&nbsp;Send Email
+        </a>
+         &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=candidates&amp;a=generateCandidatePDF&amp;candidateID=<?php echo($this->candidateID); ?>&amp;state=1">
+            <img src="images/resume_preview_inline.gif" width="16" height="16" class="absmiddle" alt="GeneratePDF" border="0" />&nbsp;Generate PDF
         </a>
         <?php endif; ?>
         <?php endif; ?>

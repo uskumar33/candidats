@@ -49,6 +49,7 @@ include_once('./lib/License.php');
 include_once('./lib/ParseUtility.php');
 include_once('./lib/Questionnaire.php');
 include_once('./lib/MailerNew.php');
+include_once('./lib/fpdf/WriteHTML.php');
 
 class CandidatesUI extends UserInterface {
     /* Maximum number of characters of the candidate notes to show without the
@@ -211,6 +212,9 @@ class CandidatesUI extends UserInterface {
                 $this->onShowQuestionnaire();
                 break;
 
+            case 'generateCandidatePDF':
+                $this->onGenerateCandidatePDF();
+                break;
             /* Main candidates page. */
             case 'listByView':
             default:
@@ -2271,9 +2275,9 @@ class CandidatesUI extends UserInterface {
         $expectedCTC = $this->getTrimmedInput('expectedCTC', $_POST);
 
         $passportValid = $this->getTrimmedInput('ValidPassport', $_POST);
-$othercertifications = $this->getTrimmedInput('othercertifications', $_POST);
-$othercommunication = $this->getTrimmedInput('othercommunications', $_POST);
-$clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
+        $othercertifications = $this->getTrimmedInput('othercertifications', $_POST);
+        $othercommunication = $this->getTrimmedInput('othercommunications', $_POST);
+        $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
 
 
         /* Candidate source list editor. */
@@ -2303,34 +2307,33 @@ $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
             return $candidateID;
         } else {
             //if ($isModal != true) {
-                /*
-                 * New changes as requested - 22nd June 2015
-                 */
-                $mandatoryskillname = $_POST['mandatoryskillname'];
-                $mandatoryskillnameexp = $_POST['projectshandled'];
-                $mandatoryskillduration = $_POST['duration'];
-                
-                $optionalskillname = $_POST['domainname'];
-                $optionalskillnameexp = $_POST['clientname'];
-                $optionalskillduration = $_POST['domainduration'];
-                
-                //$certificationname = $_POST['certificationname'];
-                //$certificationcategory = $_POST['certificationcategory'];
+            /*
+             * New changes as requested - 22nd June 2015
+             */
+            $mandatoryskillname = $_POST['mandatoryskillname'];
+            $mandatoryskillnameexp = $_POST['projectshandled'];
+            $mandatoryskillduration = $_POST['duration'];
 
-                $jobOrderID = $candidates->addJobSkillsCertifications(
-                        $candidateID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $mandatoryskillduration, 
-                        $optionalskillname, $optionalskillnameexp, $optionalskillduration
-                );
-            /*} else {
-                 // New changes as requested - 22nd June 2015
-                $optionalskillname = $_POST['optionalskillname'];
-                $optionalskillnameexp = $_POST['optionalskillnameexp'];
-                $certificationname = $_POST['certificationname'];
+            $optionalskillname = $_POST['domainname'];
+            $optionalskillnameexp = $_POST['clientname'];
+            $optionalskillduration = $_POST['domainduration'];
 
-                $jobOrderID = $candidates->addJobOrderJobSkillsCertifications(
-                        $candidateID, $this->_userID, $optionalskillname, $optionalskillnameexp, $certificationname
-                );
-            } */
+            //$certificationname = $_POST['certificationname'];
+            //$certificationcategory = $_POST['certificationcategory'];
+
+            $jobOrderID = $candidates->addJobSkillsCertifications(
+                    $candidateID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $mandatoryskillduration, $optionalskillname, $optionalskillnameexp, $optionalskillduration
+            );
+            /* } else {
+              // New changes as requested - 22nd June 2015
+              $optionalskillname = $_POST['optionalskillname'];
+              $optionalskillnameexp = $_POST['optionalskillnameexp'];
+              $certificationname = $_POST['certificationname'];
+
+              $jobOrderID = $candidates->addJobOrderJobSkillsCertifications(
+              $candidateID, $this->_userID, $optionalskillname, $optionalskillnameexp, $certificationname
+              );
+              } */
         }
 
         /* Update extra fields. */
@@ -2538,7 +2541,7 @@ $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
         //if (!$this->isOptionalIDValid('statusID', $_POST)) {
         //    $statusID = -1;
         //} else {
-            $statusID = $_POST['statusID'];
+        $statusID = $_POST['statusID'];
         //}
 
         $candidateID = $_POST['candidateID'];
@@ -2548,9 +2551,9 @@ $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
 
         if ($this->isChecked('addActivity', $_POST)) {
             /* Bail out if we don't have a valid job order ID. 
-            if (!$this->isOptionalIDValid('activityTypeID', $_POST)) {
-                CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid activity type ID.');
-            }*/
+              if (!$this->isOptionalIDValid('activityTypeID', $_POST)) {
+              CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid activity type ID.');
+              } */
 
             $activityTypeID = $_POST['activityTypeID'];
             $activitySubTypeID = $_POST['activitySubTypeID'];
@@ -2572,12 +2575,7 @@ $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
             $activityEntries = new ActivityEntries($this->_siteID);
             if ($isClientActivity == "1") {
                 $activityID = $activityEntries->addClientActivity(
-                        $candidateID, 
-                        DATA_ITEM_CANDIDATE, 
-                        $statusID, 
-                        $activityTypeID, 
-                        $activitySubTypeID, 
-                        $activityNote, $this->_userID, $regardingID
+                        $candidateID, DATA_ITEM_CANDIDATE, $statusID, $activityTypeID, $activitySubTypeID, $activityNote, $this->_userID, $regardingID
                 );
             } else {
                 $activityID = $activityEntries->add(
@@ -3075,6 +3073,66 @@ $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
     </table>";
 
         return $candidateProfileSummary;
+    }
+
+    /**
+     * 
+     */
+    private function onGenerateCandidatePDF() {
+        if ($this->_accessLevel == ACCESS_LEVEL_DEMO) {
+            CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Sorry, but demo accounts are not allowed to send e-mails.');
+        }
+
+        $fromShowCandidate = true;
+        $CandidateProfileForEmail = "";
+
+        if (isset($_POST['postback'])) {
+            
+        } else {
+            $CurrCandidateID = isset($_GET[$id = 'candidateID']) ? $_GET[$id] : false;
+            if ($CurrCandidateID >= 0 && $CurrCandidateID != false) {
+                $CandidateProfileForEmail = $this->getCandidateProfileForEmail($CurrCandidateID);
+                $fromShowCandidate = true;
+            } else {
+                $fromShowCandidate = false;
+            }
+
+            $pdf = new PDF_HTML();
+
+            $pdf->AliasNbPages();
+            $pdf->SetAutoPageBreak(true, 15);
+
+            $pdf->AddPage();
+            //$pdf->Image('logo.png', 18, 13, 33);
+            //$pdf->SetFont('Arial', 'B', 14);
+            //$pdf->WriteHTML('<para><h1>Techzax Programming Blog, Tutorials, jQuery, Ajax, PHP, MySQL and Demos</h1><br> Website: <u>www.techzax.com</u></para><br><br>How to Convert HTML to PDF with fpdf example');
+
+            $pdf->SetFont('Arial', 'B', 12);
+            $htmlTable = '<TABLE>
+                            <TR>
+                            <TD>Name:</TD>
+                            <TD>Suresh Kumar Udatha</TD>
+                            </TR>
+                            <TR>
+                            <TD>Email:</TD>
+                            <TD>uskumar33@gmail.com</TD>
+                            </TR>
+                            <TR>
+                            <TD>URl:</TD>
+                            <TD>http://www.deltaintech.com</TD>
+                            </TR>
+                            <TR>
+                            <TD>Comment:</TD>
+                            <TD>Test comments goes here...!</TD>
+                            </TR>
+                            </TABLE>';
+            $pdf->WriteHTML2("<br><br><br>$htmlTable");
+            $pdf->SetFont('Arial', 'B', 6);
+            $pdf->Output();
+
+            //$this->_template->assign('candidate_id', $CurrCandidateID);
+            //$this->_template->display('./modules/candidates/SendEmail.tpl');
+        }
     }
 
     /*

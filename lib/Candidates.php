@@ -1233,7 +1233,7 @@ class Candidates {
      */
     public function getCandidateSkills($CandidateID) {
         $sql = sprintf(
-                "select skillname, skillexprience from candidate_skills where candidate_id = %s order by skillname", $CandidateID
+                "select skillname, projectshandled skillexprience from candidate_skills where candidate_id = %s order by skillname", $CandidateID
         );
 
         $skls = $this->_db->getAllAssoc($sql);
