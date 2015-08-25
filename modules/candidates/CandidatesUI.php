@@ -2261,7 +2261,6 @@ class CandidatesUI extends UserInterface {
          * New added columns
          */
         $sex = $this->getTrimmedInput('sex', $_POST);
-        $dob = $this->getTrimmedInput('dob', $_POST);
         $skypeid = $this->getTrimmedInput('skypeid', $_POST);
         $pan = $this->getTrimmedInput('pan', $_POST);
         $totalexp = $this->getTrimmedInput('totalexp', $_POST);
@@ -2281,6 +2280,17 @@ class CandidatesUI extends UserInterface {
         $othercommunication = $this->getTrimmedInput('othercommunications', $_POST);
         $clientinteraction = $this->getTrimmedInput('clientintegration', $_POST);
 
+        $dob = $this->getTrimmedInput('dob', $_POST);
+        if (!empty($dob)) {
+           /* if (!DateUtility::validate('-', $dob, DATE_FORMAT_MMDDYYYY)) {
+                CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid DOB.');
+            }*/
+
+            /* Convert start_date to something MySQL can understand. */
+            $dob = DateUtility::convert(
+                            '-', $dob, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
+            );
+        }
 
         /* Candidate source list editor. */
         $sourceCSV = $this->getTrimmedInput('sourceCSV', $_POST);
@@ -3136,7 +3146,7 @@ class CandidatesUI extends UserInterface {
               $pdf->SetFont('Arial', 'B', 6);
               $pdf->Output();
              */
-            
+
             // create new PDF document
             $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -3149,7 +3159,6 @@ class CandidatesUI extends UserInterface {
 
             // set default header data
             //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 048', PDF_HEADER_STRING);
-
             // set header and footer fonts
             $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
             $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
@@ -3169,11 +3178,11 @@ class CandidatesUI extends UserInterface {
             $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
             /*
-            // set some language-dependent strings (optional)
-            if (@file_exists('./lib/tcpdf/examples/lang/eng.php')) {
-                    require_once('./lib/tcpdf/examples/lang/eng.php');
-                    $pdf->setLanguageArray($l);
-            }*/
+              // set some language-dependent strings (optional)
+              if (@file_exists('./lib/tcpdf/examples/lang/eng.php')) {
+              require_once('./lib/tcpdf/examples/lang/eng.php');
+              $pdf->setLanguageArray($l);
+              } */
 
             // ---------------------------------------------------------
             // set font
@@ -3423,7 +3432,7 @@ EOD;
             $pdf->writeHTML($tbl, true, false, false, false, '');
             //Close and output PDF document
             $pdf->Output('example_048.pdf', 'I');
-                    
+
             //$this->_template->assign('candidate_id', $CurrCandidateID);
             //$this->_template->display('./modules/candidates/SendEmail.tpl');
         }

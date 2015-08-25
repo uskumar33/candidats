@@ -109,16 +109,18 @@
                                     </select>
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="tdVertical">
-                                    <label id="doblabel" for="dob">DOB:</label>
+                                    <label id="startDateLabel" for="startDate">Start Date:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="5" name="dob" id="dob" class="inputbox" style="width: 150px" value="" />
+                                    <?php if (!empty($this->data['startDate'])): ?>
+                                    <script type="text/javascript">DateInput('dob', false, 'MM-DD-YYYY', '<?php echo($this->data['dob']); ?>', 9);</script>
+                                    <?php else: ?>
+                                    <script type="text/javascript">DateInput('dob', false, 'MM-DD-YYYY', '', 9);</script>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
-
                             <tr>
                                 <td class="tdVertical">
                                     <label id="emailLabel" for="email1">E-Mail:</label>
