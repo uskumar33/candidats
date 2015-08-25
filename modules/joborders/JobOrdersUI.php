@@ -140,7 +140,15 @@ class JobOrdersUI extends UserInterface {
                 }
 
                 break;
+            /* Change candidate-joborder status. */
+            case 'addActivityChangeClientStatus':
+                if ($this->isPostBack()) {
+                    $this->onAddClientActivityChangeStatus();
+                } else {
+                    $this->addActivityChangeClientStatus();
+                }
 
+                break;
             /*
              * Search for a candidate (in the modal window) for which to
              * consider for this job order.
@@ -217,6 +225,126 @@ class JobOrdersUI extends UserInterface {
                 $this->listByView();
                 break;
         }
+    }
+
+    private function onAddClientActivityChangeStatus() {
+        if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
+            CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
+        }
+
+        /* Bail out if we don't have a valid regardingjob order ID. */
+        if (!$this->isOptionalIDValid('regardingID', $_POST)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
+        }
+
+        $regardingID = $_POST['regardingID'];
+
+        $this->_addActivityChangeStatus(false, $regardingID, "", "1");
+    }
+
+    private function addActivityChangeClientStatus() {
+        /* Bail out if we don't have a valid candidate ID. */
+        if (!$this->isRequiredIDValid('candidateID', $_GET)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
+        }
+
+        /* Bail out if we don't have a valid job order ID. */
+        if (!$this->isOptionalIDValid('jobOrderID', $_GET)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
+        }
+
+        $selectedJobOrderID = $_GET['jobOrderID'];
+        $candidateID = $_GET['candidateID'];
+
+        $candidates = new Candidates($this->_siteID);
+        $candidateData = $candidates->get($candidateID);
+
+        /* Bail out if we got an empty result set. */
+        if (empty($candidateData)) {
+            CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this);
+            return;
+            /* $this->fatalModal(
+              'The specified candidate ID could not be found.'
+              ); */
+        }
+
+        $pipelines = new Pipelines($this->_siteID);
+        $pipelineRS = $pipelines->getCandidatePipeline($candidateID);
+
+        $statusRS = $pipelines->getStatusesForPicking();
+
+        if ($selectedJobOrderID != -1) {
+            $selectedStatusID = ResultSetUtility::getColumnValueByIDValue(
+                            $pipelineRS, 'jobOrderID', $selectedJobOrderID, 'statusID'
+            );
+        } else {
+            $selectedStatusID = -1;
+        }
+
+        /* Get the change status email template. */
+        $emailTemplates = new EmailTemplates($this->_siteID);
+        $statusChangeTemplateRS = $emailTemplates->getByTag(
+                'EMAIL_TEMPLATE_STATUSCHANGE'
+        );
+        if (empty($statusChangeTemplateRS) ||
+                empty($statusChangeTemplateRS['textReplaced'])) {
+            $statusChangeTemplate = '';
+            $emailDisabled = '1';
+        } else {
+            $statusChangeTemplate = $statusChangeTemplateRS['textReplaced'];
+            $emailDisabled = $statusChangeTemplateRS['disabled'];
+        }
+
+        /* Replace e-mail template variables. '%CANDSTATUS%', '%JBODTITLE%',
+         * '%JBODCLIENT%' are replaced by JavaScript.
+         */
+        $stringsToFind = array(
+            '%CANDOWNER%',
+            '%CANDFIRSTNAME%',
+            '%CANDFULLNAME%'
+        );
+        $replacementStrings = array(
+            $candidateData['ownerFullName'],
+            $candidateData['firstName'],
+            $candidateData['firstName'] . ' ' . $candidateData['lastName'],
+            $candidateData['firstName'],
+            $candidateData['firstName']
+        );
+        $statusChangeTemplate = str_replace(
+                $stringsToFind, $replacementStrings, $statusChangeTemplate
+        );
+
+        /* Are we in "Only Schedule Event" mode? */
+        $onlyScheduleEvent = $this->isChecked('onlyScheduleEvent', $_GET);
+
+        $calendar = new Calendar($this->_siteID);
+        $calendarEventTypes = $calendar->getAllEventTypes();
+
+        if (!eval(Hooks::get('CANDIDATE_ADD_ACTIVITY_CHANGE_STATUS')))
+            return;
+
+        if (SystemUtility::isSchedulerEnabled() && !$_SESSION['CATS']->isDemo()) {
+            $allowEventReminders = true;
+        } else {
+            $allowEventReminders = false;
+        }
+
+        $this->_template->assign('candidateID', $candidateID);
+        $this->_template->assign('pipelineRS', $pipelineRS);
+        $this->_template->assign('statusRS', $statusRS);
+        $this->_template->assign('selectedJobOrderID', $selectedJobOrderID);
+        $this->_template->assign('selectedStatusID', $selectedStatusID);
+        $this->_template->assign('allowEventReminders', $allowEventReminders);
+        $this->_template->assign('userEmail', $_SESSION['CATS']->getEmail());
+        $this->_template->assign('calendarEventTypes', $calendarEventTypes);
+        $this->_template->assign('statusChangeTemplate', $statusChangeTemplate);
+        $this->_template->assign('onlyScheduleEvent', $onlyScheduleEvent);
+        $this->_template->assign('emailDisabled', $emailDisabled);
+        $this->_template->assign('isFinishedMode', false);
+        $this->_template->assign('isJobOrdersMode', false);
+        $this->_template->display(
+                './modules/candidates/addActivityChangeClientStatusModal.tpl'
+        );
     }
 
     /*
@@ -1169,9 +1297,9 @@ class JobOrdersUI extends UserInterface {
          * Get JobOrder Skills & Certifications
          */
         if ($jobOrderID > 0) {
-             $jOrders = new JobOrders($this->_siteID);
-             $jobOrderSkills = $jOrders->getJobOrderSkills($jobOrderID);
-             $jobOrderCertifications = $jOrders->getJobOrderCertifications($jobOrderID);
+            $jOrders = new JobOrders($this->_siteID);
+            $jobOrderSkills = $jOrders->getJobOrderSkills($jobOrderID);
+            $jobOrderCertifications = $jOrders->getJobOrderCertifications($jobOrderID);
         }
 
         $candidates = new Candidates($this->_siteID);

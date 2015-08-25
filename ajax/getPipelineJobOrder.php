@@ -283,7 +283,7 @@ if (!eval(Hooks::get('JO_AJAX_GET_PIPELINE'))) return;
                 <?php endif; ?>
                 <?php if (!isset($frozen)): ?>
                     <?php if ($_SESSION['CATS']->getAccessLevel() >= ACCESS_LEVEL_EDIT): ?>
-                        <a href="#" onclick="showPopWin('<?php echo($indexFile); ?>?m=joborders&amp;a=addActivityChangeStatus&amp;jobOrderID=<?php echo($jobOrderID); ?>&amp;candidateID=<?php echo($pipelinesData['candidateID']); ?>', 600, 550, null); return false;">
+                        <a href="#" onclick="showPopWin('<?php echo($indexFile); ?>?m=joborders&amp;a=addActivityChangeClientStatus&amp;jobOrderID=<?php echo($jobOrderID); ?>&amp;candidateID=<?php echo($pipelinesData['candidateID']); ?>', 600, 550, null); return false;">
                             <img src="images/actions/edit.gif" width="16" height="16" class="absmiddle" alt="" style="border: none;"  title="Log an Activity / Change Status" />
                         </a>
                     <?php endif; ?>
