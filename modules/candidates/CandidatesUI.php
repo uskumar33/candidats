@@ -50,6 +50,8 @@ include_once('./lib/ParseUtility.php');
 include_once('./lib/Questionnaire.php');
 include_once('./lib/MailerNew.php');
 include_once('./lib/fpdf/WriteHTML.php');
+include_once('./lib/tcpdf/tcpdf.php');
+include_once('./lib/tcpdf/config/tcpdf_config.php');
 
 class CandidatesUI extends UserInterface {
     /* Maximum number of characters of the candidate notes to show without the
@@ -3097,39 +3099,331 @@ class CandidatesUI extends UserInterface {
                 $fromShowCandidate = false;
             }
 
-            $pdf = new PDF_HTML();
+            /*
+              $pdf = new PDF_HTML();
 
-            $pdf->AliasNbPages();
-            $pdf->SetAutoPageBreak(true, 15);
+              $pdf->AliasNbPages();
+              $pdf->SetAutoPageBreak(true, 15);
 
+              $pdf->AddPage();
+              //$pdf->Image('logo.png', 18, 13, 33);
+              //$pdf->SetFont('Arial', 'B', 14);
+              //$pdf->WriteHTML('<para><h1>Techzax Programming Blog, Tutorials, jQuery, Ajax, PHP, MySQL and Demos</h1><br> Website: <u>www.techzax.com</u></para><br><br>How to Convert HTML to PDF with fpdf example');
+
+              $pdf->SetFont('Arial', 'B', 10);
+              $htmlTable = "<TABLE>
+              <TR>
+              <TD>Name:</TD>
+              <TD>Suresh Kumar Udatha</TD>
+              </TR>
+              <TR>
+              <TD>Email:</TD>
+              <TD>uskumar33@gmail.com</TD>
+              </TR>
+              <TR>
+              <TD>URl:</TD>
+              <TD>http://www.deltaintech.com</TD>
+              </TR>
+              <TR>
+              <TD>Comment:</TD>
+              <TD>Test comments goes here...!</TD>
+              </TR>
+              <TR>
+              <TD colspan='2'>Merged columns</TD>
+              </TR>
+              </TABLE>";
+              $pdf->WriteHTML2("<br><br><br>$htmlTable");
+              $pdf->SetFont('Arial', 'B', 6);
+              $pdf->Output();
+             */
+            
+            // create new PDF document
+            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+            // set document information
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('Nicola Asuni');
+            $pdf->SetTitle('TCPDF Example 048');
+            $pdf->SetSubject('TCPDF Tutorial');
+            $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+            // set default header data
+            //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 048', PDF_HEADER_STRING);
+
+            // set header and footer fonts
+            $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+            $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+            // set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+            // set margins
+            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+            // set auto page breaks
+            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+            // set image scale factor
+            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+            /*
+            // set some language-dependent strings (optional)
+            if (@file_exists('./lib/tcpdf/examples/lang/eng.php')) {
+                    require_once('./lib/tcpdf/examples/lang/eng.php');
+                    $pdf->setLanguageArray($l);
+            }*/
+
+            // ---------------------------------------------------------
+            // set font
+            $pdf->SetFont('helvetica', 'B', 20);
+
+            // add a page
             $pdf->AddPage();
-            //$pdf->Image('logo.png', 18, 13, 33);
-            //$pdf->SetFont('Arial', 'B', 14);
-            //$pdf->WriteHTML('<para><h1>Techzax Programming Blog, Tutorials, jQuery, Ajax, PHP, MySQL and Demos</h1><br> Website: <u>www.techzax.com</u></para><br><br>How to Convert HTML to PDF with fpdf example');
+            $pdf->Write(0, 'Example of HTML tables', '', 0, 'L', true, 0, false, false, 0);
+            $pdf->SetFont('helvetica', '', 8);
+            // -----------------------------------------------------------------------------
 
-            $pdf->SetFont('Arial', 'B', 12);
-            $htmlTable = '<TABLE>
-                            <TR>
-                            <TD>Name:</TD>
-                            <TD>Suresh Kumar Udatha</TD>
-                            </TR>
-                            <TR>
-                            <TD>Email:</TD>
-                            <TD>uskumar33@gmail.com</TD>
-                            </TR>
-                            <TR>
-                            <TD>URl:</TD>
-                            <TD>http://www.deltaintech.com</TD>
-                            </TR>
-                            <TR>
-                            <TD>Comment:</TD>
-                            <TD>Test comments goes here...!</TD>
-                            </TR>
-                            </TABLE>';
-            $pdf->WriteHTML2("<br><br><br>$htmlTable");
-            $pdf->SetFont('Arial', 'B', 6);
-            $pdf->Output();
+            $tbl = <<<EOD
+            <table width="800" border="1" cellpadding="0" cellspacing="0" style="border-width: 0px; background-color: #ffffff;">
+                <tr valign="top">
+                    <td colspan=5 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <p style=" text-align: left; text-indent: 0px; background: #c0c0c0; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 14pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: bold; color: #000000; background-color: transparent; text-decoration: none;">PERSONAL INFORMATION</span></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; background: #c0c0c0; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">1</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Candidate Name</span></p>
+                    </td>
+                    <td colspan=3 width="558" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">2</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; e-mail / Address</span></p>
+                    </td>
+                    <td colspan=3 width="558" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">3</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Phone / Mobile</span></p>
+                    </td>
+                    <td colspan=3 width="558" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">4</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Current Company</span></p>
+                    </td>
+                    <td width="255" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Designation&nbsp;&nbsp; </span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp;&nbsp; </span></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">5</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Current Location</span></p>
+                    </td>
+                    <td width="255" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Current CTC&nbsp;&nbsp; </span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">6</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Preferred Location</span></p>
+                    </td>
+                    <td width="255" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Expected CTC&nbsp;&nbsp; </span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">7</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; PAN Card No:</span></p>
+                    </td>
+                    <td width="255" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Notice Period&nbsp;&nbsp; </span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">8</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Valid Passport</span></p>
+                    </td>
+                    <td width="255" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Education</span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">9</span></p>
+                    </td>
+                    <td width="133" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Sex</span></p>
+                    </td>
+                    <td width="255" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">DoB / Age&nbsp;&nbsp; </span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td colspan=5 width="470" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 14pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: bold; color: #000000; background-color: transparent; text-decoration: none;"> EMPLOYMENT INFORMATION</span></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">1</span></p>
+                    </td>
+                    <td colspan=2 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Total Exprience</span></p>
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">2</span></p>
+                    </td>
+                    <td colspan=2 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Technical Exprience</span></p>
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;"># Projects</span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Duration</span></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td colspan=5 width="723" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; background: #ffffff; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;"><br /></span></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">3</span></p>
+                    </td>
+                    <td colspan=2 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Business Knowledge (Domain Knowledge)</span></p>
+                    </td>
+                    <td width="117" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Client</span></p>
+                    </td>
+                    <td width="232" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">Duration</span></p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td colspan=5 width="723" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #ffffff;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">4</span></p>
+                    </td>
+                    <td colspan=2 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Certification (if any)</span></p>
+                    </td>
+                    <td colspan=2 width="286" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">5</span></p>
+                    </td>
+                    <td colspan=2 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Communication (Listening, Verbal &amp; Written)</span></p>
+                    </td>
+                    <td colspan=2 width="286" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td width="32" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">6</span></p>
+                    </td>
+                    <td colspan=2 style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid; background-color: #c0c0c0;">
+                        <p style=" text-align: left; text-indent: 0px; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;"><span style=" font-size: 10pt; font-family: 'Arial', 'Helvetica', sans-serif; font-style: normal; font-weight: normal; color: #000000; background-color: transparent; text-decoration: none;">&nbsp; Client Interaction (On-site Exprience etc...)</span></p>
+                    </td>
+                    <td colspan=2 width="286" style="border-width : 1px; border-color : #000000 #000000 #000000 #000000; border-style: solid;">
+                        <br />
+                    </td>
+                </tr>
+            </table>
+EOD;
 
+            $pdf->writeHTML($tbl, true, false, false, false, '');
+            //Close and output PDF document
+            $pdf->Output('example_048.pdf', 'I');
+                    
             //$this->_template->assign('candidate_id', $CurrCandidateID);
             //$this->_template->display('./modules/candidates/SendEmail.tpl');
         }
