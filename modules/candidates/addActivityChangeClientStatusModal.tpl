@@ -41,13 +41,15 @@
             < ?php endforeach; ? >
 </script>
     <script type="text/javascript">
+   var ActivityTypes=["Profile", "Interview", "HR"];
     
-   var profileActivityType=["Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
-   var interviewActivityType=["Shortlisted", "Interview Rejected", "Interview Rescheduled", "Awaiting Feedback", "On Hold"];
+   var profileActivityType=["Sourced", "Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
+   var interviewActivityType=["Shortlisted", "Interview Scheduled", "Interview Rescheduled", "Interview Rejected", "Awaiting Feedback", "On Hold"];
    var hrActivityType=["Offered", "Rejected", "Declined", "Withdrawn", "Joined", "On Hold"];
    
    var interviewRejected=["Technically NotFit", "Fake", "Salary", "Attitude", "Exprience", "Qualification", "Communication"];
    var interviewRescheduled=["By Candidate", "By Company"];
+   var interviewscheduled=["Interview Round-1", "Interview Round-2", "Interview Round-3", "Interview Round-4", "Interview Round-5"];
    
    function statusIDChanged(cstatusID)
    {  
@@ -112,6 +114,9 @@
            break;
        case "Interview Rescheduled":
            cityArray=interviewRescheduled
+           break;         
+       case "Interview Scheduled":
+           cityArray=interviewscheduled
            break;         
        default:
 			//document.getElementById("activitySubTypeID").style.display = "none";

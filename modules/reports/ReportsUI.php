@@ -1,4 +1,5 @@
 <?php
+
 /*
  * CATS
  * Reports Module
@@ -32,10 +33,9 @@ include_once('./lib/DateUtility.php');
 include_once('./lib/Candidates.php');
 include_once('./lib/CommonErrors.php');
 
-class ReportsUI extends UserInterface
-{
-    public function __construct()
-    {
+class ReportsUI extends UserInterface {
+
+    public function __construct() {
         parent::__construct();
 
         $this->_authenticationRequired = true;
@@ -43,18 +43,16 @@ class ReportsUI extends UserInterface
         $this->_moduleName = 'reports';
         $this->_moduleTabText = 'Reports';
         $this->_subTabs = array(
-                'EEO Reports' => CATSUtility::getIndexName() . '?m=reports&amp;a=customizeEEOReport'
-            );
+            'EEO Reports' => CATSUtility::getIndexName() . '?m=reports&amp;a=customizeEEOReport'
+        );
     }
 
-
-    public function handleRequest()
-    {
-        if (!eval(Hooks::get('REPORTS_HANDLE_REQUEST'))) return;
+    public function handleRequest() {
+        if (!eval(Hooks::get('REPORTS_HANDLE_REQUEST')))
+            return;
 
         $action = $this->getAction();
-        switch ($action)
-        {
+        switch ($action) {
             case 'graphView':
                 $this->graphView();
                 break;
@@ -83,6 +81,23 @@ class ReportsUI extends UserInterface
                 $this->generateEEOReportPreview();
                 break;
 
+            case 'RecruitmentSummaryReport':
+                $this->showRecruitmentSummaryReport();
+                //$this->generateEEOReportPreview();
+                break;
+
+            case 'RecruiterSummaryReport':
+                //$this->generateEEOReportPreview();
+                break;
+
+            case 'ClientSummaryReport':
+                //$this->generateEEOReportPreview();
+                break;
+
+            case 'RecruitmentTracker':
+                //$this->generateEEOReportPreview();
+                break;
+
             case 'reports':
             default:
                 $this->reports();
@@ -90,116 +105,267 @@ class ReportsUI extends UserInterface
         }
     }
 
-    private function reports()
-    {
+    /**
+     * 
+     */
+    private function getRecruitmentSummaryReport() {
+
+        //$clientName = $_POST['clientName'];
+    }
+
+    private function generatePDF($htmlText) {
+        // create new PDF document
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // set document information
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Nicola Asuni');
+        $pdf->SetTitle('TCPDF Example 048');
+        $pdf->SetSubject('TCPDF Tutorial');
+        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+        // set default header data
+        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 048', PDF_HEADER_STRING);
+        // set header and footer fonts
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        /*
+          // set some language-dependent strings (optional)
+          if (@file_exists('./lib/tcpdf/examples/lang/eng.php')) {
+          require_once('./lib/tcpdf/examples/lang/eng.php');
+          $pdf->setLanguageArray($l);
+          } */
+
+        // ---------------------------------------------------------
+        // set font
+        $pdf->SetFont('helvetica', 'B', 20);
+
+        // add a page
+        $pdf->AddPage();
+        $pdf->Write(0, 'Example of HTML tables', '', 0, 'L', true, 0, false, false, 0);
+        $pdf->SetFont('helvetica', '', 8);
+        // -----------------------------------------------------------------------------
+
+        $pdf->writeHTML($htmlText, true, false, false, false, '');
+        //Close and output PDF document
+        $pdf->Output('example_048.pdf', 'I');
+    }
+
+    /**
+     * 
+     * @param string $GridName
+     * @param type $dataArray
+     * @return string
+     */
+    public function ConvertArrayToGrid($GridName, $dataArray) {
+        if ($GridName != "")
+            $GridName = "<p class='note'>" . $GridName . "</p>";
+
+        $output = $GridName . "        
+        <div style='width: 925px; height: auto; overflow: hidden; position: relative;font-size: 7px;'>
+                <table width='925px' align='center' border='0' cellspacing='0' cellpadding='4'>
+                    <thead>
+                        <tr>";
+        foreach ($dataArray as $key => $value) {
+            foreach ($value as $key1 => $value1) {
+                $output .= "<th align='center'>" . $key1 . "</th>";
+                //echo '<a href="' . $value . '">' . $key . '</a>';
+            }
+            break;
+        }
+
+        $output .= "</tr> 
+                    </thead>
+                    <tbody>";
+
+        $ii = 0;
+        foreach ($dataArray as $key => $value) {
+            $output .= "<tr>";
+            foreach ($value as $key1 => $value1) {
+                $output .= "<td align='center'><div style='font-size: 7px;'><span title='" . $value1 . "'>" . $value1 . "</div></td>";
+            }
+            $output .= "</tr>";
+            $ii++;
+        }
+
+        $output .= "</tbody>
+                </table></div>";
+
+        return $output;
+    }
+
+    /**
+     * 
+     */
+    private function showRecruitmentSummaryReport() {
+        //post back values
+        $rptTitle = "Recruitment Summary Report";
+        $selClientName = "";
+        $selClientID = "";
+        $startDate = "";
+        $endDate = "";
+        $selReportColumns = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+
+        $rptColumns = $statistics->getReportColumns();
+        $cNames = $statistics->getAllCompanies();
+
+        if (isset($_POST['clientName'])) {
+            $selReportColumns = $_POST['reportColumns'];
+            $selClientID = $_POST['clientName'];
+            $startDate = $_POST['startDate'];
+            $endDate = $_POST['endDate'];
+
+            //get selected client name
+            foreach ($cNames as $cName) {
+                if ($cName['company_id'] == $selClientID) {
+                    $selClientName = $cName['name'];
+                    break;
+                }
+            }
+
+            $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+            $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+            $rptTitle = sprintf("%s - Recruitment Summary Report from %s to %s", $selClientName, $startDate, $endDate);
+            $gridData = $statistics->getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate1, $endDate1);
+            $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
+
+            if ($_POST["pdf"] == "1") {
+                $this->generatePDF($dataGrid);
+            }
+        }
+
+        //set postback values to preserve state 
+        $this->_template->assign('dataGrid', $dataGrid);
+        $this->_template->assign('selClientName', $selClientID);
+        $this->_template->assign('selReportColumns', $selReportColumns);
+        $this->_template->assign('startDate', $startDate);
+        $this->_template->assign('endDate', $endDate);
+        $this->_template->assign('cNames', $cNames);
+        $this->_template->assign('rptColumns', $rptColumns);
+
+        $this->_template->display('./modules/reports/RecruitmentSummaryReport.tpl');
+    }
+
+    private function reports() {
         /* Grab an instance of Statistics. */
         $statistics = new Statistics($this->_siteID);
 
         /* Get company statistics. */
-        $statisticsData['totalCompanies']     = $statistics->getCompanyCount(TIME_PERIOD_TODATE);
-        $statisticsData['companiesToday']     = $statistics->getCompanyCount(TIME_PERIOD_TODAY);
+        $statisticsData['totalCompanies'] = $statistics->getCompanyCount(TIME_PERIOD_TODATE);
+        $statisticsData['companiesToday'] = $statistics->getCompanyCount(TIME_PERIOD_TODAY);
         $statisticsData['companiesYesterday'] = $statistics->getCompanyCount(TIME_PERIOD_YESTERDAY);
-        $statisticsData['companiesThisWeek']  = $statistics->getCompanyCount(TIME_PERIOD_THISWEEK);
-        $statisticsData['companiesLastWeek']  = $statistics->getCompanyCount(TIME_PERIOD_LASTWEEK);
+        $statisticsData['companiesThisWeek'] = $statistics->getCompanyCount(TIME_PERIOD_THISWEEK);
+        $statisticsData['companiesLastWeek'] = $statistics->getCompanyCount(TIME_PERIOD_LASTWEEK);
         $statisticsData['companiesThisMonth'] = $statistics->getCompanyCount(TIME_PERIOD_THISMONTH);
         $statisticsData['companiesLastMonth'] = $statistics->getCompanyCount(TIME_PERIOD_LASTMONTH);
-        $statisticsData['companiesThisYear']  = $statistics->getCompanyCount(TIME_PERIOD_THISYEAR);
-        $statisticsData['companiesLastYear']  = $statistics->getCompanyCount(TIME_PERIOD_LASTYEAR);
+        $statisticsData['companiesThisYear'] = $statistics->getCompanyCount(TIME_PERIOD_THISYEAR);
+        $statisticsData['companiesLastYear'] = $statistics->getCompanyCount(TIME_PERIOD_LASTYEAR);
 
         /* Get candidate statistics. */
-        $statisticsData['totalCandidates']     = $statistics->getCandidateCount(TIME_PERIOD_TODATE);
-        $statisticsData['candidatesToday']     = $statistics->getCandidateCount(TIME_PERIOD_TODAY);
+        $statisticsData['totalCandidates'] = $statistics->getCandidateCount(TIME_PERIOD_TODATE);
+        $statisticsData['candidatesToday'] = $statistics->getCandidateCount(TIME_PERIOD_TODAY);
         $statisticsData['candidatesYesterday'] = $statistics->getCandidateCount(TIME_PERIOD_YESTERDAY);
-        $statisticsData['candidatesThisWeek']  = $statistics->getCandidateCount(TIME_PERIOD_THISWEEK);
-        $statisticsData['candidatesLastWeek']  = $statistics->getCandidateCount(TIME_PERIOD_LASTWEEK);
+        $statisticsData['candidatesThisWeek'] = $statistics->getCandidateCount(TIME_PERIOD_THISWEEK);
+        $statisticsData['candidatesLastWeek'] = $statistics->getCandidateCount(TIME_PERIOD_LASTWEEK);
         $statisticsData['candidatesThisMonth'] = $statistics->getCandidateCount(TIME_PERIOD_THISMONTH);
         $statisticsData['candidatesLastMonth'] = $statistics->getCandidateCount(TIME_PERIOD_LASTMONTH);
-        $statisticsData['candidatesThisYear']  = $statistics->getCandidateCount(TIME_PERIOD_THISYEAR);
-        $statisticsData['candidatesLastYear']  = $statistics->getCandidateCount(TIME_PERIOD_LASTYEAR);
+        $statisticsData['candidatesThisYear'] = $statistics->getCandidateCount(TIME_PERIOD_THISYEAR);
+        $statisticsData['candidatesLastYear'] = $statistics->getCandidateCount(TIME_PERIOD_LASTYEAR);
 
         /* Get submission statistics. */
-        $statisticsData['totalSubmissions']     = $statistics->getSubmissionCount(TIME_PERIOD_TODATE);
-        $statisticsData['submissionsToday']     = $statistics->getSubmissionCount(TIME_PERIOD_TODAY);
+        $statisticsData['totalSubmissions'] = $statistics->getSubmissionCount(TIME_PERIOD_TODATE);
+        $statisticsData['submissionsToday'] = $statistics->getSubmissionCount(TIME_PERIOD_TODAY);
         $statisticsData['submissionsYesterday'] = $statistics->getSubmissionCount(TIME_PERIOD_YESTERDAY);
-        $statisticsData['submissionsThisWeek']  = $statistics->getSubmissionCount(TIME_PERIOD_THISWEEK);
-        $statisticsData['submissionsLastWeek']  = $statistics->getSubmissionCount(TIME_PERIOD_LASTWEEK);
+        $statisticsData['submissionsThisWeek'] = $statistics->getSubmissionCount(TIME_PERIOD_THISWEEK);
+        $statisticsData['submissionsLastWeek'] = $statistics->getSubmissionCount(TIME_PERIOD_LASTWEEK);
         $statisticsData['submissionsThisMonth'] = $statistics->getSubmissionCount(TIME_PERIOD_THISMONTH);
         $statisticsData['submissionsLastMonth'] = $statistics->getSubmissionCount(TIME_PERIOD_LASTMONTH);
-        $statisticsData['submissionsThisYear']  = $statistics->getSubmissionCount(TIME_PERIOD_THISYEAR);
-        $statisticsData['submissionsLastYear']  = $statistics->getSubmissionCount(TIME_PERIOD_LASTYEAR);
+        $statisticsData['submissionsThisYear'] = $statistics->getSubmissionCount(TIME_PERIOD_THISYEAR);
+        $statisticsData['submissionsLastYear'] = $statistics->getSubmissionCount(TIME_PERIOD_LASTYEAR);
 
-		/* Get placement statistics. */
-        $statisticsData['totalPlacements']     = $statistics->getPlacementCount(TIME_PERIOD_TODATE);
-        $statisticsData['placementsToday']     = $statistics->getPlacementCount(TIME_PERIOD_TODAY);
+        /* Get placement statistics. */
+        $statisticsData['totalPlacements'] = $statistics->getPlacementCount(TIME_PERIOD_TODATE);
+        $statisticsData['placementsToday'] = $statistics->getPlacementCount(TIME_PERIOD_TODAY);
         $statisticsData['placementsYesterday'] = $statistics->getPlacementCount(TIME_PERIOD_YESTERDAY);
-        $statisticsData['placementsThisWeek']  = $statistics->getPlacementCount(TIME_PERIOD_THISWEEK);
-        $statisticsData['placementsLastWeek']  = $statistics->getPlacementCount(TIME_PERIOD_LASTWEEK);
+        $statisticsData['placementsThisWeek'] = $statistics->getPlacementCount(TIME_PERIOD_THISWEEK);
+        $statisticsData['placementsLastWeek'] = $statistics->getPlacementCount(TIME_PERIOD_LASTWEEK);
         $statisticsData['placementsThisMonth'] = $statistics->getPlacementCount(TIME_PERIOD_THISMONTH);
         $statisticsData['placementsLastMonth'] = $statistics->getPlacementCount(TIME_PERIOD_LASTMONTH);
-        $statisticsData['placementsThisYear']  = $statistics->getPlacementCount(TIME_PERIOD_THISYEAR);
-        $statisticsData['placementsLastYear']  = $statistics->getPlacementCount(TIME_PERIOD_LASTYEAR);
+        $statisticsData['placementsThisYear'] = $statistics->getPlacementCount(TIME_PERIOD_THISYEAR);
+        $statisticsData['placementsLastYear'] = $statistics->getPlacementCount(TIME_PERIOD_LASTYEAR);
 
         /* Get contact statistics. */
-        $statisticsData['totalContacts']     = $statistics->getContactCount(TIME_PERIOD_TODATE);
-        $statisticsData['contactsToday']     = $statistics->getContactCount(TIME_PERIOD_TODAY);
+        $statisticsData['totalContacts'] = $statistics->getContactCount(TIME_PERIOD_TODATE);
+        $statisticsData['contactsToday'] = $statistics->getContactCount(TIME_PERIOD_TODAY);
         $statisticsData['contactsYesterday'] = $statistics->getContactCount(TIME_PERIOD_YESTERDAY);
-        $statisticsData['contactsThisWeek']  = $statistics->getContactCount(TIME_PERIOD_THISWEEK);
-        $statisticsData['contactsLastWeek']  = $statistics->getContactCount(TIME_PERIOD_LASTWEEK);
+        $statisticsData['contactsThisWeek'] = $statistics->getContactCount(TIME_PERIOD_THISWEEK);
+        $statisticsData['contactsLastWeek'] = $statistics->getContactCount(TIME_PERIOD_LASTWEEK);
         $statisticsData['contactsThisMonth'] = $statistics->getContactCount(TIME_PERIOD_THISMONTH);
         $statisticsData['contactsLastMonth'] = $statistics->getContactCount(TIME_PERIOD_LASTMONTH);
-        $statisticsData['contactsThisYear']  = $statistics->getContactCount(TIME_PERIOD_THISYEAR);
-        $statisticsData['contactsLastYear']  = $statistics->getContactCount(TIME_PERIOD_LASTYEAR);
+        $statisticsData['contactsThisYear'] = $statistics->getContactCount(TIME_PERIOD_THISYEAR);
+        $statisticsData['contactsLastYear'] = $statistics->getContactCount(TIME_PERIOD_LASTYEAR);
 
         /* Get job order statistics. */
-        $statisticsData['totalJobOrders']     = $statistics->getJobOrderCount(TIME_PERIOD_TODATE);
-        $statisticsData['jobOrdersToday']     = $statistics->getJobOrderCount(TIME_PERIOD_TODAY);
+        $statisticsData['totalJobOrders'] = $statistics->getJobOrderCount(TIME_PERIOD_TODATE);
+        $statisticsData['jobOrdersToday'] = $statistics->getJobOrderCount(TIME_PERIOD_TODAY);
         $statisticsData['jobOrdersYesterday'] = $statistics->getJobOrderCount(TIME_PERIOD_YESTERDAY);
-        $statisticsData['jobOrdersThisWeek']  = $statistics->getJobOrderCount(TIME_PERIOD_THISWEEK);
-        $statisticsData['jobOrdersLastWeek']  = $statistics->getJobOrderCount(TIME_PERIOD_LASTWEEK);
+        $statisticsData['jobOrdersThisWeek'] = $statistics->getJobOrderCount(TIME_PERIOD_THISWEEK);
+        $statisticsData['jobOrdersLastWeek'] = $statistics->getJobOrderCount(TIME_PERIOD_LASTWEEK);
         $statisticsData['jobOrdersThisMonth'] = $statistics->getJobOrderCount(TIME_PERIOD_THISMONTH);
         $statisticsData['jobOrdersLastMonth'] = $statistics->getJobOrderCount(TIME_PERIOD_LASTMONTH);
-        $statisticsData['jobOrdersThisYear']  = $statistics->getJobOrderCount(TIME_PERIOD_THISYEAR);
-        $statisticsData['jobOrdersLastYear']  = $statistics->getJobOrderCount(TIME_PERIOD_LASTYEAR);
+        $statisticsData['jobOrdersThisYear'] = $statistics->getJobOrderCount(TIME_PERIOD_THISYEAR);
+        $statisticsData['jobOrdersLastYear'] = $statistics->getJobOrderCount(TIME_PERIOD_LASTYEAR);
 
-        if (!eval(Hooks::get('REPORTS_SHOW'))) return;
+        if (!eval(Hooks::get('REPORTS_SHOW')))
+            return;
 
         $this->_template->assign('active', $this);
         $this->_template->assign('statisticsData', $statisticsData);
         $this->_template->display('./modules/reports/Reports.tpl');
     }
 
-    private function graphView()
-    {
-        if (isset($_GET['theImage']))
-        {
+    private function graphView() {
+        if (isset($_GET['theImage'])) {
             $this->_template->assign('theImage', $_GET['theImage']);
-        }
-        else
-        {
+        } else {
             $this->_template->assign('theImage', '');
         }
 
-        if (!eval(Hooks::get('REPORTS_GRAPH'))) return;
+        if (!eval(Hooks::get('REPORTS_GRAPH')))
+            return;
 
         $this->_template->assign('active', $this);
         $this->_template->display('./modules/reports/GraphView.tpl');
     }
 
-    private function showSubmissionReport()
-    {
+    private function showSubmissionReport() {
         //FIXME: getTrimmedInput
-        if (isset($_GET['period']) && !empty($_GET['period']))
-        {
+        if (isset($_GET['period']) && !empty($_GET['period'])) {
             $period = $_GET['period'];
-        }
-        else
-        {
+        } else {
             $period = '';
         }
 
 
-        switch ($period)
-        {
+        switch ($period) {
             case 'yesterday':
                 $period = TIME_PERIOD_YESTERDAY;
                 $reportTitle = 'Yesterday\'s Report';
@@ -250,36 +416,31 @@ class ReportsUI extends UserInterface
         $statistics = new Statistics($this->_siteID);
         $submissionJobOrdersRS = $statistics->getSubmissionJobOrders($period);
 
-        foreach ($submissionJobOrdersRS as $rowIndex => $submissionJobOrdersData)
-        {
+        foreach ($submissionJobOrdersRS as $rowIndex => $submissionJobOrdersData) {
             /* Querys inside loops are bad, but I don't think there is any avoiding this. */
             $submissionJobOrdersRS[$rowIndex]['submissionsRS'] = $statistics->getSubmissionsByJobOrder(
-                $period, $submissionJobOrdersData['jobOrderID'], $this->_siteID
+                    $period, $submissionJobOrdersData['jobOrderID'], $this->_siteID
             );
         }
 
-        if (!eval(Hooks::get('REPORTS_SHOW_SUBMISSION'))) return;
+        if (!eval(Hooks::get('REPORTS_SHOW_SUBMISSION')))
+            return;
 
         $this->_template->assign('reportTitle', $reportTitle);
         $this->_template->assign('submissionJobOrdersRS', $submissionJobOrdersRS);
         $this->_template->display('./modules/reports/SubmissionReport.tpl');
     }
 
-    private function showPlacementReport()
-    {
+    private function showPlacementReport() {
         //FIXME: getTrimmedInput
-        if (isset($_GET['period']) && !empty($_GET['period']))
-        {
+        if (isset($_GET['period']) && !empty($_GET['period'])) {
             $period = $_GET['period'];
-        }
-        else
-        {
+        } else {
             $period = '';
         }
 
 
-        switch ($period)
-        {
+        switch ($period) {
             case 'yesterday':
                 $period = TIME_PERIOD_YESTERDAY;
                 $reportTitle = 'Yesterday\'s Report';
@@ -330,26 +491,24 @@ class ReportsUI extends UserInterface
         $statistics = new Statistics($this->_siteID);
         $placementsJobOrdersRS = $statistics->getPlacementsJobOrders($period);
 
-        foreach ($placementsJobOrdersRS as $rowIndex => $placementsJobOrdersData)
-        {
+        foreach ($placementsJobOrdersRS as $rowIndex => $placementsJobOrdersData) {
             /* Querys inside loops are bad, but I don't think there is any avoiding this. */
             $placementsJobOrdersRS[$rowIndex]['placementsRS'] = $statistics->getPlacementsByJobOrder(
-                $period, $placementsJobOrdersData['jobOrderID'], $this->_siteID
+                    $period, $placementsJobOrdersData['jobOrderID'], $this->_siteID
             );
         }
 
-        if (!eval(Hooks::get('REPORTS_SHOW_SUBMISSION'))) return;
+        if (!eval(Hooks::get('REPORTS_SHOW_SUBMISSION')))
+            return;
 
         $this->_template->assign('reportTitle', $reportTitle);
         $this->_template->assign('placementsJobOrdersRS', $placementsJobOrdersRS);
         $this->_template->display('./modules/reports/PlacedReport.tpl');
     }
 
-    private function customizeJobOrderReport()
-    {
+    private function customizeJobOrderReport() {
         /* Bail out if we don't have a valid candidate ID. */
-        if (!$this->isRequiredIDValid('jobOrderID', $_GET))
-        {
+        if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid job order ID.');
         }
 
@@ -362,8 +521,7 @@ class ReportsUI extends UserInterface
         $data = $statistics->getJobOrderReport($jobOrderID);
 
         /* Bail out if we got an empty result set. */
-        if (empty($data))
-        {
+        if (empty($data)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'The specified job order ID could not be found.');
         }
 
@@ -374,9 +532,7 @@ class ReportsUI extends UserInterface
         $reportParameters['recruiter'] = $data['recruiterFullName'];
 
         $reportParameters['periodLine'] = sprintf(
-            '%s - %s',
-            strtok($data['dateCreated'], ' '),
-            DateUtility::getAdjustedDate('m-d-y')
+                '%s - %s', strtok($data['dateCreated'], ' '), DateUtility::getAdjustedDate('m-d-y')
         );
 
         $reportParameters['dataSet1'] = $data['pipeline'];
@@ -397,8 +553,7 @@ class ReportsUI extends UserInterface
         $this->_template->display('./modules/reports/JobOrderReport.tpl');
     }
 
-    private function customizeEEOReport()
-    {
+    private function customizeEEOReport() {
         $this->_template->assign('modePeriod', 'all');
         $this->_template->assign('modeStatus', 'all');
         $this->_template->assign('active', $this);
@@ -406,8 +561,7 @@ class ReportsUI extends UserInterface
         $this->_template->display('./modules/reports/EEOReport.tpl');
     }
 
-    private function generateJobOrderReportPDF()
-    {
+    private function generateJobOrderReportPDF() {
         /* E_STRICT doesn't like FPDF. */
         $errorReporting = error_reporting();
         error_reporting($errorReporting & ~ E_STRICT);
@@ -419,21 +573,18 @@ class ReportsUI extends UserInterface
 
         $unixName = $_SESSION['CATS']->getUnixName();
 
-        $siteName       = $this->getTrimmedInput('siteName', $_GET);
-        $companyName    = $this->getTrimmedInput('companyName', $_GET);
-        $jobOrderName   = $this->getTrimmedInput('jobOrderName', $_GET);
-        $periodLine     = $this->getTrimmedInput('periodLine', $_GET);
+        $siteName = $this->getTrimmedInput('siteName', $_GET);
+        $companyName = $this->getTrimmedInput('companyName', $_GET);
+        $jobOrderName = $this->getTrimmedInput('jobOrderName', $_GET);
+        $periodLine = $this->getTrimmedInput('periodLine', $_GET);
         $accountManager = $this->getTrimmedInput('accountManager', $_GET);
-        $recruiter      = $this->getTrimmedInput('recruiter', $_GET);
-        $notes          = $this->getTrimmedInput('notes', $_GET);
+        $recruiter = $this->getTrimmedInput('recruiter', $_GET);
+        $notes = $this->getTrimmedInput('notes', $_GET);
 
-        if (isset($_GET['dataSet']))
-        {
+        if (isset($_GET['dataSet'])) {
             $dataSet = $_GET['dataSet'];
             $dataSet = explode(',', $dataSet);
-        }
-        else
-        {
+        } else {
             $dataSet = array(4, 3, 2, 1);
         }
 
@@ -445,14 +596,14 @@ class ReportsUI extends UserInterface
         $pdf = new FPDF();
         $pdf->AddPage();
 
-        if (!eval(Hooks::get('REPORTS_CUSTOMIZE_JO_REPORT_PRE'))) return;
+        if (!eval(Hooks::get('REPORTS_CUSTOMIZE_JO_REPORT_PRE')))
+            return;
 
-        if ($isASP && $unixName == 'cognizo')
-        {
+        if ($isASP && $unixName == 'cognizo') {
             /* TODO: MAKE THIS CUSTOMIZABLE FOR EVERYONE. */
             $pdf->SetFont($fontFace, 'B', 10);
             $pdf->Image('images/cognizo-logo.jpg', 130, 10, 59, 20);
-            $pdf->SetXY(129,27);
+            $pdf->SetXY(129, 27);
             $pdf->Write(5, 'Information Technology Consulting');
         }
 
@@ -466,7 +617,7 @@ class ReportsUI extends UserInterface
 
         $pdf->SetFont($fontFace, 'B', 10);
         $pdf->SetX(25);
-        $pdf->Write(5, 'Company: '. $companyName . "\n");
+        $pdf->Write(5, 'Company: ' . $companyName . "\n");
 
         $pdf->SetFont($fontFace, '', 10);
         $pdf->SetX(25);
@@ -492,14 +643,14 @@ class ReportsUI extends UserInterface
         // FIXME: "could not make seekable" - http://demo.catsone.net/index.php?m=graphs&a=jobOrderReportGraph&data=%2C%2C%2C
         //        in /usr/local/www/catsone.net/data/lib/fpdf/fpdf.php on line 1500
         $URI = CATSUtility::getAbsoluteURI(
-            CATSUtility::getIndexName()
-            . '?m=graphs&a=jobOrderReportGraph&data='
-            . urlencode(implode(',', $dataSet))
+                        CATSUtility::getIndexName()
+                        . '?m=graphs&a=jobOrderReportGraph&data='
+                        . urlencode(implode(',', $dataSet))
         );
 
         $pdf->Image($URI, 70, 95, 80, 80, 'jpg');
 
-        $pdf->SetXY(25,180);
+        $pdf->SetXY(25, 180);
         $pdf->SetFont($fontFace, '', 10);
         $pdf->Write(5, 'Total Candidates ');
         $pdf->SetTextColor(255, 0, 0);
@@ -531,8 +682,7 @@ class ReportsUI extends UserInterface
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Write(5, ' at ' . $companyName . ": \n\n\n");
 
-        if ($notes != '')
-        {
+        if ($notes != '') {
             $pdf->SetX(25);
             $pdf->SetFont($fontFace, '', 10);
             $pdf->Write(5, "Notes:\n");
@@ -558,14 +708,14 @@ class ReportsUI extends UserInterface
 
         $pdf->Rect(3, 6, 204, 285);
 
-        if (!eval(Hooks::get('REPORTS_CUSTOMIZE_JO_REPORT_POST'))) return;
+        if (!eval(Hooks::get('REPORTS_CUSTOMIZE_JO_REPORT_POST')))
+            return;
 
         $pdf->Output();
         die();
     }
 
-    function generateEEOReportPreview()
-    {
+    function generateEEOReportPreview() {
         $modePeriod = $this->getTrimmedInput('period', $_GET);
         $modeStatus = $this->getTrimmedInput('status', $_GET);
 
@@ -574,8 +724,7 @@ class ReportsUI extends UserInterface
 
         //print_r($EEOReportStatistics);
 
-        switch ($modePeriod)
-        {
+        switch ($modePeriod) {
             case 'week':
                 $labelPeriod = ' Last Week';
                 break;
@@ -589,8 +738,7 @@ class ReportsUI extends UserInterface
                 break;
         }
 
-        switch ($modeStatus)
-        {
+        switch ($modeStatus) {
             case 'rejected':
                 $labelStatus = ' Rejected';
                 break;
@@ -610,21 +758,14 @@ class ReportsUI extends UserInterface
 
         $rsEthnicStatistics = $EEOReportStatistics['rsEthnicStatistics'];
 
-        foreach ($rsEthnicStatistics as $index => $line)
-        {
+        foreach ($rsEthnicStatistics as $index => $line) {
             $labels[] = $line['EEOEthnicType'];
             $data[] = $line['numberOfCandidates'];
         }
 
         $urlEthnicGraph = CATSUtility::getAbsoluteURI(
-            sprintf("%s?m=graphs&a=generic&title=%s&labels=%s&data=%s&width=%s&height=%s",
-                CATSUtility::getIndexName(),
-                urlencode('Number of Candidates'.$labelStatus.' by Ethnic Type'.$labelPeriod),
-                urlencode(implode(',', $labels)),
-                urlencode(implode(',', $data)),
-                400,
-                240
-            ));
+                        sprintf("%s?m=graphs&a=generic&title=%s&labels=%s&data=%s&width=%s&height=%s", CATSUtility::getIndexName(), urlencode('Number of Candidates' . $labelStatus . ' by Ethnic Type' . $labelPeriod), urlencode(implode(',', $labels)), urlencode(implode(',', $data)), 400, 240
+        ));
 
 
         /* Produce the URL to the veteran status statistics graph. */
@@ -633,21 +774,14 @@ class ReportsUI extends UserInterface
 
         $rsVeteranStatistics = $EEOReportStatistics['rsVeteranStatistics'];
 
-        foreach ($rsVeteranStatistics as $index => $line)
-        {
+        foreach ($rsVeteranStatistics as $index => $line) {
             $labels[] = $line['EEOVeteranType'];
             $data[] = $line['numberOfCandidates'];
         }
 
         $urlVeteranGraph = CATSUtility::getAbsoluteURI(
-            sprintf("%s?m=graphs&a=generic&title=%s&labels=%s&data=%s&width=%s&height=%s",
-                CATSUtility::getIndexName(),
-                urlencode('Number of Candidates'.$labelStatus.' by Veteran Status'.$labelPeriod),
-                urlencode(implode(',', $labels)),
-                urlencode(implode(',', $data)),
-                400,
-                240
-            ));
+                        sprintf("%s?m=graphs&a=generic&title=%s&labels=%s&data=%s&width=%s&height=%s", CATSUtility::getIndexName(), urlencode('Number of Candidates' . $labelStatus . ' by Veteran Status' . $labelPeriod), urlencode(implode(',', $labels)), urlencode(implode(',', $data)), 400, 240
+        ));
 
         /* Produce the URL to the gender statistics graph. */
         $labels = array();
@@ -655,25 +789,17 @@ class ReportsUI extends UserInterface
 
         $rsGenderStatistics = $EEOReportStatistics['rsGenderStatistics'];
 
-        $labels[] = 'Male ('.$rsGenderStatistics['numberOfCandidatesMale'].')';
+        $labels[] = 'Male (' . $rsGenderStatistics['numberOfCandidatesMale'] . ')';
         $data[] = $rsGenderStatistics['numberOfCandidatesMale'];
 
-        $labels[] = 'Female ('.$rsGenderStatistics['numberOfCandidatesFemale'].')';
+        $labels[] = 'Female (' . $rsGenderStatistics['numberOfCandidatesFemale'] . ')';
         $data[] = $rsGenderStatistics['numberOfCandidatesFemale'];
 
         $urlGenderGraph = CATSUtility::getAbsoluteURI(
-            sprintf("%s?m=graphs&a=genericPie&title=%s&labels=%s&data=%s&width=%s&height=%s&legendOffset=%s",
-                CATSUtility::getIndexName(),
-                urlencode('Number of Candidates by Gender'),
-                urlencode(implode(',', $labels)),
-                urlencode(implode(',', $data)),
-                320,
-                300,
-                1.575
-            ));
+                        sprintf("%s?m=graphs&a=genericPie&title=%s&labels=%s&data=%s&width=%s&height=%s&legendOffset=%s", CATSUtility::getIndexName(), urlencode('Number of Candidates by Gender'), urlencode(implode(',', $labels)), urlencode(implode(',', $data)), 320, 300, 1.575
+        ));
 
-        if ($rsGenderStatistics['numberOfCandidatesMale'] == 0 && $rsGenderStatistics['numberOfCandidatesFemale'] == 0)
-        {
+        if ($rsGenderStatistics['numberOfCandidatesMale'] == 0 && $rsGenderStatistics['numberOfCandidatesFemale'] == 0) {
             $urlGenderGraph = "images/noDataByGender.png";
         }
 
@@ -683,25 +809,17 @@ class ReportsUI extends UserInterface
 
         $rsDisabledStatistics = $EEOReportStatistics['rsDisabledStatistics'];
 
-        $labels[] = 'Disabled ('.$rsDisabledStatistics['numberOfCandidatesDisabled'].')';
+        $labels[] = 'Disabled (' . $rsDisabledStatistics['numberOfCandidatesDisabled'] . ')';
         $data[] = $rsDisabledStatistics['numberOfCandidatesDisabled'];
 
-        $labels[] = 'Non Disabled ('.$rsDisabledStatistics['numberOfCandidatesNonDisabled'].')';
+        $labels[] = 'Non Disabled (' . $rsDisabledStatistics['numberOfCandidatesNonDisabled'] . ')';
         $data[] = $rsDisabledStatistics['numberOfCandidatesNonDisabled'];
 
         $urlDisabilityGraph = CATSUtility::getAbsoluteURI(
-            sprintf("%s?m=graphs&a=genericPie&title=%s&labels=%s&data=%s&width=%s&height=%s&legendOffset=%s",
-                CATSUtility::getIndexName(),
-                urlencode('Number of Candidates by Disability Status'),
-                urlencode(implode(',', $labels)),
-                urlencode(implode(',', $data)),
-                320,
-                300,
-                1.575
-            ));
+                        sprintf("%s?m=graphs&a=genericPie&title=%s&labels=%s&data=%s&width=%s&height=%s&legendOffset=%s", CATSUtility::getIndexName(), urlencode('Number of Candidates by Disability Status'), urlencode(implode(',', $labels)), urlencode(implode(',', $data)), 320, 300, 1.575
+        ));
 
-        if ($rsDisabledStatistics['numberOfCandidatesNonDisabled'] == 0 && $rsDisabledStatistics['numberOfCandidatesDisabled'] == 0)
-        {
+        if ($rsDisabledStatistics['numberOfCandidatesNonDisabled'] == 0 && $rsDisabledStatistics['numberOfCandidatesDisabled'] == 0) {
             $urlDisabilityGraph = "images/noDataByDisability.png";
         }
 
@@ -720,6 +838,7 @@ class ReportsUI extends UserInterface
         $this->_template->assign('subActive', '');
         $this->_template->display('./modules/reports/EEOReport.tpl');
     }
+
 }
 
 ?>
