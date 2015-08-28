@@ -105,8 +105,12 @@ class ReportsUI extends UserInterface {
                 $this->showRecruiterSummaryReportPDF();
                 break;
 
-            case 'RecruitmentTracker':
-                //$this->generateEEOReportPreview();
+            case 'RecruitmentTrackerReport':
+                $this->showRecruiterTrackerReport();
+                break;
+
+            case 'RecruitmentTrackerReportPDF':
+                $this->showRecruiterTrackerReportPDF();
                 break;
 
             case 'reports':
@@ -458,6 +462,94 @@ class ReportsUI extends UserInterface {
 
         $rptTitle = sprintf("%s - Recruiter (%s) Summary Report from %s to %s", $selClientName, $selRecruiterName, $startDate, $endDate);
         $gridData = $statistics->getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+        $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
+
+        $this->generatePDF($rptTitle, $dataGrid);
+    }
+
+    /**
+     * 
+     */
+    private function showRecruiterTrackerReport() {
+        //post back values
+        $strSelReportColumns = "";
+        $startDate = "";
+        $endDate = "";
+        $selReportColumns = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+        $selRecruiterName = "";
+        $selRecruiterID = "";
+
+        $rptColumns = $statistics->getReportColumns();
+        $recruiterNames = $statistics->getAllRecruiters();
+
+        if (isset($_POST['recruiterName'])) {
+            $selReportColumns = $_POST['reportColumns'];
+            $strSelReportColumns = implode(",", $selReportColumns);
+            $selRecruiterID = $_POST['recruiterName'];
+            $startDate = $_POST['startDate'];
+            $endDate = $_POST['endDate'];
+
+            //get selected recruiter name
+            foreach ($recruiterNames as $cName) {
+                if ($cName['id'] == $selRecruiterID) {
+                    $selRecruiterName = $cName['name'];
+                    break;
+                }
+            }
+
+            $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+            $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+            $rptTitle = sprintf("Recruiter (%s) Tracker Report from %s to %s", $selRecruiterName, $startDate, $endDate);
+            $gridData = $statistics->getRecruitmentSummaryReport(2, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+            $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
+        }
+
+        //set postback values to preserve state 
+        $this->_template->assign('dataGrid', $dataGrid);
+        $this->_template->assign('selReportColumns', $selReportColumns);
+        $this->_template->assign('strSelReportColumns', $strSelReportColumns);
+        $this->_template->assign('startDate', $startDate);
+        $this->_template->assign('endDate', $endDate);
+        $this->_template->assign('selRecruiterName', $selRecruiterID);
+        $this->_template->assign('recruiterNames', $recruiterNames);
+        $this->_template->assign('rptColumns', $rptColumns);
+
+        $this->_template->display('./modules/reports/RecruitmentTrackerReport.tpl');
+    }
+
+    /**
+     * 
+     */
+    private function showRecruiterTrackerReportPDF() {
+        $selRecruiterID = isset($_GET[$id = 'recruiterid']) ? $_GET[$id] : false;
+        $startDate = isset($_GET[$id = 'startdate']) ? $_GET[$id] : false;
+        $endDate = isset($_GET[$id = 'enddate']) ? $_GET[$id] : false;
+        $strSelReportColumns = isset($_GET[$id = 'reportcolumns']) ? $_GET[$id] : false;
+        $selReportColumns = explode(",", $strSelReportColumns);
+
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+        $selRecruiterName = "";
+
+        $rptColumns = $statistics->getReportColumns();
+        $recruiterNames = $statistics->getAllRecruiters();
+
+        //get selected recruiter name
+        foreach ($recruiterNames as $cName) {
+            if ($cName['id'] == $selRecruiterID) {
+                $selRecruiterName = $cName['name'];
+                break;
+            }
+        }
+
+        $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+        $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+        $rptTitle = sprintf("Recruiter (%s) Summary Report from %s to %s", $selRecruiterName, $startDate, $endDate);
+        $gridData = $statistics->getRecruitmentSummaryReport(2, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
         $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
 
         $this->generatePDF($rptTitle, $dataGrid);

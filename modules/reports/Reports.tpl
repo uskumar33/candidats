@@ -39,7 +39,7 @@
                         </tr>
                         <tr class="oddTableRow">
                             <td align="left">
-                                <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruitmentTracker" target="_blank">Recruitment Tracker</a>
+                                <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruitmentTrackerReport" target="_blank">Recruitment Tracker</a>
                             </td>
                             <td align="right">&nbsp;&nbsp;</td>
                         </tr>
