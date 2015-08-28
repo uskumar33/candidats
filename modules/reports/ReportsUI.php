@@ -37,6 +37,9 @@ include_once('./lib/tcpdf/config/tcpdf_config.php');
 
 class ReportsUI extends UserInterface {
 
+    /**
+     * 
+     */
     public function __construct() {
         parent::__construct();
 
@@ -49,6 +52,10 @@ class ReportsUI extends UserInterface {
         );
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function handleRequest() {
         if (!eval(Hooks::get('REPORTS_HANDLE_REQUEST')))
             return;
@@ -117,6 +124,11 @@ class ReportsUI extends UserInterface {
         //$clientName = $_POST['clientName'];
     }
 
+    /**
+     * 
+     * @param type $rptTitle
+     * @param type $htmlText
+     */
     private function generatePDF($rptTitle, $htmlText) {
         // create new PDF document
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -211,6 +223,11 @@ class ReportsUI extends UserInterface {
         return $output;
     }
 
+    /**
+     * 
+     * @param type $dataArray
+     * @return type
+     */
     public function ConvertArrayToHTMLTable($dataArray) {
         $output = "        
                 <table align='center' border='1' cellspacing='0' cellpadding='4'><thead><tr>";
@@ -292,6 +309,9 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/RecruitmentSummaryReport.tpl');
     }
 
+    /**
+     * 
+     */
     private function showRecruitmentSummaryReportPDF() {
         //post back values
         $selClientID = isset($_GET[$id = 'client']) ? $_GET[$id] : false;
@@ -325,6 +345,9 @@ class ReportsUI extends UserInterface {
         $this->generatePDF($rptTitle, $dataGrid);
     }
 
+    /**
+     * 
+     */
     private function showRecruiterSummaryReport() {
         //post back values
         $strSelReportColumns = "";
@@ -393,6 +416,9 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/RecruiterSummaryReport.tpl');
     }
 
+    /**
+     * 
+     */
     private function showRecruiterSummaryReportPDF() {
         $selRecruiterID = isset($_GET[$id = 'recruiterid']) ? $_GET[$id] : false;
         $selClientID = isset($_GET[$id = 'client']) ? $_GET[$id] : false;
@@ -437,6 +463,10 @@ class ReportsUI extends UserInterface {
         $this->generatePDF($rptTitle, $dataGrid);
     }
 
+    /**
+     * 
+     * @return type
+     */
     private function reports() {
         /* Grab an instance of Statistics. */
         $statistics = new Statistics($this->_siteID);
@@ -515,6 +545,10 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/Reports.tpl');
     }
 
+    /**
+     * 
+     * @return type
+     */
     private function graphView() {
         if (isset($_GET['theImage'])) {
             $this->_template->assign('theImage', $_GET['theImage']);
@@ -529,6 +563,10 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/GraphView.tpl');
     }
 
+    /**
+     * 
+     * @return type
+     */
     private function showSubmissionReport() {
         //FIXME: getTrimmedInput
         if (isset($_GET['period']) && !empty($_GET['period'])) {
@@ -604,6 +642,10 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/SubmissionReport.tpl');
     }
 
+    /**
+     * 
+     * @return type
+     */
     private function showPlacementReport() {
         //FIXME: getTrimmedInput
         if (isset($_GET['period']) && !empty($_GET['period'])) {
@@ -679,6 +721,9 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/PlacedReport.tpl');
     }
 
+    /**
+     * 
+     */
     private function customizeJobOrderReport() {
         /* Bail out if we don't have a valid candidate ID. */
         if (!$this->isRequiredIDValid('jobOrderID', $_GET)) {
@@ -726,6 +771,9 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/JobOrderReport.tpl');
     }
 
+    /**
+     * 
+     */
     private function customizeEEOReport() {
         $this->_template->assign('modePeriod', 'all');
         $this->_template->assign('modeStatus', 'all');
@@ -734,6 +782,10 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/EEOReport.tpl');
     }
 
+    /**
+     * 
+     * @return type
+     */
     private function generateJobOrderReportPDF() {
         /* E_STRICT doesn't like FPDF. */
         $errorReporting = error_reporting();
@@ -888,6 +940,9 @@ class ReportsUI extends UserInterface {
         die();
     }
 
+    /**
+     * 
+     */
     function generateEEOReportPreview() {
         $modePeriod = $this->getTrimmedInput('period', $_GET);
         $modeStatus = $this->getTrimmedInput('status', $_GET);

@@ -97,6 +97,10 @@ class Statistics {
         return $rs;
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function getAllRecruiters() {
         $sql = "select user_id id, user_name name from user where user_id in (select distinct last_modified_by from candidate_joborder) order by user_name";
         $rs = $this->_db->getAllAssoc($sql);
