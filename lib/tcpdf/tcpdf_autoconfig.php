@@ -132,6 +132,10 @@ if (!defined('PDF_PAGE_FORMAT')) {
 	define ('PDF_PAGE_FORMAT', 'A4');
 }
 
+if (!defined('PDF_PAGE_FORMAT_A3')) {
+	define ('PDF_PAGE_FORMAT_A3', 'A3');
+}
+
 if (!defined('PDF_PAGE_ORIENTATION')) {
 	define ('PDF_PAGE_ORIENTATION', 'P');
 }

@@ -37,14 +37,7 @@
                             </td>
                             <td align="right">&nbsp;&nbsp;</td>
                         </tr>
-                         <tr class="oddTableRow">
-                            <td align="left">
-                                <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=ClientSummaryReport" target="_blank">Client Summary Report</a>
-                            </td>
-                            <td align="right">&nbsp;&nbsp;</td>
-                        </tr>
-
-                        <tr class="evenTableRow">
+                        <tr class="oddTableRow">
                             <td align="left">
                                 <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruitmentTracker" target="_blank">Recruitment Tracker</a>
                             </td>
@@ -71,11 +64,7 @@
                          <tr class="evenTableRow">
                             <td align="left">&nbsp;</td>
                             <td align="right">&nbsp;</td>
-                        </tr>
-                        <tr class="oddTableRow">
-                            <td align="left">&nbsp;</td>
-                            <td align="right">&nbsp;</td>
-                        </tr>
+                        </tr>                        
                     </table>
                 </td>
 
@@ -85,7 +74,6 @@
                             <th align="left">&nbsp;&nbsp;</th>
                             <th align="left">&nbsp;&nbsp;</th>
                         </tr>
-
                         <tr class="evenTableRow">
                             <td align="left">&nbsp;</td>
                             <td align="right">&nbsp;</td>
@@ -95,10 +83,6 @@
                             <td align="right">&nbsp;</td>
                         </tr>
                          <tr class="evenTableRow">
-                            <td align="left">&nbsp;</td>
-                            <td align="right">&nbsp;</td>
-                        </tr>
-                        <tr class="oddTableRow">
                             <td align="left">&nbsp;</td>
                             <td align="right">&nbsp;</td>
                         </tr>

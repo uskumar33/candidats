@@ -14,7 +14,7 @@
             </tr>
         </table>
 
-       
+
         <?php $URI = CATSUtility::getIndexName() . '?m=reports&amp;a=RecruitmentSummaryReport'; ?>
         <form name="RecruitmentSummaryReportForm" id="RecruitmentSummaryReportForm" action="<?php echo($URI); ?>" method="post" autocomplete="off" enctype="multipart/form-data">
             <table class="editTable" width="450">
@@ -74,9 +74,6 @@
                             <tr>
                                 <td>
                                     <input type="submit"  class="button" value="Generate Report" />&nbsp;&nbsp;&nbsp;
-                                    <!--
-                                    <input type="button"  class="button" value="Generate PDF" onclick="javascript:goToURL('<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruitmentSummaryReport&amp;pdf=1');" />
-                                    -->
                                 </td>   
                             </tr>
                         </table>
@@ -87,8 +84,11 @@
             <table>
                 <tr >                   
                     <td>
-                        <?php if (!empty($this->selClientName)){ ?>
+                        <?php if (!empty($this->selClientName)){ ?>                        
                         <?php echo $this->dataGrid; ?>
+                        <a target="_blank" href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruitmentSummaryReportPDF&reportcolumns=<?php echo($this->strSelReportColumns); ?>&amp;client=<?php echo($this->selClientName); ?>&amp;startdate=<?php echo($this->startDate); ?>&amp;enddate=<?php echo($this->endDate); ?>">
+                            <img src="images/resume_preview_inline.gif" width="16" height="16" class="absmiddle" alt="GeneratePDF" border="0" />&nbsp;Generate PDF
+                        </a>                        
                         <?php } else { echo "<h1>Choose report filters...!</h1>"; } ?>
                     </td>
                 </tr>

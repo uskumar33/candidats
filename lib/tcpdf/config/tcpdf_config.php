@@ -91,6 +91,9 @@ define ('K_BLANK_IMAGE', '_blank.png');
  */
 define ('PDF_PAGE_FORMAT', 'A4');
 
+define ('PDF_PAGE_FORMAT_A3', 'A3');
+
+
 /**
  * Page orientation (P=portrait, L=landscape).
  */
@@ -104,7 +107,7 @@ define ('PDF_CREATOR', 'TCPDF');
 /**
  * Document author.
  */
-define ('PDF_AUTHOR', 'TCPDF');
+define ('PDF_AUTHOR', 'Suresh, Udatha');
 
 /**
  * Header title.

@@ -32,6 +32,8 @@ include_once('./lib/Statistics.php');
 include_once('./lib/DateUtility.php');
 include_once('./lib/Candidates.php');
 include_once('./lib/CommonErrors.php');
+include_once('./lib/tcpdf/tcpdf.php');
+include_once('./lib/tcpdf/config/tcpdf_config.php');
 
 class ReportsUI extends UserInterface {
 
@@ -84,13 +86,16 @@ class ReportsUI extends UserInterface {
             case 'RecruitmentSummaryReport':
                 $this->showRecruitmentSummaryReport();
                 break;
+            case 'RecruitmentSummaryReportPDF':
+                $this->showRecruitmentSummaryReportPDF();
+                break;
 
             case 'RecruiterSummaryReport':
                 $this->showRecruiterSummaryReport();
                 break;
 
-            case 'ClientSummaryReport':
-                //$this->generateEEOReportPreview();
+            case 'RecruiterSummaryReportPDF':
+                $this->showRecruiterSummaryReportPDF();
                 break;
 
             case 'RecruitmentTracker':
@@ -112,26 +117,24 @@ class ReportsUI extends UserInterface {
         //$clientName = $_POST['clientName'];
     }
 
-    private function generatePDF($htmlText) {
+    private function generatePDF($rptTitle, $htmlText) {
         // create new PDF document
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // set document information
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Nicola Asuni');
-        $pdf->SetTitle('TCPDF Example 048');
-        $pdf->SetSubject('TCPDF Tutorial');
-        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        $pdf->SetAuthor(PDF_AUTHOR);
+        $pdf->SetTitle('CATS');
+        $pdf->SetSubject('CATS');
+        $pdf->SetKeywords('CATS');
 
         // set default header data
         //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 048', PDF_HEADER_STRING);
         // set header and footer fonts
-        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
+        //$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        //$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
         // set default monospaced font
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
+        //$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         // set margins
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -152,17 +155,17 @@ class ReportsUI extends UserInterface {
 
         // ---------------------------------------------------------
         // set font
-        $pdf->SetFont('helvetica', 'B', 20);
+        $pdf->SetFont('helvetica', 'B', 18);
 
         // add a page
-        $pdf->AddPage();
-        $pdf->Write(0, 'Example of HTML tables', '', 0, 'L', true, 0, false, false, 0);
+        $pdf->AddPage('L', 'A4');
+        $pdf->Write(0, $rptTitle, '', 0, 'L', true, 0, false, false, 0);
         $pdf->SetFont('helvetica', '', 8);
         // -----------------------------------------------------------------------------
 
         $pdf->writeHTML($htmlText, true, false, false, false, '');
         //Close and output PDF document
-        $pdf->Output('example_048.pdf', 'I');
+        $pdf->Output('reports.pdf', 'I');
     }
 
     /**
@@ -176,8 +179,8 @@ class ReportsUI extends UserInterface {
             $GridName = "<p class='note'>" . $GridName . "</p>";
 
         $output = $GridName . "        
-        <div style='width: 925px; height: auto; overflow: hidden; position: relative;font-size: 7px;'>
-                <table width='925px' align='center' border='0' cellspacing='0' cellpadding='4'>
+        <div style='width: 925px; height: auto; overflow: auto; position: relative;font-size: 12px;'>
+                <table width='925px' align='center' border='5' cellspacing='0' cellpadding='4'>
                     <thead>
                         <tr>";
         foreach ($dataArray as $key => $value) {
@@ -196,7 +199,7 @@ class ReportsUI extends UserInterface {
         foreach ($dataArray as $key => $value) {
             $output .= "<tr>";
             foreach ($value as $key1 => $value1) {
-                $output .= "<td align='center'><div style='font-size: 7px;'><span title='" . $value1 . "'>" . $value1 . "</div></td>";
+                $output .= "<td align='center'><div style='font-size: 12px;'><span title='" . $value1 . "'>" . $value1 . "</div></td>";
             }
             $output .= "</tr>";
             $ii++;
@@ -205,6 +208,29 @@ class ReportsUI extends UserInterface {
         $output .= "</tbody>
                 </table></div>";
 
+        return $output;
+    }
+
+    public function ConvertArrayToHTMLTable($dataArray) {
+        $output = "        
+                <table align='center' border='1' cellspacing='0' cellpadding='4'><thead><tr>";
+        foreach ($dataArray as $key => $value) {
+            foreach ($value as $key1 => $value1) {
+                $output .= "<th>" . $key1 . "</th>";
+            }
+            break;
+        }
+
+        $output .= "</tr> </thead><tbody>";
+        foreach ($dataArray as $key => $value) {
+            $output .= "<tr>";
+            foreach ($value as $key1 => $value1) {
+                $output .= "<td>" . $value1 . "</td>";
+            }
+            $output .= "</tr>";
+        }
+        $output .= "</tbody></table>";
+        $output = str_replace("'", '"', $output);
         return $output;
     }
 
@@ -219,6 +245,7 @@ class ReportsUI extends UserInterface {
         $startDate = "";
         $endDate = "";
         $selReportColumns = "";
+        $strSelReportColumns = "";
         $dataGrid = "";
         $statistics = new Statistics(0);
 
@@ -227,6 +254,7 @@ class ReportsUI extends UserInterface {
 
         if (isset($_POST['clientName'])) {
             $selReportColumns = $_POST['reportColumns'];
+            $strSelReportColumns = implode(",", $selReportColumns);
             $selClientID = $_POST['clientName'];
             $startDate = $_POST['startDate'];
             $endDate = $_POST['endDate'];
@@ -255,6 +283,7 @@ class ReportsUI extends UserInterface {
         $this->_template->assign('dataGrid', $dataGrid);
         $this->_template->assign('selClientName', $selClientID);
         $this->_template->assign('selReportColumns', $selReportColumns);
+        $this->_template->assign('strSelReportColumns', $strSelReportColumns);
         $this->_template->assign('startDate', $startDate);
         $this->_template->assign('endDate', $endDate);
         $this->_template->assign('cNames', $cNames);
@@ -263,9 +292,42 @@ class ReportsUI extends UserInterface {
         $this->_template->display('./modules/reports/RecruitmentSummaryReport.tpl');
     }
 
+    private function showRecruitmentSummaryReportPDF() {
+        //post back values
+        $selClientID = isset($_GET[$id = 'client']) ? $_GET[$id] : false;
+        $startDate = isset($_GET[$id = 'startdate']) ? $_GET[$id] : false;
+        $endDate = isset($_GET[$id = 'enddate']) ? $_GET[$id] : false;
+        $strSelReportColumns = isset($_GET[$id = 'reportcolumns']) ? $_GET[$id] : false;
+        $selReportColumns = explode(",", $strSelReportColumns);
+
+        $selClientName = "";
+        $strSelReportColumns = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+        $rptColumns = $statistics->getReportColumns();
+        $cNames = $statistics->getAllCompanies();
+
+        //get selected client name
+        foreach ($cNames as $cName) {
+            if ($cName['company_id'] == $selClientID) {
+                $selClientName = $cName['name'];
+                break;
+            }
+        }
+
+        $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+        $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+        $rptTitle = sprintf("%s - Recruitment Summary Report from %s to %s", $selClientName, $startDate, $endDate);
+        $gridData = $statistics->getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate1, $endDate1);
+        $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
+
+        $this->generatePDF($rptTitle, $dataGrid);
+    }
+
     private function showRecruiterSummaryReport() {
         //post back values
-        $rptTitle = "Recruitment Summary Report";
+        $strSelReportColumns = "";
         $selClientName = "";
         $selClientID = "";
         $startDate = "";
@@ -282,6 +344,7 @@ class ReportsUI extends UserInterface {
 
         if (isset($_POST['clientName'])) {
             $selReportColumns = $_POST['reportColumns'];
+            $strSelReportColumns = implode(",", $selReportColumns);
             $selClientID = $_POST['clientName'];
             $selRecruiterID = $_POST['recruiterName'];
             $startDate = $_POST['startDate'];
@@ -319,6 +382,7 @@ class ReportsUI extends UserInterface {
         $this->_template->assign('dataGrid', $dataGrid);
         $this->_template->assign('selClientName', $selClientID);
         $this->_template->assign('selReportColumns', $selReportColumns);
+        $this->_template->assign('strSelReportColumns', $strSelReportColumns);
         $this->_template->assign('startDate', $startDate);
         $this->_template->assign('endDate', $endDate);
         $this->_template->assign('cNames', $cNames);
@@ -327,6 +391,50 @@ class ReportsUI extends UserInterface {
         $this->_template->assign('rptColumns', $rptColumns);
 
         $this->_template->display('./modules/reports/RecruiterSummaryReport.tpl');
+    }
+
+    private function showRecruiterSummaryReportPDF() {
+        $selRecruiterID = isset($_GET[$id = 'recruiterid']) ? $_GET[$id] : false;
+        $selClientID = isset($_GET[$id = 'client']) ? $_GET[$id] : false;
+        $startDate = isset($_GET[$id = 'startdate']) ? $_GET[$id] : false;
+        $endDate = isset($_GET[$id = 'enddate']) ? $_GET[$id] : false;
+        $strSelReportColumns = isset($_GET[$id = 'reportcolumns']) ? $_GET[$id] : false;
+        $selReportColumns = explode(",", $strSelReportColumns);
+
+        $selClientName = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+        $selRecruiterName = "";
+
+        $rptColumns = $statistics->getReportColumns();
+        $cNames = $statistics->getAllCompanies();
+        $recruiterNames = $statistics->getAllRecruiters();
+
+
+        //get selected client name
+        foreach ($cNames as $cName) {
+            if ($cName['company_id'] == $selClientID) {
+                $selClientName = $cName['name'];
+                break;
+            }
+        }
+
+        //get selected recruiter name
+        foreach ($recruiterNames as $cName) {
+            if ($cName['id'] == $selRecruiterID) {
+                $selRecruiterName = $cName['name'];
+                break;
+            }
+        }
+
+        $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+        $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+        $rptTitle = sprintf("%s - Recruiter (%s) Summary Report from %s to %s", $selClientName, $selRecruiterName, $startDate, $endDate);
+        $gridData = $statistics->getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+        $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
+
+        $this->generatePDF($rptTitle, $dataGrid);
     }
 
     private function reports() {

@@ -14,7 +14,7 @@
             </tr>
         </table>
 
-        
+
         <?php $URI = CATSUtility::getIndexName() . '?m=reports&amp;a=RecruiterSummaryReport'; ?>
         <form name="RecruiterSummaryReportForm" id="RecruiterSummaryReportForm" action="<?php echo($URI); ?>" method="post" autocomplete="off" enctype="multipart/form-data">
             <table class="editTable" width="450">
@@ -64,12 +64,12 @@
                                     </select>
                                 </td>
                             </tr>
-                           
+
                         </table>
                     </td>      
-                     <td class="tdVertical">
+                    <td class="tdVertical">
                         <table class="editTable"  width="250">
-                            
+
                             <tr>
                                 <td>
                                     <label id="lblStartDate" for="regardingID">Start Date :</label><br>
@@ -108,6 +108,9 @@
                     <td>
                         <?php if (!empty($this->selClientName)){ ?>
                         <?php echo $this->dataGrid; ?>
+                        <a target="_blank" href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruiterSummaryReportPDF&amp;recruiterid=<?php echo($this->selRecruiterName); ?>&amp;reportcolumns=<?php echo($this->strSelReportColumns); ?>&amp;client=<?php echo($this->selClientName); ?>&amp;startdate=<?php echo($this->startDate); ?>&amp;enddate=<?php echo($this->endDate); ?>">
+                            <img src="images/resume_preview_inline.gif" width="16" height="16" class="absmiddle" alt="GeneratePDF" border="0" />&nbsp;Generate PDF
+                        </a>  
                         <?php } else { echo "<h1>Choose report filters...!</h1>"; } ?>
                     </td>
                 </tr>
