@@ -103,60 +103,87 @@ class Statistics {
         return $rs;
     }
 
+    /**
+     * 
+     * @param type $selClientID
+     * @param type $selReportColumns
+     * @param type $startDate
+     * @param type $endDate
+     * @param type $selRecruiterID
+     * @return type
+     */
     public function getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate, $endDate, $selRecruiterID = -1) {
         $selQueryColumns = "b.title 'Job Title', date(IFNULL(b.start_date,b.date_created)) 'Requisition Date'";
+        $selQueryColumnsSummary = "null 'Job Title', 'Totals :'";
 
         foreach ($selReportColumns as $selReportColumn) {
             if ($selReportColumn == "Profile - Sourced") {
                 $selQueryColumns = $selQueryColumns . " ,profile_sourced.cnt 'Profile<br>Sourced'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(profile_sourced.cnt) 'Profile<br>Sourced'";
             }
             if ($selReportColumn == "Profile - Shortlisted") {
                 $selQueryColumns = $selQueryColumns . " ,profile_shortlisted.cnt 'Profile<br>Shortlisted'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(profile_shortlisted.cnt) 'Profile<br>Shortlisted'";
             }
             if ($selReportColumn == "Profile - Rejected") {
                 $selQueryColumns = $selQueryColumns . " ,profile_rejected.cnt 'Profile<br>Rejected'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(profile_rejected.cnt) 'Profile<br>Rejected'";
             }
             if ($selReportColumn == "Profile - Awaiting Feedback") {
                 $selQueryColumns = $selQueryColumns . " ,profile_awaiting_feedback.cnt 'Profile<br>AwaitingFeedback'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(profile_awaiting_feedback.cnt) 'Profile<br>AwaitingFeedback'";
             }
             if ($selReportColumn == "Profile - On Hold") {
                 $selQueryColumns = $selQueryColumns . " ,profile_on_hold.cnt 'Profile<br>OnHold'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(profile_on_hold.cnt) 'Profile<br>OnHold'";
             }
             if ($selReportColumn == "Interview - Shortlisted") {
                 $selQueryColumns = $selQueryColumns . " ,interview_shortlisted.cnt 'Interview<br>Shortlisted'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(interview_shortlisted.cnt) 'Interview<br>Shortlisted'";
             }
             if ($selReportColumn == "Interview - Scheduled") {
                 $selQueryColumns = $selQueryColumns . " ,interview_scheduled.cnt 'Interview<br>Scheduled'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(interview_scheduled.cnt) 'Interview<br>Scheduled'";
             }
             if ($selReportColumn == "Interview - Rescheduled") {
                 $selQueryColumns = $selQueryColumns . " ,interview_rescheduled.cnt 'Interview<br>Rescheduled'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(interview_rescheduled.cnt) 'Interview<br>Rescheduled'";
             }
             if ($selReportColumn == "Interview - Rejected") {
                 $selQueryColumns = $selQueryColumns . " ,interview_rejected.cnt 'Interview<br>Rejected'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(interview_rejected.cnt) 'Interview<br>Rejected'";
             }
             if ($selReportColumn == "Interview - Awaiting Feedback") {
                 $selQueryColumns = $selQueryColumns . " ,interview_awaiting_feedback.cnt 'Interview<br>AwaitingFeedback'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(interview_awaiting_feedback.cnt) 'Interview<br>AwaitingFeedback'";
             }
             if ($selReportColumn == "Interview - On Hold") {
                 $selQueryColumns = $selQueryColumns . " ,interview_on_hold.cnt 'Interview<br>OnHold'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(interview_on_hold.cnt) 'Interview<br>OnHold'";
             }
             if ($selReportColumn == "HR - Offered") {
                 $selQueryColumns = $selQueryColumns . " ,hr_offered.cnt 'HR<br>offered'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(hr_offered.cnt) 'HR<br>offered'";
             }
             if ($selReportColumn == "HR - Rejected") {
                 $selQueryColumns = $selQueryColumns . " ,hr_rejected.cnt 'HR<br>Rejected'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(hr_rejected.cnt) 'HR<br>Rejected'";
             }
             if ($selReportColumn == "HR - Declined") {
                 $selQueryColumns = $selQueryColumns . " ,hr_declined.cnt 'HR<br>Declined'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(hr_declined.cnt) 'HR<br>Declined'";
             }
             if ($selReportColumn == "HR - Withdrawn") {
                 $selQueryColumns = $selQueryColumns . " ,hr_withdrawn.cnt 'HR<br>Withdrawn'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(hr_withdrawn.cnt) 'HR<br>Withdrawn'";
             }
             if ($selReportColumn == "HR - Joined") {
                 $selQueryColumns = $selQueryColumns . " ,hr_joined.cnt 'HR<br>Joined'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(hr_joined.cnt) 'HR<br>Joined'";
             }
             if ($selReportColumn == "HR - On Hold") {
                 $selQueryColumns = $selQueryColumns . " ,hr_on_hold.cnt 'HR<br>OnHold'";
+                $selQueryColumnsSummary = $selQueryColumnsSummary . " ,sum(hr_on_hold.cnt) 'HR<br>OnHold'";
             }
         }
 
@@ -166,28 +193,51 @@ class Statistics {
         }
         $sql = "select " . $selQueryColumns . "  	 
                 from company a inner join joborder b on a.company_id = b.company_id 
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Sourced') profile_sourced on b.joborder_id=profile_sourced.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Shortlisted') profile_shortlisted on b.joborder_id=profile_shortlisted.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Rejected') profile_rejected on b.joborder_id=profile_rejected.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Awaiting Feedback') profile_awaiting_feedback on b.joborder_id=profile_awaiting_feedback.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='On Hold') profile_on_hold on b.joborder_id=profile_on_hold.joborder_id 
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Offered') hr_offered on b.joborder_id=hr_offered.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Rejected') hr_rejected on b.joborder_id=hr_rejected.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Declined') hr_declined on b.joborder_id=hr_declined.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Withdrawn') hr_withdrawn on b.joborder_id=hr_withdrawn.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Joined') hr_joined on b.joborder_id=hr_joined.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='On Hold') hr_on_hold on b.joborder_id=hr_on_hold.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Shortlisted') interview_shortlisted on b.joborder_id=interview_shortlisted.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Scheduled') interview_scheduled on b.joborder_id=interview_scheduled.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Rescheduled') interview_rescheduled on b.joborder_id=interview_rescheduled.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Rejected') interview_rejected on b.joborder_id=interview_rejected.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Awaiting Feedback') interview_awaiting_feedback on b.joborder_id=interview_awaiting_feedback.joborder_id
-                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='On Hold') interview_on_hold on b.joborder_id=interview_on_hold.joborder_id 
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Sourced' group by joborder_id) profile_sourced on b.joborder_id=profile_sourced.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Shortlisted' group by joborder_id) profile_shortlisted on b.joborder_id=profile_shortlisted.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Rejected' group by joborder_id) profile_rejected on b.joborder_id=profile_rejected.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Awaiting Feedback' group by joborder_id) profile_awaiting_feedback on b.joborder_id=profile_awaiting_feedback.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='On Hold' group by joborder_id) profile_on_hold on b.joborder_id=profile_on_hold.joborder_id 
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Offered' group by joborder_id) hr_offered on b.joborder_id=hr_offered.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Rejected' group by joborder_id) hr_rejected on b.joborder_id=hr_rejected.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Declined' group by joborder_id) hr_declined on b.joborder_id=hr_declined.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Withdrawn' group by joborder_id) hr_withdrawn on b.joborder_id=hr_withdrawn.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Joined' group by joborder_id) hr_joined on b.joborder_id=hr_joined.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='On Hold' group by joborder_id) hr_on_hold on b.joborder_id=hr_on_hold.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Shortlisted' group by joborder_id) interview_shortlisted on b.joborder_id=interview_shortlisted.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Scheduled' group by joborder_id) interview_scheduled on b.joborder_id=interview_scheduled.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Rescheduled' group by joborder_id) interview_rescheduled on b.joborder_id=interview_rescheduled.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Rejected' group by joborder_id) interview_rejected on b.joborder_id=interview_rejected.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Awaiting Feedback' group by joborder_id) interview_awaiting_feedback on b.joborder_id=interview_awaiting_feedback.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='On Hold' group by joborder_id) interview_on_hold on b.joborder_id=interview_on_hold.joborder_id 
                 where 
                     b.status = 'Active' 
                     and a.company_id = " . $selClientID . " 
                     and ((date(b.start_date) between '" . $startDate . "' and '" . $endDate . "') OR (date(b.date_created) between '" . $startDate . "' and '" . $endDate . "'))
-                order by a.company_id, b.joborder_id;";
+                union all
+                select " . $selQueryColumnsSummary . "  	 
+                from company a inner join joborder b on a.company_id = b.company_id 
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Sourced' group by joborder_id) profile_sourced on b.joborder_id=profile_sourced.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Shortlisted' group by joborder_id) profile_shortlisted on b.joborder_id=profile_shortlisted.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Rejected' group by joborder_id) profile_rejected on b.joborder_id=profile_rejected.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='Awaiting Feedback' group by joborder_id) profile_awaiting_feedback on b.joborder_id=profile_awaiting_feedback.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Profile' and clientactivitytype='On Hold' group by joborder_id) profile_on_hold on b.joborder_id=profile_on_hold.joborder_id 
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Offered' group by joborder_id) hr_offered on b.joborder_id=hr_offered.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Rejected' group by joborder_id) hr_rejected on b.joborder_id=hr_rejected.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Declined' group by joborder_id) hr_declined on b.joborder_id=hr_declined.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Withdrawn' group by joborder_id) hr_withdrawn on b.joborder_id=hr_withdrawn.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='Joined' group by joborder_id) hr_joined on b.joborder_id=hr_joined.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='HR' and clientactivitytype='On Hold' group by joborder_id) hr_on_hold on b.joborder_id=hr_on_hold.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Shortlisted' group by joborder_id) interview_shortlisted on b.joborder_id=interview_shortlisted.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Scheduled' group by joborder_id) interview_scheduled on b.joborder_id=interview_scheduled.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Rescheduled' group by joborder_id) interview_rescheduled on b.joborder_id=interview_rescheduled.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Interview Rejected' group by joborder_id) interview_rejected on b.joborder_id=interview_rejected.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='Awaiting Feedback' group by joborder_id) interview_awaiting_feedback on b.joborder_id=interview_awaiting_feedback.joborder_id
+                        left join (select joborder_id, count(*) cnt from candidate_joborder where " . $additionalConditions . " clientactivityname='Interview' and clientactivitytype='On Hold' group by joborder_id) interview_on_hold on b.joborder_id=interview_on_hold.joborder_id 
+                where 
+                    b.status = 'Active' 
+                    and a.company_id = " . $selClientID . " 
+                    and ((date(b.start_date) between '" . $startDate . "' and '" . $endDate . "') OR (date(b.date_created) between '" . $startDate . "' and '" . $endDate . "'))";
 
 
         $rs = $this->_db->getAllAssoc($sql);
