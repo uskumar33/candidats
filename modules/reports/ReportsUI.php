@@ -83,11 +83,10 @@ class ReportsUI extends UserInterface {
 
             case 'RecruitmentSummaryReport':
                 $this->showRecruitmentSummaryReport();
-                //$this->generateEEOReportPreview();
                 break;
 
             case 'RecruiterSummaryReport':
-                //$this->generateEEOReportPreview();
+                $this->showRecruiterSummaryReport();
                 break;
 
             case 'ClientSummaryReport':
@@ -247,9 +246,9 @@ class ReportsUI extends UserInterface {
             $gridData = $statistics->getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate1, $endDate1);
             $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
 
-            if ($_POST["pdf"] == "1") {
-                $this->generatePDF($dataGrid);
-            }
+            /* if ($_POST["pdf"] == "1") {
+              $this->generatePDF($dataGrid);
+              } */
         }
 
         //set postback values to preserve state 
@@ -262,6 +261,72 @@ class ReportsUI extends UserInterface {
         $this->_template->assign('rptColumns', $rptColumns);
 
         $this->_template->display('./modules/reports/RecruitmentSummaryReport.tpl');
+    }
+
+    private function showRecruiterSummaryReport() {
+        //post back values
+        $rptTitle = "Recruitment Summary Report";
+        $selClientName = "";
+        $selClientID = "";
+        $startDate = "";
+        $endDate = "";
+        $selReportColumns = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+        $selRecruiterName = "";
+        $selRecruiterID = "";
+
+        $rptColumns = $statistics->getReportColumns();
+        $cNames = $statistics->getAllCompanies();
+        $recruiterNames = $statistics->getAllRecruiters();
+
+        if (isset($_POST['clientName'])) {
+            $selReportColumns = $_POST['reportColumns'];
+            $selClientID = $_POST['clientName'];
+            $selRecruiterID = $_POST['recruiterName'];
+            $startDate = $_POST['startDate'];
+            $endDate = $_POST['endDate'];
+
+            //get selected client name
+            foreach ($cNames as $cName) {
+                if ($cName['company_id'] == $selClientID) {
+                    $selClientName = $cName['name'];
+                    break;
+                }
+            }
+
+            //get selected recruiter name
+            foreach ($recruiterNames as $cName) {
+                if ($cName['id'] == $selRecruiterID) {
+                    $selRecruiterName = $cName['name'];
+                    break;
+                }
+            }
+
+            $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+            $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+            $rptTitle = sprintf("%s - Recruiter (%s) Summary Report from %s to %s", $selClientName, $selRecruiterName, $startDate, $endDate);
+            $gridData = $statistics->getRecruitmentSummaryReport($selClientID, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+            $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
+
+            /* if ($_POST["pdf"] == "1") {
+              $this->generatePDF($dataGrid);
+              } */
+        }
+
+        //set postback values to preserve state 
+        $this->_template->assign('dataGrid', $dataGrid);
+        $this->_template->assign('selClientName', $selClientID);
+        $this->_template->assign('selReportColumns', $selReportColumns);
+        $this->_template->assign('startDate', $startDate);
+        $this->_template->assign('endDate', $endDate);
+        $this->_template->assign('cNames', $cNames);
+        $this->_template->assign('selRecruiterName', $selRecruiterID);
+        $this->_template->assign('recruiterNames', $recruiterNames);
+        $this->_template->assign('rptColumns', $rptColumns);
+
+        $this->_template->display('./modules/reports/RecruiterSummaryReport.tpl');
     }
 
     private function reports() {

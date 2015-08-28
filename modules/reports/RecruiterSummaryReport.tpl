@@ -1,5 +1,5 @@
 <?php /* $Id: EEOReport.tpl 2441 2007-05-04 20:42:02Z brian $ */ ?>
-<?php TemplateUtility::printHeader('Recruitment Summary Report', array('modules/joborders/validator.js', 'js/company.js', 'js/sweetTitles.js')); ?>
+<?php TemplateUtility::printHeader('Recruiter Summary Report', array('modules/joborders/validator.js', 'js/company.js', 'js/sweetTitles.js')); ?>
 <?php TemplateUtility::printHeaderBlock(); ?>
 <div id="main">
     <?php TemplateUtility::printQuickSearch(); ?>
@@ -10,18 +10,18 @@
                 <td width="3%">
                     <img src="images/job_orders.gif" width="24" height="24" border="0" alt="Job Orders" style="margin-top: 3px;" />&nbsp;
                 </td>
-                <td><h2>Recruitment Summary Report</h2></td>
+                <td><h2>Recruiter Summary Report</h2></td>
             </tr>
         </table>
 
-       
-        <?php $URI = CATSUtility::getIndexName() . '?m=reports&amp;a=RecruitmentSummaryReport'; ?>
-        <form name="RecruitmentSummaryReportForm" id="RecruitmentSummaryReportForm" action="<?php echo($URI); ?>" method="post" autocomplete="off" enctype="multipart/form-data">
+        
+        <?php $URI = CATSUtility::getIndexName() . '?m=reports&amp;a=RecruiterSummaryReport'; ?>
+        <form name="RecruiterSummaryReportForm" id="RecruiterSummaryReportForm" action="<?php echo($URI); ?>" method="post" autocomplete="off" enctype="multipart/form-data">
             <table class="editTable" width="450">
                 <tr id="visibleTR" >                   
                     <td >
                         <label id="lblReportColumns" for="lblReportColumns">Report Columns :</label><br>
-                        <select id="s4" name="reportColumns[]" multiple="reportColumns" size="8" >
+                        <select id="s4" name="reportColumns[]" multiple="reportColumns" size="6" >
                             <?php                             
                             foreach ($this->rptColumns as $rowIndex => $rptColumn) {
                             $cSel = '';
@@ -40,6 +40,19 @@
                         <table class="editTable"  width="250">
                             <tr>
                                 <td>
+                                    <label id="lblrecruiterName" for="lblrecruiterName">Recruiter Name :</label><br>
+                                    <select id="recruiterName" name="recruiterName"   >
+                                        <option selected value='-1'>--Select Recruiter--</option>
+                                        <?php 
+                                        foreach ($this->recruiterNames as $rowIndex => $recruiterName) {                                        
+                                        ?>                                        
+                                        <option <?php if ($this->selRecruiterName == $recruiterName['id']) echo ' selected'; ?> value="<?php echo $recruiterName['id'] ?>"><?php echo $recruiterName['name'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
                                     <label id="lblClient" for="regardingID">Client :</label><br>
                                     <select id="clientName" name="clientName"   >
                                         <option selected value='-1'>--Select Client--</option>
@@ -51,6 +64,12 @@
                                     </select>
                                 </td>
                             </tr>
+                           
+                        </table>
+                    </td>      
+                     <td class="tdVertical">
+                        <table class="editTable"  width="250">
+                            
                             <tr>
                                 <td>
                                     <label id="lblStartDate" for="regardingID">Start Date :</label><br>

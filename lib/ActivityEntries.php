@@ -131,38 +131,34 @@ class ActivityEntries {
     }
 
     public function addClientActivity($dataItemID, $dataItemType, $statusID, $activityType, $activitySubTypeID, $activityNotes, $enteredBy, $jobOrderID = -1) {
-        if($jobOrderID <> -1){
+        if ($jobOrderID <> -1) {
             $sql2 = sprintf(
-                "update candidate_joborder set "
-                . "clientactivityname=%s, "
-                . "clientactivitytype=%s, "
-                . "clientactivitysubtype=%s, "
-                . "clientnotes=%s, date_modified = now() "
-                . "where candidate_id = %s and joborder_id=%s",
-                $this->_db->makeQueryString($statusID), 
-                $this->_db->makeQueryString($activityType), 
-                $this->_db->makeQueryString($activitySubTypeID), 
-                $this->_db->makeQueryString($activityNotes),
-                $this->_db->makeQueryInteger($dataItemID),
-                $this->_db->makeQueryInteger($jobOrderID)
-                );
-         $queryResult2 = $this->_db->query($sql2); 
+                    "update candidate_joborder set "
+                    . "clientactivityname=%s, "
+                    . "clientactivitytype=%s, "
+                    . "clientactivitysubtype=%s, "
+                    . "clientnotes=%s, date_modified = now(), last_modified_by = %s "
+                    . "where candidate_id = %s and joborder_id=%s", 
+                    $this->_db->makeQueryString($statusID),
+                    $this->_db->makeQueryString($activityType), 
+                    $this->_db->makeQueryString($activitySubTypeID), 
+                    $this->_db->makeQueryString($activityNotes),
+                    $this->_db->makeQueryInteger($enteredBy),
+                    $this->_db->makeQueryInteger($dataItemID),
+                    $this->_db->makeQueryInteger($jobOrderID)                    
+            );
+            $queryResult2 = $this->_db->query($sql2);
         }
-        
+
         $sql1 = sprintf(
                 "update candidate set "
                 . "clientactivityname=%s, "
                 . "clientactivitytype=%s, "
                 . "clientactivitysubtype=%s, "
-                . "clientnotes=%s, date_modified = now() where candidate_id = %s",
-                $this->_db->makeQueryString($statusID), 
-                $this->_db->makeQueryString($activityType), 
-                $this->_db->makeQueryString($activitySubTypeID), 
-                $this->_db->makeQueryString($activityNotes),
-                $this->_db->makeQueryInteger($dataItemID)
-                );
-         $queryResult1 = $this->_db->query($sql1);         
-         
+                . "clientnotes=%s, date_modified = now() where candidate_id = %s", $this->_db->makeQueryString($statusID), $this->_db->makeQueryString($activityType), $this->_db->makeQueryString($activitySubTypeID), $this->_db->makeQueryString($activityNotes), $this->_db->makeQueryInteger($dataItemID)
+        );
+        $queryResult1 = $this->_db->query($sql1);
+
         $sql = sprintf(
                 "INSERT INTO activityclient (
                 data_item_id,
@@ -177,15 +173,7 @@ class ActivityEntries {
             )
             VALUES (
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW()
-            )", $this->_db->makeQueryInteger($dataItemID), 
-                $this->_db->makeQueryInteger($dataItemType), 
-                $this->_db->makeQueryInteger($jobOrderID), 
-                $this->_db->makeQueryInteger($enteredBy), 
-                $this->_db->makeQueryString($statusID), 
-                $this->_db->makeQueryString($activityType), 
-                $this->_db->makeQueryString($activitySubTypeID), 
-                $this->_db->makeQueryString($activityNotes), 
-                $this->_siteID
+            )", $this->_db->makeQueryInteger($dataItemID), $this->_db->makeQueryInteger($dataItemType), $this->_db->makeQueryInteger($jobOrderID), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryString($statusID), $this->_db->makeQueryString($activityType), $this->_db->makeQueryString($activitySubTypeID), $this->_db->makeQueryString($activityNotes), $this->_siteID
         );
 
         $queryResult = $this->_db->query($sql);
