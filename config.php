@@ -32,7 +32,7 @@ define('LICENSE_KEY','3163GQ-54ISGW-14E4SHD-ES9ICL-X02DTG-GYRSQ6');
 
 /* Database configuration. */
 define('DATABASE_USER', 'root');
-define('DATABASE_PASS', '');
+define('DATABASE_PASS', 'redhat');
 define('DATABASE_HOST', 'localhost');
 define('DATABASE_NAME', 'cats');
 
