@@ -37,12 +37,12 @@
  * $Id: index.php 3807 2007-12-05 01:47:41Z will $
  */
 
-/* Do we need to run the installer? */
+/* Do we need to run the installer? 
 if (!file_exists('INSTALL_BLOCK') && !isset($_POST['performMaintenence']))
 {
     include('modules/install/notinstalled.php');
     die();
-}
+}*/
 
 // FIXME: Config file setting.
 @ini_set('memory_limit', '64M');
