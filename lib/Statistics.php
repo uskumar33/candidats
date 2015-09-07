@@ -91,6 +91,31 @@ class Statistics {
      * 
      * @return type
      */
+    public function getRecruitmentTrackerColumns() {
+        $sql = "select 'Profile Submission Date' AS `categories` union all 
+            select 'Initial Screening Result'  union all 
+            select 'First Round Date'  union all 
+            select 'First Round Result'  union all 
+            select 'Second Round Date'  union all 
+            select 'Second Round Result'  union all 
+            select 'Third Round Date'  union all 
+            select 'Third Round Result'  union all 
+            select 'Fourth Round Date'  union all 
+            select 'Fourth Round Result'  union all 
+            select 'Fifth Round Date'  union all 
+            select 'Fifth Round Result'  union all 
+            select 'Days'  ;
+            ";
+        $rs = $this->_db->getAllAssoc($sql);
+
+        //return $rs['categories'];
+        return $rs;
+    }
+
+    /**
+     * 
+     * @return type
+     */
     public function getAllCompanies() {
         $sql = "select company_id,name from company order by name";
         $rs = $this->_db->getAllAssoc($sql);
@@ -242,6 +267,125 @@ class Statistics {
                     b.status = 'Active' 
                     and a.company_id = " . $selClientID . " 
                     and ((date(b.start_date) between '" . $startDate . "' and '" . $endDate . "') OR (date(b.date_created) between '" . $startDate . "' and '" . $endDate . "'))";
+
+
+        $rs = $this->_db->getAllAssoc($sql);
+        return $rs;
+    }
+
+    /**
+     * 
+     * @param type $selReportColumns
+     * @param type $startDate
+     * @param type $endDate
+     * @param type $selRecruiterID
+     * @return type
+     */
+    public function getRecruiterSummaryReport($selReportColumns, $startDate, $endDate, $selRecruiterID) {
+        $selQueryColumns = "concat_ws(' ',u.first_name,u.last_name) recruitername
+                            , concat_ws(' ',c1.first_name,c1.last_name) candidatename, c1.phone_cell phone 
+                            , c2.name companyname
+                            , j.title ";
+        $grpbyQueryColumns = "group by 
+                                a.entered_by, concat_ws(' ',u.first_name,u.last_name), 
+                                concat_ws(' ',c1.first_name,c1.last_name), c1.phone_cell 
+                                , c2.name
+                                , j.title ";
+
+        foreach ($selReportColumns as $selReportColumn) {
+            if ($selReportColumn == "Profile Submission Date") {
+                $selQueryColumns = $selQueryColumns . " ,b.SubmittedDate 'Profile<br>Submission<br>Date'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,b.SubmittedDate";
+            }
+            if ($selReportColumn == "Initial Screening Result") {
+                $selQueryColumns = $selQueryColumns . " ,c.InitialScreenResult 'Initial<br>Screening<br>Result'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,c.InitialScreenResult";
+            }
+            if ($selReportColumn == "First Round Date") {
+                $selQueryColumns = $selQueryColumns . " ,d.date_created 'Interview<br>Round-1<br>Date'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,d.date_created ";
+            }
+            if ($selReportColumn == "First Round Result") {
+                $selQueryColumns = $selQueryColumns . " ,d.InitialScreenResult 'Interview<br>Round-1<br>Result'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,d.InitialScreenResult ";
+            }
+            if ($selReportColumn == "Second Round Date") {
+                $selQueryColumns = $selQueryColumns . " ,e.date_created 'Interview<br>Round-2<br>Date'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,e.date_created ";
+            }
+            if ($selReportColumn == "Second Round Result") {
+                $selQueryColumns = $selQueryColumns . " ,e.InitialScreenResult 'Interview<br>Round-2<br>Result'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,e.InitialScreenResult ";
+            }
+            if ($selReportColumn == "Third Round Date") {
+                $selQueryColumns = $selQueryColumns . " ,f.date_created 'Interview<br>Round-3<br>Date'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,f.date_created ";
+            }
+            if ($selReportColumn == "Third Round Result") {
+                $selQueryColumns = $selQueryColumns . " ,f.InitialScreenResult 'Interview<br>Round-3<br>Result'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,f.InitialScreenResult ";
+            }
+            if ($selReportColumn == "Fourth Round Date") {
+                $selQueryColumns = $selQueryColumns . " ,g.date_created 'Interview<br>Round-4<br>Date'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,g.date_created ";
+            }
+            if ($selReportColumn == "Fourth Round Result") {
+                $selQueryColumns = $selQueryColumns . " ,g.InitialScreenResult 'Interview<br>Round-4<br>Result'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,g.InitialScreenResult ";
+            }
+            if ($selReportColumn == "Fifth Round Date") {
+                $selQueryColumns = $selQueryColumns . " ,h.date_created 'Interview<br>Round-5<br>Date'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,h.date_created ";
+            }
+            if ($selReportColumn == "Fifth Round Result") {
+                $selQueryColumns = $selQueryColumns . " ,h.InitialScreenResult 'Interview<br>Round-5<br>Result'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " ,h.InitialScreenResult ";
+            }
+            if ($selReportColumn == "Days") {
+                $selQueryColumns = $selQueryColumns . " , if(h.InitialScreenResult is not null, datediff(h.date_created, b.SubmittedDate),
+		if(g.InitialScreenResult is not null, datediff(g.date_created, b.SubmittedDate),
+			if(f.InitialScreenResult is not null, datediff(f.date_created, b.SubmittedDate),
+				if(e.InitialScreenResult is not null, datediff(e.date_created, b.SubmittedDate),
+					if(d.InitialScreenResult is not null, datediff(d.date_created, b.SubmittedDate),datediff(now(), b.SubmittedDate)					
+					)
+				)
+			)
+		)
+	) 'Total<br>Days'";
+                $grpbyQueryColumns = $grpbyQueryColumns . " , if(h.InitialScreenResult is not null, datediff(h.date_created, b.SubmittedDate),
+		if(g.InitialScreenResult is not null, datediff(g.date_created, b.SubmittedDate),
+			if(f.InitialScreenResult is not null, datediff(f.date_created, b.SubmittedDate),
+				if(e.InitialScreenResult is not null, datediff(e.date_created, b.SubmittedDate),
+					if(d.InitialScreenResult is not null, datediff(d.date_created, b.SubmittedDate),datediff(now(), b.SubmittedDate)					
+					)
+				)
+			)
+		)
+	) ";
+            }
+        }
+
+        $additionalConditions = "";
+        if ($selRecruiterID <> -1) {
+            $additionalConditions = " last_modified_by = " . $selRecruiterID . " and ";
+        }
+        $sql = "select " . $selQueryColumns . "  	 
+                from 
+	activityclient a 
+        inner join user u on a.entered_by = u.user_id 
+        inner join candidate c1 on a.data_item_id = c1.candidate_id 
+	inner join joborder j on a.joborder_id = j.joborder_id 
+	inner join company c2 on j.company_id=c2.company_id 
+	left join (select entered_by, data_item_id, joborder_id,max(date(date_created)) SubmittedDate from activityclient where joborder_id>0 and activityname='Profile' and activitytype='Sourced' group by entered_by, data_item_id, joborder_id) b on a.entered_by=b.entered_by and a.data_item_id = b.data_item_id and a.joborder_id=b.joborder_id 
+	left join (select entered_by, data_item_id, joborder_id,activitytype InitialScreenResult from activityclient x1 where joborder_id>0 and activityname='Profile' and activitytype in ('Shortlisted', 'Rejected', 'Awaiting Feedback', 'On Hold') and date_created = (select max(date_created) from activityclient x2 where x2.entered_by=x1.entered_by and x2.data_item_id=x1.data_item_id and x2.joborder_id=x1.joborder_id and x2.activityname='Profile' and x2.activitytype in ('Shortlisted', 'Rejected', 'Awaiting Feedback', 'On Hold')) group by entered_by, data_item_id, joborder_id) c on a.entered_by=c.entered_by and a.data_item_id = c.data_item_id and a.joborder_id=c.joborder_id 
+	left join (select entered_by, data_item_id, joborder_id,date_created, activitytype InitialScreenResult from activityclient x1 where joborder_id>0 and activityname='Interview Round-1' and date_created = (select max(date_created) from activityclient x2 where x2.entered_by=x1.entered_by and x2.data_item_id=x1.data_item_id and x2.joborder_id=x1.joborder_id and x2.activityname='Interview Round-1' ) group by entered_by, data_item_id, joborder_id) d on a.entered_by=d.entered_by and a.data_item_id = d.data_item_id and a.joborder_id=d.joborder_id 
+	left join (select entered_by, data_item_id, joborder_id,date_created, activitytype InitialScreenResult from activityclient x1 where joborder_id>0 and activityname='Interview Round-2' and date_created = (select max(date_created) from activityclient x2 where x2.entered_by=x1.entered_by and x2.data_item_id=x1.data_item_id and x2.joborder_id=x1.joborder_id and x2.activityname='Interview Round-2' ) group by entered_by, data_item_id, joborder_id) e on a.entered_by=e.entered_by and a.data_item_id = e.data_item_id and a.joborder_id=e.joborder_id 
+	left join (select entered_by, data_item_id, joborder_id,date_created, activitytype InitialScreenResult from activityclient x1 where joborder_id>0 and activityname='Interview Round-3' and date_created = (select max(date_created) from activityclient x2 where x2.entered_by=x1.entered_by and x2.data_item_id=x1.data_item_id and x2.joborder_id=x1.joborder_id and x2.activityname='Interview Round-3' ) group by entered_by, data_item_id, joborder_id) f on a.entered_by=f.entered_by and a.data_item_id = f.data_item_id and a.joborder_id=f.joborder_id 
+	left join (select entered_by, data_item_id, joborder_id,date_created, activitytype InitialScreenResult from activityclient x1 where joborder_id>0 and activityname='Interview Round-4' and date_created = (select max(date_created) from activityclient x2 where x2.entered_by=x1.entered_by and x2.data_item_id=x1.data_item_id and x2.joborder_id=x1.joborder_id and x2.activityname='Interview Round-4' ) group by entered_by, data_item_id, joborder_id) g on a.entered_by=g.entered_by and a.data_item_id = g.data_item_id and a.joborder_id=g.joborder_id 
+	left join (select entered_by, data_item_id, joborder_id,date_created, activitytype InitialScreenResult from activityclient x1 where joborder_id>0 and activityname='Interview Round-5' and date_created = (select max(date_created) from activityclient x2 where x2.entered_by=x1.entered_by and x2.data_item_id=x1.data_item_id and x2.joborder_id=x1.joborder_id and x2.activityname='Interview Round-5' ) group by entered_by, data_item_id, joborder_id) h on a.entered_by=h.entered_by and a.data_item_id = h.data_item_id and a.joborder_id=h.joborder_id 
+        where 
+            a.joborder_id > 0 and 
+            (date(b.SubmittedDate) between '" . $startDate . "' and '" . $endDate . "') " . $grpbyQueryColumns;
 
 
         $rs = $this->_db->getAllAssoc($sql);

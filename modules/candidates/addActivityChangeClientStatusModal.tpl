@@ -44,15 +44,17 @@
    var ActivityTypes=["Profile", "Interview", "HR"];
     
    var profileActivityType=["Sourced", "Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
-   var interviewActivityType=["Shortlisted", "Interview Scheduled", "Interview Rescheduled", "Interview Rejected", "Awaiting Feedback", "On Hold"];
+   var interviewActivityType=["Interview Scheduled", "Interview Rescheduled", "Interview Awaiting Feedback", "Interview On Hold", "Interview Shortlisted", "Interview Rejected"];
    var hrActivityType=["Offered", "Rejected", "Declined", "Withdrawn", "Joined", "On Hold"];
    
    var interviewRejected=["Technically NotFit", "Fake", "Salary", "Attitude", "Exprience", "Qualification", "Communication"];
    var interviewRescheduled=["By Candidate", "By Company"];
-   var interviewscheduled=["Interview Round-1", "Interview Round-2", "Interview Round-3", "Interview Round-4", "Interview Round-5"];
+   var interviewscheduled=["Scheduled"];
+   var interviewshortlisted=["Scheduled for Next Round", "Finilized"];
    
    function statusIDChanged(cstatusID)
    {  
+      document.getElementById('lstinterviewrounds').style.visibility = "hidden";
       var selectAType = document.getElementById('activityTypeID');
       var ln = selectAType.length - 1;
       while (ln > 0)
@@ -77,6 +79,7 @@
             ActivityType0=profileActivityType
             break;
         case "Interview":
+            document.getElementById('lstinterviewrounds').style.visibility = "visible";
             ActivityType0=interviewActivityType
             break;
         case "HR":
@@ -118,6 +121,9 @@
        case "Interview Scheduled":
            cityArray=interviewscheduled
            break;         
+       case "Interview Shortlisted":
+            cityArray=interviewshortlisted
+            break;
        default:
 			//document.getElementById("activitySubTypeID").style.display = "none";
 			//break;
@@ -190,7 +196,14 @@
                         <option value="Interview">Interview</option>
                         <option value="HR">HR</option>
                     </select>
-                    <span id="changeStatusSpanB" style="color: #aaaaaa;">&nbsp;*</span>&nbsp;&nbsp;
+                    <span id="changeStatusSpanB" style="color: #aaaaaa;">&nbsp;*</span>
+                    <select id="lstinterviewrounds" name="lstinterviewrounds" class="inputbox" style="width: 100px; margin-bottom: 4px; visibility:hidden;">
+                        <option value='Round-1'>Round-1</option>
+                        <option value='Round-2'>Round-2</option>
+                        <option value='Round-3'>Round-3</option>
+                        <option value='Round-4'>Round-4</option>
+                        <option value='Round-5'>Round-5</option>
+                    </select>
                     <span id="triggerEmailSpan" style="display: none;"><input type="checkbox" name="triggerEmail" id="triggerEmail" onclick="AS_onSendEmailChange('triggerEmail', 'sendEmailCheckTR', 'visibleTR');" />Send E-Mail Notification to Candidate</span>
                 </div>
             </td>
@@ -218,7 +231,7 @@
                 <div id="activityNoteDiv" style="margin-top: 4px;">
                     <select id="activityTypeID" name="activityTypeID" onchange='stateChanged(this.value);' class="inputbox" style="width: 150px; margin-bottom: 4px;">
                         <option value=''>Select Activity Type</option>
-                    </select>
+                    </select>                    
                 </div>
             </td>
         </tr>

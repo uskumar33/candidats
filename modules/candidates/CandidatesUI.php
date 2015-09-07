@@ -2282,9 +2282,9 @@ class CandidatesUI extends UserInterface {
 
         $dob = $this->getTrimmedInput('dob', $_POST);
         if (!empty($dob)) {
-           /* if (!DateUtility::validate('-', $dob, DATE_FORMAT_MMDDYYYY)) {
-                CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid DOB.');
-            }*/
+            /* if (!DateUtility::validate('-', $dob, DATE_FORMAT_MMDDYYYY)) {
+              CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid DOB.');
+              } */
 
             /* Convert start_date to something MySQL can understand. */
             $dob = DateUtility::convert(
@@ -2586,6 +2586,10 @@ class CandidatesUI extends UserInterface {
             /* Add the activity entry. */
             $activityEntries = new ActivityEntries($this->_siteID);
             if ($isClientActivity == "1") {
+                if ($statusID == "Interview") {
+                    $_POST['lstinterviewrounds'];
+                    $statusID = $statusID . " " . $_POST['lstinterviewrounds'];
+                }
                 $activityID = $activityEntries->addClientActivity(
                         $candidateID, DATA_ITEM_CANDIDATE, $statusID, $activityTypeID, $activitySubTypeID, $activityNote, $this->_userID, $regardingID
                 );

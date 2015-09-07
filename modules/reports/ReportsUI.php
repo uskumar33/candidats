@@ -481,7 +481,7 @@ class ReportsUI extends UserInterface {
         $selRecruiterName = "";
         $selRecruiterID = "";
 
-        $rptColumns = $statistics->getReportColumns();
+        $rptColumns = $statistics->getRecruitmentTrackerColumns();
         $recruiterNames = $statistics->getAllRecruiters();
 
         if (isset($_POST['recruiterName'])) {
@@ -503,7 +503,7 @@ class ReportsUI extends UserInterface {
             $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
 
             $rptTitle = sprintf("Recruiter (%s) Tracker Report from %s to %s", $selRecruiterName, $startDate, $endDate);
-            $gridData = $statistics->getRecruitmentSummaryReport(2, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+            $gridData = $statistics->getRecruiterSummaryReport($selReportColumns, $startDate1, $endDate1, $selRecruiterID);
             $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
         }
 
@@ -534,7 +534,7 @@ class ReportsUI extends UserInterface {
         $statistics = new Statistics(0);
         $selRecruiterName = "";
 
-        $rptColumns = $statistics->getReportColumns();
+        $rptColumns = $statistics->getRecruitmentTrackerColumns();
         $recruiterNames = $statistics->getAllRecruiters();
 
         //get selected recruiter name
@@ -549,7 +549,7 @@ class ReportsUI extends UserInterface {
         $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
 
         $rptTitle = sprintf("Recruiter (%s) Summary Report from %s to %s", $selRecruiterName, $startDate, $endDate);
-        $gridData = $statistics->getRecruitmentSummaryReport(2, $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+        $gridData = $statistics->getRecruiterSummaryReport( $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
         $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
 
         $this->generatePDF($rptTitle, $dataGrid);
