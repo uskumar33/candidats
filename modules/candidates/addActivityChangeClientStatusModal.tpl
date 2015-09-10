@@ -11,10 +11,10 @@
 <script type="text/javascript">
     < ?php if ($this - > isJobOrdersMode): ? >
             statusesArray = new Array(1);
-            jobOrdersArray = new Array(1);
-            statusesArrayString = new Array(1);
-            jobOrdersArrayStringTitle = new Array(1);
-            jobOrdersArrayStringCompany = new Array(1);
+    jobOrdersArray = new Array(1);
+    statusesArrayString = new Array(1);
+    jobOrdersArrayStringTitle = new Array(1);
+    jobOrdersArrayStringCompany = new Array(1);
             statusesArray[0] = < ?php echo($this - > pipelineData['statusID']); ? > ;
             statusesArrayString[0] = '<?php echo($this->pipelineData['status']); ?>';
             jobOrdersArray[0] = < ?php echo($this - > pipelineData['jobOrderID']); ? > ;
@@ -38,117 +38,125 @@
             statusTriggersEmailArray = new Array( < ?php echo(count($this - > statusRS)); ? > );
             < ?php foreach ($this - > statusRS as $rowNumber = > $statusData): ? >
             statusTriggersEmailArray[ < ?php echo($rowNumber); ? > ] = < ?php echo($statusData['triggersEmail']); ? > ;
-            < ?php endforeach; ? >
+            < ?php endforeach; ? ></script>
+<script type="text/javascript">
+            var ActivityTypes = ["Profile", "Interview", "HR"];
+
+    var profileActivityType = ["Sourced", "Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
+    var interviewActivityType = ["Interview Scheduled", "Interview Rescheduled", "Interview Awaiting Feedback", "Interview On Hold", "Interview Shortlisted", "Interview Rejected"];
+    var hrActivityType = ["Offered", "Rejected", "Declined", "Withdrawn", "Joined", "On Hold"];
+
+    var interviewRejected = ["Technically NotFit", "Fake", "Salary", "Attitude", "Exprience", "Qualification", "Communication"];
+    var interviewRescheduled = ["By Candidate", "By Company"];
+    var interviewscheduled = ["Scheduled"];
+    var interviewshortlisted = ["Scheduled for Next Round", "Finilized"];
+
+    function statusIDChanged(cstatusID)
+    {
+        document.getElementById('lstinterviewrounds').style.visibility = "hidden";
+        var selectAType = document.getElementById('activityTypeID');
+        var ln = selectAType.length - 1;
+        while (ln > 0)
+        {
+            selectAType.remove(1);  //Remove all but "Select State"
+            ln--;
+        }
+
+        var ActivityType1 = document.getElementById('activitySubTypeID');
+        var ln = ActivityType1.length - 1;
+        while (ln > 0)
+        {
+            ActivityType1.remove(1);  //Remove all but "Select City"
+            ln--;
+        }
+
+        var ActivityType0;
+
+        switch (cstatusID)
+        {
+            case "Profile":
+                ActivityType0 = profileActivityType
+                break;
+            case "Interview":
+                document.getElementById('lstinterviewrounds').style.visibility = "visible";
+                ActivityType0 = interviewActivityType
+                break;
+            case "HR":
+                ActivityType0 = hrActivityType
+                break;
+            default:
+        }
+
+        for (i = 0; i < ActivityType0.length; i++)
+        {
+            var option = document.createElement('option');
+            option.text = ActivityType0[i];
+            option.value = ActivityType0[i];
+            selectAType.add(option);
+        }
+    }
+
+    function stateChanged(state)
+    {
+        document.getElementById("scheduleEvent").checked = false;
+        document.getElementById("scheduleEventDiv").style.display = 'none';
+        document.getElementById("scheduleEventchkboxDiv").style.display = 'none';
+        document.getElementById("scheduleEventlabelDiv").style.display = 'none';
+
+        var ActivityType2 = document.getElementById('activitySubTypeID');
+        var ln = ActivityType2.length - 1;
+        while (ln > 0)
+        {
+            ActivityType2.remove(1);  //Remove all but "Select City"
+            ln--;
+        }
+
+        //document.getElementById("activitySubTypeID").style.display = "block";
+        var cityArray;
+
+        switch (state)
+        {
+            case "Interview Rejected":
+                cityArray = interviewRejected
+                break;
+            case "Interview Rescheduled":
+                cityArray = interviewRescheduled
+                break;
+            case "Interview Scheduled":
+                document.getElementById("scheduleEvent").checked = true;
+                document.getElementById("scheduleEventDiv").style.display = 'block';
+                document.getElementById("scheduleEventchkboxDiv").style.display = 'block';
+                document.getElementById("scheduleEventlabelDiv").style.display = 'block';
+                cityArray = interviewscheduled
+                break;
+            case "Interview Shortlisted":
+                cityArray = interviewshortlisted
+                break;
+            default:
+                //document.getElementById("activitySubTypeID").style.display = "none";
+                //break;
+        }
+
+        for (i = 0; i < cityArray.length; i++)
+        {
+            var option = document.createElement('option');
+            option.text = cityArray[i];
+            option.value = cityArray[i];
+            ActivityType2.add(option);
+        }
+    }
+
+    function cityChanged(city)
+    {
+        /*switch(city)
+         {
+         case "test":
+         alert("test text") 
+         break;                
+         default:
+         } */
+    }
 </script>
-    <script type="text/javascript">
-   var ActivityTypes=["Profile", "Interview", "HR"];
-    
-   var profileActivityType=["Sourced", "Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
-   var interviewActivityType=["Interview Scheduled", "Interview Rescheduled", "Interview Awaiting Feedback", "Interview On Hold", "Interview Shortlisted", "Interview Rejected"];
-   var hrActivityType=["Offered", "Rejected", "Declined", "Withdrawn", "Joined", "On Hold"];
-   
-   var interviewRejected=["Technically NotFit", "Fake", "Salary", "Attitude", "Exprience", "Qualification", "Communication"];
-   var interviewRescheduled=["By Candidate", "By Company"];
-   var interviewscheduled=["Scheduled"];
-   var interviewshortlisted=["Scheduled for Next Round", "Finilized"];
-   
-   function statusIDChanged(cstatusID)
-   {  
-      document.getElementById('lstinterviewrounds').style.visibility = "hidden";
-      var selectAType = document.getElementById('activityTypeID');
-      var ln = selectAType.length - 1;
-      while (ln > 0)
-      { 
-        selectAType.remove(1);  //Remove all but "Select State"
-        ln--;
-      }
-      
-      var ActivityType1 = document.getElementById('activitySubTypeID');
-      var ln = ActivityType1.length - 1;
-      while (ln > 0)
-      { 
-        ActivityType1.remove(1);  //Remove all but "Select City"
-        ln--;
-      }    
-      
-      var ActivityType0;
-      
-      switch(cstatusID)
-      {
-        case "Profile":
-            ActivityType0=profileActivityType
-            break;
-        case "Interview":
-            document.getElementById('lstinterviewrounds').style.visibility = "visible";
-            ActivityType0=interviewActivityType
-            break;
-        case "HR":
-            ActivityType0=hrActivityType
-            break;
-        default:
-      }      
-          
-      for (i = 0; i < ActivityType0.length; i++)
-      {
-        var option = document.createElement('option'); 
-        option.text = ActivityType0[i];
-        option.value = ActivityType0[i];
-        selectAType.add(option);
-      }      
-  }
-  
-  function stateChanged(state)
-  {  
-     var ActivityType2 = document.getElementById('activitySubTypeID');
-     var ln = ActivityType2.length - 1;
-     while (ln > 0)
-     { 
-       ActivityType2.remove(1);  //Remove all but "Select City"
-       ln--;
-     }    
-     
-	 //document.getElementById("activitySubTypeID").style.display = "block";
-     var cityArray;
-     
-     switch(state)
-     {
-       case "Interview Rejected":
-           cityArray=interviewRejected
-           break;
-       case "Interview Rescheduled":
-           cityArray=interviewRescheduled
-           break;         
-       case "Interview Scheduled":
-           cityArray=interviewscheduled
-           break;         
-       case "Interview Shortlisted":
-            cityArray=interviewshortlisted
-            break;
-       default:
-			//document.getElementById("activitySubTypeID").style.display = "none";
-			//break;
-     }   
-      
-     for (i = 0; i < cityArray.length; i++)
-     {
-       var option = document.createElement('option'); 
-       option.text = cityArray[i];
-       option.value = cityArray[i];
-       ActivityType2.add(option);
-     }      
-  }
-  
- function cityChanged(city)
-  {  
-     /*switch(city)
-     {
-       case "test":
-           alert("test text") 
-           break;                
-       default:
-     } */
-  } 
-  </script>
 <form name="changePipelineStatusForm" id="changePipelineStatusForm" action="<?php echo(CATSUtility::getIndexName()); ?>?m=<?php if ($this->isJobOrdersMode): ?>joborders<?php else: ?>candidates<?php endif; ?>&amp;a=addActivityChangeClientStatus<?php if ($this->onlyScheduleEvent): ?>&amp;onlyScheduleEvent=true<?php endif; ?>" method="post" onsubmit="return checkActivityForm(document.changePipelineStatusForm);" autocomplete="off">
     <input type="hidden" name="postback" id="postback" value="postback" />
     <input type="hidden" id="candidateID" name="candidateID" value="<?php echo($this->candidateID); ?>" />
@@ -231,7 +239,10 @@
                 <div id="activityNoteDiv" style="margin-top: 4px;">
                     <select id="activityTypeID" name="activityTypeID" onchange='stateChanged(this.value);' class="inputbox" style="width: 150px; margin-bottom: 4px;">
                         <option value=''>Select Activity Type</option>
-                    </select>                    
+                    </select>  
+                    <div id="scheduleEventchkboxDiv" style="margin-top: 4px; display: none;">
+                        <input type="checkbox" name="scheduleEvent" id="scheduleEvent" style="margin-left: 0px; <?php if ($this->onlyScheduleEvent): ?>display:none;<?php endif; ?>" onclick="AS_onScheduleEventChange('scheduleEvent', 'scheduleEventDiv');"<?php if ($this->onlyScheduleEvent): ?> checked="checked"<?php endif; ?> /><?php if (!$this->onlyScheduleEvent): ?>Schedule Event<?php endif; ?>
+                    </div>
                 </div>
             </td>
         </tr>
@@ -257,14 +268,16 @@
             </td>
         </tr>
 
-        <tr id="scheduleEventTR" style="display: none;">
+        <tr id="addActivityNotesTR" >
             <td class="tdVertical">
-                <label id="scheduleEventLabel" for="scheduleEvent">Schedule Event:</label>
+                <div id="scheduleEventlabelDiv" style="margin-top: 4px; display: none;">
+                    <label id="scheduleEventLabel" for="scheduleEvent">Schedule Event:</label>
+                </div>
             </td>
             <td class="tdData">
-                <input type="checkbox" name="scheduleEvent" id="scheduleEvent" style="margin-left: 0px; <?php if ($this->onlyScheduleEvent): ?>display:none;<?php endif; ?>" onclick="AS_onScheduleEventChange('scheduleEvent', 'scheduleEventDiv');"<?php if ($this->onlyScheduleEvent): ?> checked="checked"<?php endif; ?> /><?php if (!$this->onlyScheduleEvent): ?>Schedule Event<?php endif; ?>
-                       <div id="scheduleEventDiv" <?php if (!$this->onlyScheduleEvent): ?>style="display:none;"<?php endif; ?>>
-                       <table style="border: none; margin: 0px; padding: 0px;">
+
+                <div id="scheduleEventDiv" <?php if (!$this->onlyScheduleEvent): ?>style="display:none;"<?php endif; ?>>
+                     <table style="border: none; margin: 0px; padding: 0px;">
                         <tr>
                             <td valign="top">
                                 <div style="margin-bottom: 4px;">
@@ -276,7 +289,7 @@
                                 </div>
 
                                 <div style="margin-bottom: 4px;">
-                                    <script type="text/javascript">DateInput('dateAdd', true, 'MM-DD-YY', '', - 1);</script>
+                                    <script type="text/javascript">DateInput('dateAdd', true, 'MM-DD-YY', '', -1);</script>
                                 </div>
 
                                 <div style="margin-bottom: 4px;">
@@ -336,7 +349,10 @@
                                 </div>
 
                                 <div <?php if (!$this->allowEventReminders): ?>style="display:none;"<?php endif; ?>>
-                                    <input type="checkbox" name="reminderToggle" onclick="if (this.checked) document.getElementById('reminderArea').style.display = ''; else document.getElementById('reminderArea').style.display = '';">&nbsp;<label>Set Reminder</label><br />
+                                    <input type="checkbox" name="reminderToggle" onclick="if (this.checked)
+                                                document.getElementById('reminderArea').style.display = '';
+                                            else
+                                                document.getElementById('reminderArea').style.display = '';">&nbsp;<label>Set Reminder</label><br />
                                 </div>
 
                                 <div style="display:none;" id="reminderArea">
@@ -363,6 +379,8 @@
             </td>
         </tr>
 
+
+
     </table>
     <input type="submit" class="button" name="submit" id="submit" value="Save" />&nbsp;
     <?php if ($this->isJobOrdersMode): ?>
@@ -373,7 +391,7 @@
 </form>
 
 <script type="text/javascript">
-            document.changePipelineStatusForm.activityNote.focus();</script>
+    document.changePipelineStatusForm.activityNote.focus();</script>
 
 <?php else: ?>
 <?php if (!$this->changesMade): ?>

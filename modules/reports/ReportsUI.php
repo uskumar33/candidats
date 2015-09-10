@@ -1,33 +1,5 @@
 <?php
 
-/*
- * CATS
- * Reports Module
- *
- * Copyright (C) 2005 - 2007 Cognizo Technologies, Inc.
- *
- *
- * The contents of this file are subject to the CATS Public License
- * Version 1.1a (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://www.catsone.com/.
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * The Original Code is "CATS Standard Edition".
- *
- * The Initial Developer of the Original Code is Cognizo Technologies, Inc.
- * Portions created by the Initial Developer are Copyright (C) 2005 - 2007
- * (or from the year in which this file was created to the year 2007) by
- * Cognizo Technologies, Inc. All Rights Reserved.
- *
- *
- * $Id: ReportsUI.php 3810 2007-12-05 19:13:25Z brian $
- */
-
 include_once('./lib/Statistics.php');
 include_once('./lib/DateUtility.php');
 include_once('./lib/Candidates.php');
@@ -36,7 +8,6 @@ include_once('./lib/tcpdf/tcpdf.php');
 include_once('./lib/tcpdf/config/tcpdf_config.php');
 
 class ReportsUI extends UserInterface {
-
     /**
      * 
      */
@@ -51,11 +22,7 @@ class ReportsUI extends UserInterface {
             'EEO Reports' => CATSUtility::getIndexName() . '?m=reports&amp;a=customizeEEOReport'
         );
     }
-
-    /**
-     * 
-     * @return type
-     */
+    
     public function handleRequest() {
         if (!eval(Hooks::get('REPORTS_HANDLE_REQUEST')))
             return;
@@ -265,7 +232,7 @@ class ReportsUI extends UserInterface {
         $selClientID = "";
         $startDate = "";
         $endDate = "";
-        $selReportColumns = "";
+        $selReportColumns = array();
         $strSelReportColumns = "";
         $dataGrid = "";
         $statistics = new Statistics(0);
@@ -359,7 +326,7 @@ class ReportsUI extends UserInterface {
         $selClientID = "";
         $startDate = "";
         $endDate = "";
-        $selReportColumns = "";
+        $selReportColumns = array();
         $dataGrid = "";
         $statistics = new Statistics(0);
         $selRecruiterName = "";
@@ -475,7 +442,7 @@ class ReportsUI extends UserInterface {
         $strSelReportColumns = "";
         $startDate = "";
         $endDate = "";
-        $selReportColumns = "";
+        $selReportColumns = array();
         $dataGrid = "";
         $statistics = new Statistics(0);
         $selRecruiterName = "";
@@ -549,7 +516,7 @@ class ReportsUI extends UserInterface {
         $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
 
         $rptTitle = sprintf("Recruiter (%s) Summary Report from %s to %s", $selRecruiterName, $startDate, $endDate);
-        $gridData = $statistics->getRecruiterSummaryReport( $selReportColumns, $startDate1, $endDate1, $selRecruiterID);
+        $gridData = $statistics->getRecruiterSummaryReport($selReportColumns, $startDate1, $endDate1, $selRecruiterID);
         $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
 
         $this->generatePDF($rptTitle, $dataGrid);
