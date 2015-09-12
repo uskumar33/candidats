@@ -21,7 +21,7 @@
                 <td width="320">
                     <table class="statisticsTable" width="300">
                         <tr>
-                            <th align="left">Client Reports</th>
+                            <th align="left">Recruitment Reports</th>
                             <th align="left">&nbsp;&nbsp;</th>
                         </tr>
                         <tr class="oddTableRow">
@@ -31,12 +31,7 @@
                             <td align="right">&nbsp;&nbsp;</td>
                         </tr>
 
-                        <tr class="evenTableRow">
-                            <td align="left">
-                                <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruiterSummaryReport" target="_blank">Recruiter Summary Report</a>
-                            </td>
-                            <td align="right">&nbsp;&nbsp;</td>
-                        </tr>
+
                         <tr class="oddTableRow">
                             <td align="left">
                                 <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruitmentTrackerReport" target="_blank">Recruitment Tracker</a>
@@ -49,40 +44,36 @@
                 <td width="320">
                     <table class="statisticsTable" width="300">
                         <tr>
-                            <th align="left">&nbsp;&nbsp;</th>
+                            <th align="left">Recruiter Reports</th>
                             <th align="left">&nbsp;&nbsp;</th>
                         </tr>
 
                         <tr class="evenTableRow">
-                            <td align="left">&nbsp;</td>
-                            <td align="right">&nbsp;</td>
+                            <td align="left">
+                                <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=RecruiterSummaryReport" target="_blank">Recruiter Summary Report</a>
+                            </td>
+                            <td align="right">&nbsp;&nbsp;</td>
                         </tr>
                         <tr class="oddTableRow">
                             <td align="left">&nbsp;</td>
                             <td align="right">&nbsp;</td>
-                        </tr>
-                         <tr class="evenTableRow">
-                            <td align="left">&nbsp;</td>
-                            <td align="right">&nbsp;</td>
-                        </tr>                        
+                        </tr>                   
                     </table>
                 </td>
 
                 <td width="320">
                     <table class="statisticsTable" width="300">
                         <tr>
+                            <th align="left">Candidate Reports</th>
                             <th align="left">&nbsp;&nbsp;</th>
-                            <th align="left">&nbsp;&nbsp;</th>
-                        </tr>
-                        <tr class="evenTableRow">
-                            <td align="left">&nbsp;</td>
-                            <td align="right">&nbsp;</td>
-                        </tr>
-                        <tr class="oddTableRow">
-                            <td align="left">&nbsp;</td>
-                            <td align="right">&nbsp;</td>
                         </tr>
                          <tr class="evenTableRow">
+                            <td align="left">
+                                <a href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=InterviewScheduleReport" target="_blank">Interview Schedule Report</a>
+                            </td>
+                            <td align="right">&nbsp;&nbsp;</td>
+                        </tr>
+                        <tr class="oddTableRow">
                             <td align="left">&nbsp;</td>
                             <td align="right">&nbsp;</td>
                         </tr>

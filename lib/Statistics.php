@@ -112,6 +112,26 @@ class Statistics {
         return $rs;
     }
 
+    public function getInterviewScheduleReportColumns() {
+        $sql = "select 'Position Type' AS `categories` union all 
+            select 'Current Company'  union all 
+            select 'Current Location'  union all 
+            select 'Total Exprience'  union all 
+            select 'Current CTC'  union all 
+            select 'Expected CTC'  union all 
+            select 'Notice Period'  union all 
+            select 'Contact Number'  union all 
+            select 'PAN Number'  union all 
+            select 'Skype ID'  union all 
+            select 'Current Status'  union all 
+            select 'Current Status Description'  union all 
+            select 'Interview Date'  ;";
+        $rs = $this->_db->getAllAssoc($sql);
+
+        //return $rs['categories'];
+        return $rs;
+    }
+
     /**
      * 
      * @return type
@@ -365,11 +385,11 @@ class Statistics {
             }
         }
 
-        /*$additionalConditions = "";
-        if ($selRecruiterID <> -1) {
-            $additionalConditions = " last_modified_by = " . $selRecruiterID . " and ";
-        }*/
-        
+        /* $additionalConditions = "";
+          if ($selRecruiterID <> -1) {
+          $additionalConditions = " last_modified_by = " . $selRecruiterID . " and ";
+          } */
+
         $sql = "select " . $selQueryColumns . "  	 
                 from 
 	activityclient a 
@@ -389,6 +409,68 @@ class Statistics {
             and ((date(c.date_created) between '" . $startDate . "' and '" . $endDate . "') OR (c.date_created is null))" . $grpbyQueryColumns;
 
         //echo $sql;
+
+        $rs = $this->_db->getAllAssoc($sql);
+        return $rs;
+    }
+
+    public function getInterviewScheduleReport($selClientID, $selReportColumns, $startDate) {
+        $selQueryColumns = "concat_ws(' ',c1.first_name,c1.last_name) 'Candidate<br>Name', j.title 'Position<br>Applied For'";
+
+        foreach ($selReportColumns as $selReportColumn) {
+            if ($selReportColumn == "Position Type") {
+                $selQueryColumns = $selQueryColumns . " ,j.type 'Position<br>Type'";
+            }
+            if ($selReportColumn == "Current Company") {
+                $selQueryColumns = $selQueryColumns . " , c1.currentemployer 'Current<br>Employer'";
+            }
+            if ($selReportColumn == "Current Location") {
+                $selQueryColumns = $selQueryColumns . " ,c1.currentlocation 'Current<br>Location'";
+            }
+            if ($selReportColumn == "Total Exprience") {
+                $selQueryColumns = $selQueryColumns . " ,c1.totalexp 'Total<br>Exprience'";
+            }
+            if ($selReportColumn == "Current CTC") {
+                $selQueryColumns = $selQueryColumns . " ,c1.currentCTC 'Current<br>CTC'";
+            }
+            if ($selReportColumn == "Expected CTC") {
+                $selQueryColumns = $selQueryColumns . " ,c1.expectedCTC 'Expected<br>CTC'";
+            }
+            if ($selReportColumn == "Notice Period") {
+                $selQueryColumns = $selQueryColumns . " ,c1.noticeperiod 'Notice<br>Period'";
+            }
+            if ($selReportColumn == "Contact Number") {
+                $selQueryColumns = $selQueryColumns . " ,c1.phone_cell 'Contact<br>Number'";
+            }
+            if ($selReportColumn == "PAN Number") {
+                $selQueryColumns = $selQueryColumns . " ,c1.pan 'PAN<br>Number'";
+            }
+            if ($selReportColumn == "Skype ID") {
+                $selQueryColumns = $selQueryColumns . " ,c1.skypeid 'Skype<br>ID'";
+            }
+            if ($selReportColumn == "Current Status") {
+                $selQueryColumns = $selQueryColumns . " ,a.clientactivityname 'Current<br>Status'";
+            }
+            if ($selReportColumn == "Current Status Description") {
+                $selQueryColumns = $selQueryColumns . " ,a.clientactivitytype 'Current<br>Status<br>Description'";
+            }
+            if ($selReportColumn == "Interview Date") {
+                $selQueryColumns = $selQueryColumns . " ,ce.date 'Interview<br>Schedule<br>Date'";
+            }
+        }
+
+
+        $sql = "select " . $selQueryColumns . "  	 
+                from 
+                    candidate_joborder a 
+                    inner join candidate c1 on a.candidate_id = c1.candidate_id 
+                    inner join joborder j on a.joborder_id = j.joborder_id
+                    inner join calendar_event ce on j.joborder_id = ce.joborder_id 
+                    inner join company c2 on j.company_id=c2.company_id 
+            where 
+                a.clientactivityname like '%Interview%' 
+                and c2.company_id = " . $selClientID . "  
+                and date(ce.date) in ('" . $startDate . "');";
 
         $rs = $this->_db->getAllAssoc($sql);
         return $rs;

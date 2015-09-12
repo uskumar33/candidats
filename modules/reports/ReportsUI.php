@@ -8,6 +8,7 @@ include_once('./lib/tcpdf/tcpdf.php');
 include_once('./lib/tcpdf/config/tcpdf_config.php');
 
 class ReportsUI extends UserInterface {
+
     /**
      * 
      */
@@ -22,7 +23,7 @@ class ReportsUI extends UserInterface {
             'EEO Reports' => CATSUtility::getIndexName() . '?m=reports&amp;a=customizeEEOReport'
         );
     }
-    
+
     public function handleRequest() {
         if (!eval(Hooks::get('REPORTS_HANDLE_REQUEST')))
             return;
@@ -80,6 +81,13 @@ class ReportsUI extends UserInterface {
                 $this->showRecruiterTrackerReportPDF();
                 break;
 
+            case 'InterviewScheduleReport':
+                $this->showInterviewScheduleReport();
+                break;
+
+            case 'InterviewScheduleReportPDF':
+                $this->showInterviewScheduleReportPDF();
+                break;
             case 'reports':
             default:
                 $this->reports();
@@ -519,6 +527,89 @@ class ReportsUI extends UserInterface {
         $gridData = $statistics->getRecruiterSummaryReport($selReportColumns, $startDate1, $endDate1, $selRecruiterID);
         $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
 
+        $this->generatePDF($rptTitle, $dataGrid);
+    }
+
+    private function showInterviewScheduleReport() {
+        //post back values
+        $rptTitle = "Interview Schedule Report";
+        $selClientName = "";
+        $selClientID = "";
+        $startDate = "";
+        $selReportColumns = array();
+        $strSelReportColumns = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+
+        $rptColumns = $statistics->getInterviewScheduleReportColumns();
+        $cNames = $statistics->getAllCompanies();
+
+        if (isset($_POST['clientName'])) {
+            $selReportColumns = $_POST['reportColumns'];
+            $strSelReportColumns = implode(",", $selReportColumns);
+            $selClientID = $_POST['clientName'];
+            $startDate = $_POST['startDate'];
+
+            //get selected client name
+            foreach ($cNames as $cName) {
+                if ($cName['company_id'] == $selClientID) {
+                    $selClientName = $cName['name'];
+                    break;
+                }
+            }
+
+            $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+            $rptTitle = sprintf("%s - Interview Schedule Report On %s ", $selClientName, $startDate);
+            $gridData = $statistics->getInterviewScheduleReport($selClientID, $selReportColumns, $startDate1);
+            $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
+        }
+
+        //set postback values to preserve state 
+        $this->_template->assign('dataGrid', $dataGrid);
+        $this->_template->assign('selClientName', $selClientID);
+        $this->_template->assign('selReportColumns', $selReportColumns);
+        $this->_template->assign('strSelReportColumns', $strSelReportColumns);
+        $this->_template->assign('startDate', $startDate);
+        $this->_template->assign('cNames', $cNames);
+        $this->_template->assign('rptColumns', $rptColumns);
+
+        $this->_template->display('./modules/reports/InterviewScheduleReport.tpl');
+    }
+
+    /**
+     * 
+     */
+    private function showInterviewScheduleReportPDF() {
+         //post back values
+        $selClientID = isset($_GET[$id = 'client']) ? $_GET[$id] : false;
+        $startDate = isset($_GET[$id = 'startdate']) ? $_GET[$id] : false;
+        $strSelReportColumns = isset($_GET[$id = 'reportcolumns']) ? $_GET[$id] : false;
+        $selReportColumns = explode(",", $strSelReportColumns);
+
+        $selClientName = "";
+        $strSelReportColumns = "";
+        $dataGrid = "";
+        $statistics = new Statistics(0);
+        $rptColumns = $statistics->getInterviewScheduleReportColumns();
+        $cNames = $statistics->getAllCompanies();
+
+        //get selected client name
+        foreach ($cNames as $cName) {
+            if ($cName['company_id'] == $selClientID) {
+                $selClientName = $cName['name'];
+                break;
+            }
+        }
+
+        $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+
+        $rptTitle = sprintf("%s - Interview Schedule Report On %s ", $selClientName, $startDate);
+        $gridData = $statistics->getInterviewScheduleReport($selClientID, $selReportColumns, $startDate1);
+        $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
+
+        //echo $dataGrid;
+        
         $this->generatePDF($rptTitle, $dataGrid);
     }
 
