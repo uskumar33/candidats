@@ -414,7 +414,7 @@ class Statistics {
         return $rs;
     }
 
-    public function getInterviewScheduleReport($selClientID, $selReportColumns, $startDate) {
+    public function getInterviewScheduleReport($selClientID, $selReportColumns, $startDate, $endDate) {
         $selQueryColumns = "concat_ws(' ',c1.first_name,c1.last_name) 'Candidate<br>Name', j.title 'Position<br>Applied For'";
 
         foreach ($selReportColumns as $selReportColumn) {
@@ -470,7 +470,7 @@ class Statistics {
             where 
                 a.clientactivityname like '%Interview%' 
                 and c2.company_id = " . $selClientID . "  
-                and date(ce.date) in ('" . $startDate . "');";
+                and date(ce.date) between '" . $startDate . "' and '" . $endDate . "';";
 
         $rs = $this->_db->getAllAssoc($sql);
         return $rs;

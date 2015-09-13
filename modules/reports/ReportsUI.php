@@ -530,12 +530,16 @@ class ReportsUI extends UserInterface {
         $this->generatePDF($rptTitle, $dataGrid);
     }
 
+     /**
+     * 
+     */
     private function showInterviewScheduleReport() {
         //post back values
-        $rptTitle = "Interview Schedule Report";
+        $rptTitle = "Recruitment Summary Report";
         $selClientName = "";
         $selClientID = "";
         $startDate = "";
+        $endDate = "";
         $selReportColumns = array();
         $strSelReportColumns = "";
         $dataGrid = "";
@@ -549,6 +553,7 @@ class ReportsUI extends UserInterface {
             $strSelReportColumns = implode(",", $selReportColumns);
             $selClientID = $_POST['clientName'];
             $startDate = $_POST['startDate'];
+            $endDate = $_POST['endDate'];
 
             //get selected client name
             foreach ($cNames as $cName) {
@@ -559,10 +564,15 @@ class ReportsUI extends UserInterface {
             }
 
             $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+            $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
 
-            $rptTitle = sprintf("%s - Interview Schedule Report On %s ", $selClientName, $startDate);
-            $gridData = $statistics->getInterviewScheduleReport($selClientID, $selReportColumns, $startDate1);
+            $rptTitle = sprintf("%s - Interview Schedule Report from %s to %s", $selClientName, $startDate, $endDate);
+            $gridData = $statistics->getInterviewScheduleReport($selClientID, $selReportColumns, $startDate1, $endDate1);
             $dataGrid = $this->ConvertArrayToGrid($rptTitle, $gridData);
+
+            /* if ($_POST["pdf"] == "1") {
+              $this->generatePDF($dataGrid);
+              } */
         }
 
         //set postback values to preserve state 
@@ -571,6 +581,7 @@ class ReportsUI extends UserInterface {
         $this->_template->assign('selReportColumns', $selReportColumns);
         $this->_template->assign('strSelReportColumns', $strSelReportColumns);
         $this->_template->assign('startDate', $startDate);
+        $this->_template->assign('endDate', $endDate);
         $this->_template->assign('cNames', $cNames);
         $this->_template->assign('rptColumns', $rptColumns);
 
@@ -581,9 +592,10 @@ class ReportsUI extends UserInterface {
      * 
      */
     private function showInterviewScheduleReportPDF() {
-         //post back values
+        //post back values
         $selClientID = isset($_GET[$id = 'client']) ? $_GET[$id] : false;
         $startDate = isset($_GET[$id = 'startdate']) ? $_GET[$id] : false;
+        $endDate = isset($_GET[$id = 'enddate']) ? $_GET[$id] : false;
         $strSelReportColumns = isset($_GET[$id = 'reportcolumns']) ? $_GET[$id] : false;
         $selReportColumns = explode(",", $strSelReportColumns);
 
@@ -603,13 +615,12 @@ class ReportsUI extends UserInterface {
         }
 
         $startDate1 = DateUtility::convert('-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
+        $endDate1 = DateUtility::convert('-', $endDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD);
 
-        $rptTitle = sprintf("%s - Interview Schedule Report On %s ", $selClientName, $startDate);
-        $gridData = $statistics->getInterviewScheduleReport($selClientID, $selReportColumns, $startDate1);
+        $rptTitle = sprintf("%s - Interview Schedule Report from %s to %s", $selClientName, $startDate, $endDate);
+        $gridData = $statistics->getInterviewScheduleReport($selClientID, $selReportColumns, $startDate1, $endDate1);
         $dataGrid = $this->ConvertArrayToHTMLTable($gridData);
 
-        //echo $dataGrid;
-        
         $this->generatePDF($rptTitle, $dataGrid);
     }
 

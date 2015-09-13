@@ -55,11 +55,17 @@
                                     </div>
                                 </td>
                                 <td class="tdVertical" style="width: 200px;">
-                                    <label id="lblStartDate" for="regardingID">Report Date :</label><br>
+                                    <label id="lblStartDate" for="regardingID">Start Date :</label><br>
                                     <?php if (!empty($this->startDate)): ?>
                                     <script type="text/javascript">DateInput('startDate', false, 'MM-DD-YYYY', '<?php echo($this->startDate); ?>', 9);</script>
                                     <?php else: ?>
                                     <script type="text/javascript">DateInput('startDate', false, 'MM-DD-YYYY', '', 9);</script>
+                                    <?php endif; ?>
+                                    <label id="lblEndDate" for="regardingID">End Date :</label><br>
+                                    <?php if (!empty($this->endDate)): ?>
+                                    <script type="text/javascript">DateInput('endDate', false, 'MM-DD-YYYY', '<?php echo($this->endDate); ?>', 9);</script>
+                                    <?php else: ?>
+                                    <script type="text/javascript">DateInput('endDate', false, 'MM-DD-YYYY', '', 9);</script>
                                     <?php endif; ?>
                                 </td>
 
@@ -75,7 +81,7 @@
                     <td>
                         <?php if (!empty($this->selClientName)){ ?>                        
                         <?php echo $this->dataGrid; ?>
-                        <a target="_blank" href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=InterviewScheduleReportPDF&reportcolumns=<?php echo($this->strSelReportColumns); ?>&amp;client=<?php echo($this->selClientName); ?>&amp;startdate=<?php echo($this->startDate); ?>">
+                        <a target="_blank" href="<?php echo(CATSUtility::getIndexName()); ?>?m=reports&amp;a=InterviewScheduleReportPDF&reportcolumns=<?php echo($this->strSelReportColumns); ?>&amp;client=<?php echo($this->selClientName); ?>&amp;startdate=<?php echo($this->startDate); ?>&amp;enddate=<?php echo($this->endDate); ?>">
                             <img src="images/resume_preview_inline.gif" width="16" height="16" class="absmiddle" alt="GeneratePDF" border="0" />&nbsp;Generate PDF
                         </a>                        
                         <?php } else { echo "<h1>Choose report filters...!</h1>"; } ?>
