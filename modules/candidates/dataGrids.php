@@ -20,7 +20,7 @@ class candidatesListByViewDataGrid extends CandidatesDataGrid
         $this->defaultSortBy = 'dateModifiedSort';
         $this->defaultSortDirection = 'DESC';
 
-        $this->_defaultColumns = array(
+        /*$this->_defaultColumns = array(
             array('name' => 'Attachments', 'width' => 31),
             array('name' => 'First Name', 'width' => 75),
             array('name' => 'Last Name', 'width' => 85),
@@ -30,8 +30,20 @@ class candidatesListByViewDataGrid extends CandidatesDataGrid
             array('name' => 'Owner', 'width' => 65),
             array('name' => 'Created', 'width' => 60),
             array('name' => 'Modified', 'width' => 60),
-        );
+        );*/
 
+        $this->_defaultColumns = array(
+            array('name' => 'Attachments', 'width' => 31),
+            array('name' => 'First Name', 'width' => 75),
+            array('name' => 'Last Name', 'width' => 85),
+            array('name' => 'Current Location', 'width' => 75),
+            array('name' => 'Preferred Location', 'width' => 50),
+            array('name' => 'Key Skills', 'width' => 215),
+            array('name' => 'Owner', 'width' => 65),
+            array('name' => 'Created', 'width' => 60),
+            array('name' => 'Modified', 'width' => 60),
+        );
+        
          parent::__construct("candidates:candidatesListByViewDataGrid",
                              $siteID, $parameters, $misc
                         );
