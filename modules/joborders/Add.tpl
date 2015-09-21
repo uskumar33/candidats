@@ -44,12 +44,24 @@
         //orderNames(rows);
     }
     
-    function removeRow(but) {
+    /*function removeRow(but) {
         var thisRow = but.parentNode.parentNode;
         var tbo = thisRow.parentNode;
         tbo.removeChild(thisRow);
         //var rows = tbo.getElementsByTagName('tr');
         //orderNames(rows);
+    }*/
+    
+    function removeRow(but, cTable) {
+    //dont remove 1st row
+    var totalrows = document.getElementById(cTable).getElementsByTagName('tr');
+    if(totalrows.length > 1){
+        var thisRow = but.parentNode.parentNode;
+        var tbo = thisRow.parentNode;
+        tbo.removeChild(thisRow);
+        //var rows = tbo.getElementsByTagName('tr');
+        //orderNames(rows);
+        }
     }
 
     onload = function () {
@@ -436,10 +448,10 @@
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
-                            <table class="editTable" width="600" id="mytab1">
+                            <table class="editTable" width="700" id="mytab1">
                                 <tr>
                                     <td class="tdVertical">
-                                        <label id="durationLabel" for="duration">Skill 1</label>
+                                        <label id="durationLabel" for="duration">Skill </label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="21" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
@@ -466,7 +478,7 @@
                                     </td>
                                     <td>
                                         <input  type="button" class="button" value="Add" onclick="mytab1addRow(this)">
-                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this)">
+                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab1')">
                                     </td>
                                 </tr>
                             </table>
@@ -482,10 +494,10 @@
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
-                            <table class="editTable" width="600" id="mytab2">
+                            <table class="editTable" width="700" id="mytab2">
                                 <tr>
                                     <td class="tdVertical">
-                                        <label id="durationLabel" for="duration">Skill 1</label>
+                                        <label id="durationLabel" for="duration">Skill </label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="23" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
@@ -512,7 +524,7 @@
                                     </td>
                                     <td>
                                         <input  type="button" class="button" value="Add" onclick="mytab2addRow(this)">
-                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this)">
+                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab2')">
                                     </td>
                                 </tr>
                             </table>
@@ -532,10 +544,10 @@
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
-                            <table class="editTable" width="600" id="mytab3">
+                            <table class="editTable" width="700" id="mytab3">
                                 <tr>
                                     <td class="tdVertical">
-                                        <label id="durationLabel" for="duration">Certification 1</label>
+                                        <label id="durationLabel" for="duration">Certification </label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="25" class="inputbox" id="certificationname" name="certificationname[]" 
@@ -553,7 +565,7 @@
                                     </td>
                                     <td>
                                         <input type="button" class="button" value="Add" onclick="mytab3addRow(this)">
-                                        <input type="button" class="button" value="Remove" onclick="removeRow(this)">
+                                        <input type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab3')">
                                     </td>
                                 </tr>
                             </table>
