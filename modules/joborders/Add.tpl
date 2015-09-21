@@ -78,16 +78,16 @@
     function whenJobTypeChange(){
     var myselect = document.getElementById("type");
             var selValue = myselect.options[myselect.selectedIndex].value;
-            if (selValue == "H"){
-    document.getElementById("clientnameID").disabled = true;
-            document.getElementById("clientLocationID").disabled = true;
-            document.getElementById("monthlyrateID").disabled = true;
-    }
-    else{
-    document.getElementById("clientnameID").disabled = false;
+        if (selValue == "C" || selValue=="C2H"){
+            document.getElementById("clientnameID").disabled = false;
             document.getElementById("clientLocationID").disabled = false;
-            document.getElementById("monthlyrateID").disabled = false; }
-    //alert(myselect.options[myselect.selectedIndex].value);
+            document.getElementById("monthlyrateID").disabled = false;
+        }
+        else{
+        document.getElementById("clientnameID").disabled = true;
+                document.getElementById("clientLocationID").disabled = true;
+                document.getElementById("monthlyrateID").disabled = true; }
+        //alert(myselect.options[myselect.selectedIndex].value);
     }
 </script>
 <div id="main">
