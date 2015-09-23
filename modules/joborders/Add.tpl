@@ -157,7 +157,7 @@
                         <input type="hidden" name="companyID" id="companyID" value="<?php if ($this->selectedCompanyID === false) { if (isset($this->jobOrderSourceRS['companyID'])) { echo ($this->jobOrderSourceRS['companyID']); } else { echo(0); } } else { echo($this->selectedCompanyID); } ?>" />
 
                         <?php if ($this->defaultCompanyID !== false): ?>
-                        <input type="radio" name="typeCompany" checked onchange="document.getElementById('companyName').disabled = false; if (oldCompanyID != - 1) document.getElementById('companyID').value = oldCompanyID;">
+                        <input type="radio" tabindex="2" name="typeCompany" checked onchange="document.getElementById('companyName').disabled = false; if (oldCompanyID != - 1) document.getElementById('companyID').value = oldCompanyID;">
                         <input type="text" name="companyName" id="companyName" tabindex="3" value="<?php if ($this->selectedCompanyID !== false) { $this->_($this->companyRS['name']); } ?><?php if(isset($this->jobOrderSourceRS['companyName']) && $this->selectedCompanyID == false ): ?><?php $this->_($this->jobOrderSourceRS['companyName']); ?><?php endif; ?>" class="inputbox" style="width: 125px" onFocus="suggestListActivate('getCompanyNames', 'companyName', 'CompanyResults', 'companyID', 'ajaxTextEntryHover', 0, '<?php echo($this->sessionCookie); ?>', 'helpShim');" <?php if ($this->selectedCompanyID !== false) { echo('disabled'); } ?>/>&nbsp;*
                                <?php else: ?>
                                <input type="text" name="companyName" id="companyName" tabindex="4" value="<?php if ($this->selectedCompanyID !== false) { $this->_($this->companyRS['name']); } ?><?php if(isset($this->jobOrderSourceRS['companyName']) && $this->selectedCompanyID == false ): ?><?php $this->_($this->jobOrderSourceRS['companyName']); ?><?php endif; ?>" class="inputbox" style="width: 150px" onFocus="suggestListActivate('getCompanyNames', 'companyName', 'CompanyResults', 'companyID', 'ajaxTextEntryHover', 0, '<?php echo($this->sessionCookie); ?>', 'helpShim');" <?php if ($this->selectedCompanyID !== false) { echo('disabled'); } ?>/>&nbsp;*
@@ -176,31 +176,8 @@
                         <label id="durationLabel" for="duration">CTC Range(in Lakhs):</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="5" id="ctcStartID" name="ctcStart" class="inputbox" style="width: 50px;">
-                            <option value="0">0</option>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                            <option value="50">50</option>
-                            <option value="60">60</option>
-                            <option value="70">70</option>
-                            <option value="80">80</option>
-                            <option value="90">90</option>
-                        </select>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To :  
-                        <select tabindex="6" id="ctcEndID" name="ctcEnd" class="inputbox" style="width: 50px;">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                            <option value="50">50</option>
-                            <option value="60">60</option>
-                            <option value="70">70</option>
-                            <option value="80">80</option>
-                            <option value="90">90</option>
-                            <option value="100">100</option>
-                        </select>
+                        <input type="text" tabindex="7" class="inputbox" id="ctcStart" name="ctcStart" 
+                               style="width: 150px;" value="">
                     </td>
                     <!--
                                         <td class="tdVertical">
@@ -282,7 +259,7 @@
                     </td>
                     <td class="tdData">
 
-                        <select tabindex="10" id="noticeperiodID" name="noticeperiod" class="inputbox" style="width: 100px;">
+                        <select tabindex="10" id="noticeperiod" name="noticeperiod" class="inputbox" style="width: 100px;">
                             <option value="0">-None-</option>
                             <option value="1">1 Month</option>
                             <option value="2">2 Months</option>
@@ -310,7 +287,7 @@
                         <label id="clientnameLabel" for="openings">Client Name:</label>
                     </td>
                     <td class="tdData">
-                        <input type="text" tabindex="12" class="inputbox" id="clientnameID" name="clientname" 
+                        <input type="text" tabindex="12" class="inputbox" id="clientname" name="clientname" 
                                style="width: 150px;" value="">
                     </td>
                 </tr>
@@ -337,7 +314,7 @@
                         <label id="clientnameLabel" for="openings">Client Location:</label>
                     </td>
                     <td class="tdData">
-                        <input type="text" tabindex="14" class="inputbox" id="clientLocationID" name="clientLocation" 
+                        <input type="text" tabindex="14" class="inputbox" id="clientLocation" name="clientLocation" 
                                style="width: 150px;" value="">
                     </td>
                 </tr>
@@ -363,7 +340,7 @@
                         <label id="clientnameLabel" for="openings">Monthly Rate:</label>
                     </td>
                     <td class="tdData">
-                        <input type="text" tabindex="16" class="inputbox" id="monthlyrateID" name="monthlyrate" 
+                        <input type="text" tabindex="16" class="inputbox" id="monthlyrate" name="monthlyrate" 
                                style="width: 150px;" value="">
                     </td>
                 </tr>
@@ -408,35 +385,8 @@
                         <label id="durationLabel" for="duration">Total years of Exp.</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="19" id="expyearsstartID" name="expyearsstart" class="inputbox" style="width: 150px;">
-                            <option value="0">0</option>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                            <option value="50">50</option>
-                            <option value="60">60</option>
-                            <option value="70">70</option>
-                            <option value="80">80</option>
-                            <option value="90">90</option>
-                        </select>                       
-                    </td>
-                    <td class="tdVertical">
-                        <label id="openingsIDLabel" for="openingsID">To:</label>
-                    </td>
-                    <td class="tdData">
-                        <select tabindex="20" id="expyearsendID" name="expyearsend" class="inputbox" style="width: 150px;">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                            <option value="50">50</option>
-                            <option value="60">60</option>
-                            <option value="70">70</option>
-                            <option value="80">80</option>
-                            <option value="90">90</option>
-                            <option value="100">100</option>
-                        </select>
+                         <input type="text" tabindex="19" class="inputbox" id="expyearsstart" name="expyearsstart" 
+                               style="width: 150px;" value="">
                     </td>
                 </tr>
                 <tr>
@@ -448,7 +398,7 @@
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
-                            <table class="editTable" width="700" id="mytab1">
+                            <table class="editTable" width="650" id="mytab1">
                                 <tr>
                                     <td class="tdVertical">
                                         <label id="durationLabel" for="duration">Skill </label>
@@ -494,7 +444,7 @@
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
-                            <table class="editTable" width="700" id="mytab2">
+                            <table class="editTable" width="650" id="mytab2">
                                 <tr>
                                     <td class="tdVertical">
                                         <label id="durationLabel" for="duration">Skill </label>
@@ -544,7 +494,7 @@
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
-                            <table class="editTable" width="700" id="mytab3">
+                            <table class="editTable" width="650" id="mytab3">
                                 <tr>
                                     <td class="tdVertical">
                                         <label id="durationLabel" for="duration">Certification </label>

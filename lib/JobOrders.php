@@ -130,7 +130,8 @@ class JobOrders {
      * @param integer owner user
      * @return new job order ID, or -1 on failure.
      */
-    public function add($title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $public, $openings, $companyJobID, $salary, $city, $state, $startDate, $enteredBy, $recruiter, $owner, $department, $questionnaire = false) {
+    public function add($title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $public, $openings, $companyJobID, $salary, $city, $state, $startDate, $enteredBy, $recruiter, $owner, $department, $questionnaire = false
+            ,$noticeperiod, $clientname ,$clientLocation ,$monthlyrate ,$expyearsstart) {
         /* Get the department ID of the selected department. */
         // FIXME: Move this up to the UserInterface level. I don't like this
         //        tight coupling, and calling Contacts methods as static is
@@ -166,7 +167,12 @@ class JobOrders {
                 site_id,
                 date_created,
                 date_modified,
-                questionnaire_id
+                questionnaire_id,
+                noticeperiod,
+                clientname,
+                clientlocation,
+                clientmonthlyrate,
+                exprience
             )
             VALUES (
                 %s,
@@ -193,10 +199,14 @@ class JobOrders {
                 %s,
                 NOW(),
                 NOW(),
-                %s
+                %s,
+                %s, %s, %s, %s, %s 
             )", $this->_db->makeQueryString($title), $this->_db->makeQueryString($companyJobID), $this->_db->makeQueryInteger($companyID), $this->_db->makeQueryInteger($contactID), $this->_db->makeQueryString($description), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($duration), $this->_db->makeQueryString($maxRate), $this->_db->makeQueryString($type), ($isHot ? '1' : '0'), ($public ? '1' : '0'), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryString($salary), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryInteger($departmentID), $this->_db->makeQueryStringOrNULL($startDate), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryInteger($recruiter), $this->_db->makeQueryInteger($owner), $this->_siteID,
                 // Questionnaire ID or NULL if none
                 $questionnaire !== false ? $this->_db->makeQueryInteger($questionnaire) : 'NULL'
+            ,$this->_db->makeQueryString($noticeperiod), $this->_db->makeQueryString($clientname) 
+                ,$this->_db->makeQueryString($clientLocation) ,$this->_db->makeQueryString($monthlyrate) 
+                ,$this->_db->makeQueryString($expyearsstart)
         );
 
         $queryResult = $this->_db->query($sql);

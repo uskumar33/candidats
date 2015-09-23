@@ -111,7 +111,7 @@
                             </tr>
                             <tr>
                                 <td class="tdVertical">
-                                    <label id="startDateLabel" for="startDate">Start Date:</label>
+                                    <label id="startDateLabel" for="startDate">DOB :</label>
                                 </td>
                                 <td class="tdData">
                                     <?php if (!empty($this->data['startDate'])): ?>

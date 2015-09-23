@@ -757,10 +757,16 @@ class JobOrdersUI extends UserInterface {
         $duration = $this->getTrimmedInput('duration', $_POST);
         $department = $this->getTrimmedInput('department', $_POST);
         $maxRate = $this->getTrimmedInput('maxRate', $_POST);
-        $salary = $this->getTrimmedInput('salary', $_POST);
+        $salary = $this->getTrimmedInput('ctcStart', $_POST);
         $description = $this->getTrimmedInput('description', $_POST);
         $notes = $this->getTrimmedInput('notes', $_POST);
 
+        $noticeperiod = $this->getTrimmedInput('noticeperiod', $_POST);
+        $clientname = $this->getTrimmedInput('clientname', $_POST);
+        $clientLocation = $this->getTrimmedInput('clientLocation', $_POST);
+        $monthlyrate = $this->getTrimmedInput('monthlyrate', $_POST);
+        $expyearsstart = $this->getTrimmedInput('expyearsstart', $_POST);
+        
         /* Bail out if any of the required fields are empty. */
         if (empty($title) || empty($type) || empty($city) || empty($state)) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Required fields are missing.');
@@ -772,6 +778,7 @@ class JobOrdersUI extends UserInterface {
         $jobOrders = new JobOrders($this->_siteID);
         $jobOrderID = $jobOrders->add(
                 $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $this->_userID, $recruiter, $owner, $department, $questionnaireID
+                ,$noticeperiod, $clientname ,$clientLocation ,$monthlyrate ,$expyearsstart
         );
 
         if ($jobOrderID <= 0) {
