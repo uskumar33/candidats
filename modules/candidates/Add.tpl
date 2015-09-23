@@ -78,6 +78,136 @@
                                     <input type="text" tabindex="1" name="firstName" id="firstName" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['firstName'])) $this->_($this->preassignedFields['firstName']); ?>" />&nbsp;*
                                 </td>                                
                             </tr>
+                            <tr>
+                                <td class="tdVertical">
+                                    <label id="lastNameLabel" for="lastName">Last Name:</label>
+                                </td>
+                                <td class="tdData">
+                                    <input type="text" tabindex="3" name="lastName" id="lastName" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
+                                </td>
+                            </tr>   
+                            <tr>
+                                <td colspan="2" class="tdData">
+                                    <?php if (!$this->isParsingEnabled || $this->associatedAttachment != 0): ?>                       
+
+                                    <table class="editTable" width="<?php if ($this->isModal): ?>100%<?php else: ?>150<?php endif; ?>">
+                                        <tr>
+                                            <td class="tdVertical">Resume:</td>
+                                            <td class="tdData" style="width:200px;">
+                                                <?php if ($this->associatedAttachment == 0): ?>
+                                        <nobr> <?php /* FIXME:  remove nobr stuff */ ?>
+                                            <?php if (isset($this->overAttachmentQuota)): ?>
+                                            <span style="font-size:10px;">(You have already reached your limit of <?php echo(FREE_ACCOUNT_SIZE/1024); ?> MB of attachments, and cannot add additional file attachments without upgrading to CATS Professional Hosted.)<br /></font>Copy and Paste Resume:&nbsp;
+                                                <?php else: ?>
+                                                <input type="file" id="file" name="file" size="21"  <?php if($this->associatedTextResume !== false): ?>disabled<?php endif; ?> /> &nbsp;
+                                                       <?php endif; ?>
+                                                       <a href="javascript:void(0);" onclick="if (document.getElementById('textResumeTD').style.display != '') {
+                                                                   document.getElementById('textResumeTD').style.display = '';
+                                                                   document.getElementById('file').disabled = true;
+                                                               } else {
+                                                                   document.getElementById('textResumeTD').style.display = 'none';
+                                                                   document.getElementById('file').disabled = false;
+                                                               }">
+                                                    <img src="images/package_editors.gif" style="margin:0px; padding:0px;"  class="absmiddle" alt="" border="0" title="Copy / Paste Resume" />
+                                                </a>
+                                        </nobr>
+                                        <?php else: ?>
+                                        <a href="<?php echo $this->associatedAttachmentRS['retrievalURL']; ?>">
+                                            <img src="<?php $this->_($this->associatedAttachmentRS['attachmentIcon']) ?>" alt="" width="16" height="16" style="border: none;" />
+                                        </a>
+                                        <a href="<?php echo $this->associatedAttachmentRS['retrievalURL']; ?>">
+                                            <?php $this->_($this->associatedAttachmentRS['originalFilename']) ?>
+                                        </a>
+                                        <?php echo($this->associatedAttachmentRS['previewLink']); ?>
+                                        <input type="hidden" name="associatedAttachment" value="<?php echo($this->associatedAttachment); ?>" />
+                                        <?php endif; ?>
+                                </td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" align="left" valign="top">
+                                    <input type="hidden" name="textResumeFilename" value="<?php if(isset($this->preassignedFields['textResumeFilename'])) $this->_($this->preassignedFields['textResumeFilename']); else echo('resume.txt'); ?>" />
+                                    <div id="textResumeTD" <?php if($this->associatedTextResume === false): ?>style="display:none;"<?php endif; ?>>
+                                         <p class="freeformtop" style="width: 150px;">Cut and paste resume text here.</p>
+
+                                        &nbsp;<textarea class="inputbox" tabindex="46" name="textResumeBlock" id="textResumeBlock" rows="5" cols="30" style="width: 200px; height: 100px;"><?php if ($this->associatedTextResume !== false) $this->_($this->associatedTextResume); ?></textarea>
+
+                                        <p class="freeformtop" style="width: 150px;">Cut and paste resume text here.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php else: ?>
+                        <br />
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            </table>
+            </Td>
+            <Td class="tdVertical"  width="<?php if ($this->isModal): ?>50%<?php else: ?>450<?php endif; ?>">
+                <table class="editTable" width="<?php if ($this->isModal): ?>100%<?php else: ?>450<?php endif; ?>">
+                    <tr>
+                        <td class="tdVertical">
+                            <label id="currentlocationLabel" for="currentlocation">Current Location:</label>
+                        </td>
+                        <td class="tdData">
+                            <input type="text" tabindex="23" name="currentlocation" id="currentlocation" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdVertical">
+                            <label id="prefferedlocationLabel" for="prefferedlocation">Preffered Location:</label>
+                        </td>
+                        <td class="tdData">
+                            <input type="text" tabindex="24" name="prefferedlocation" id="prefferedlocation" class="inputbox" style="width: 150px" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdVertical">
+                            <label id="JobOrderLabel" for="prefferedlocation">JobOrder:</label>
+                        </td>
+                        <td class="tdData">
+                            <select id="JobOrderID" name="JobOrderID" class="inputbox" style="width: 150px;">
+                                <option value="-1">-Select from List-</option>
+                                <?php if ($this->allJobOrders !== false): ?>
+                                <?php foreach ($this->allJobOrders as $rowNumber => $contactsData): ?>
+                                <option value="<?php $this->_($contactsData['id']) ?>"><?php $this->_($contactsData['title']) ?></option>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="tdVertical">
+                            <input type="submit" class="button" value="Add Candidate" />
+                        </td>
+                    </tr>
+                </table>
+            </Td>
+            </tr>
+            </table>
+            <table class="editTable" width="<?php if ($this->isModal): ?>100%<?php else: ?>925<?php endif; ?>">
+                <tr>
+                    <Td class="tdVertical" width="<?php if ($this->isModal): ?>50%<?php else: ?>450<?php endif; ?>">
+                        <table class="editTable" width="<?php if ($this->isModal): ?>100%<?php else: ?>450<?php endif; ?>">
+                            <?php if ($this->isParsingEnabled): ?>
+                            <tr>
+                                <td class="tdVertical" colspan="2">
+                                    <img src="images/parser/manual.gif" border="0" />
+                                </td>
+                                <td class="tdVertical">
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                        <tr>
+                                            <td align="left"><img src="images/parser/import.gif" border="0" /></td>
+                                            <td align="right">
+                                                &nbsp;
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <?php endif; ?>
+
 
                             <tr style="display: none;">
                                 <td class="tdVertical">
@@ -86,16 +216,7 @@
                                 <td class="tdData">
                                     <input type="text" tabindex="2" name="middleName" id="middleName" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['middleName'])) $this->_($this->preassignedFields['middleName']); ?>" />
                                 </td>
-                            </tr>
-
-                            <tr>
-                                <td class="tdVertical">
-                                    <label id="lastNameLabel" for="lastName">Last Name:</label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="3" name="lastName" id="lastName" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
-                                </td>
-                            </tr>
+                            </tr>                         
 
                             <tr>
                                 <td class="tdVertical">
@@ -282,25 +403,6 @@
                                     <input type="text" tabindex="22" name="totalexp" id="totalexp" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['middleName'])) $this->_($this->preassignedFields['middleName']); ?>" />
                                 </td>
                             </tr>
-
-                            <tr>
-                                <td class="tdVertical">
-                                    <label id="currentlocationLabel" for="currentlocation">Current Location:</label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="23" name="currentlocation" id="currentlocation" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="tdVertical">
-                                    <label id="prefferedlocationLabel" for="prefferedlocation">Preffered Location:</label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="24" name="prefferedlocation" id="prefferedlocation" class="inputbox" style="width: 150px" value="" />
-                                </td>
-                            </tr>
-
                             <tr>
                                 <td class="tdVertical">
                                     <label id="currentemployerlabel" for="currentemployer">Current Employer:</label>
@@ -336,7 +438,14 @@
                                     <input type="text" tabindex="32" name="expectedCTC" id="expectedCTC" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
-
+                            <tr>
+                                <td class="tdVertical">
+                                    <label id="durationLabel" for="duration">Total years of Exp.</label>
+                                </td>
+                                <td class="tdData">
+                                    <input type="text" tabindex="32" name="expyearsstart" id="expyearsstartID" class="inputbox" style="width: 150px" value="" />
+                                </td>                                  
+                            </tr>
                             <tr style="display: none;">
                                 <td class="tdVertical">
                                     <label id="employeetypelabel" for="employeetype">Employee Type:</label>
@@ -411,158 +520,90 @@
             ?>
             <p class="note">Candidate Experience </p>
 
-            <table class="editTable" width="925">
+            <table class="editTable" width="925">               
                 <tr>
-                    <td class="tdVertical">
-                        <label id="durationLabel" for="duration">Total years of Exp.</label>
+                    <td colspan="5" class="tdVertical">
+                        <br>
+                        <input type="button" width=250px" class="button" name="btnmandatoryskills"  value="Technical Experience"  />                        
                     </td>
-                    <td class="tdData">
-                        <input type="text" tabindex="32" name="expyearsstart" id="expyearsstartID" class="inputbox" style="width: 100px" value="" />
-                    </td>
-                    <td class="tdVertical">
-                        <label id="openingsIDLabel" for="openingsID">To:</label>
-                    </td>
-                    <td class="tdData">
-                        <input type="text" tabindex="32" name="expyearsend" id="expyearsendID" class="inputbox" style="width: 100px" value="" />
-                    </td>
-                    <td class="tdData">
-                        <?php if (!$this->isParsingEnabled || $this->associatedAttachment != 0): ?>                       
-
-                        <table class="editTable" width="<?php if ($this->isModal): ?>100%<?php else: ?>200<?php endif; ?>">
-                            <tr>
-                                <td class="tdVertical">Resume:</td>
-                                <td class="tdData" style="width:320px;">
-                                    <?php if ($this->associatedAttachment == 0): ?>
-                            <nobr> <?php /* FIXME:  remove nobr stuff */ ?>
-                                <?php if (isset($this->overAttachmentQuota)): ?>
-                                <span style="font-size:10px;">(You have already reached your limit of <?php echo(FREE_ACCOUNT_SIZE/1024); ?> MB of attachments, and cannot add additional file attachments without upgrading to CATS Professional Hosted.)<br /></font>Copy and Paste Resume:&nbsp;
-                                    <?php else: ?>
-                                    <input type="file" id="file" name="file" size="21" tabindex="<?php echo($tabIndex++); ?>" <?php if($this->associatedTextResume !== false): ?>disabled<?php endif; ?> /> &nbsp;
-                                           <?php endif; ?>
-                                           <a href="javascript:void(0);" onclick="if (document.getElementById('textResumeTD').style.display != '') {
-                                                       document.getElementById('textResumeTD').style.display = '';
-                                                       document.getElementById('file').disabled = true;
-                                                   } else {
-                                                       document.getElementById('textResumeTD').style.display = 'none';
-                                                       document.getElementById('file').disabled = false;
-                                                   }">
-                                        <img src="images/package_editors.gif" style="margin:0px; padding:0px;"  class="absmiddle" alt="" border="0" title="Copy / Paste Resume" />
-                                    </a>
-                            </nobr>
-                            <?php else: ?>
-                            <a href="<?php echo $this->associatedAttachmentRS['retrievalURL']; ?>">
-                                <img src="<?php $this->_($this->associatedAttachmentRS['attachmentIcon']) ?>" alt="" width="16" height="16" style="border: none;" />
-                            </a>
-                            <a href="<?php echo $this->associatedAttachmentRS['retrievalURL']; ?>">
-                                <?php $this->_($this->associatedAttachmentRS['originalFilename']) ?>
-                            </a>
-                            <?php echo($this->associatedAttachmentRS['previewLink']); ?>
-                            <input type="hidden" name="associatedAttachment" value="<?php echo($this->associatedAttachment); ?>" />
-                            <?php endif; ?>
-                    </td>
-                    <td>&nbsp;</td>
                 </tr>
                 <tr>
-                    <td colspan="3" align="left" valign="top">
-                        <input type="hidden" name="textResumeFilename" value="<?php if(isset($this->preassignedFields['textResumeFilename'])) $this->_($this->preassignedFields['textResumeFilename']); else echo('resume.txt'); ?>" />
-                        <div id="textResumeTD" <?php if($this->associatedTextResume === false): ?>style="display:none;"<?php endif; ?>>
-                             <p class="freeformtop" style="width: 200px;">Cut and paste resume text here.</p>
+                    <td colspan="5" class="tdVertical">
+                        <div style="margin-left: 5px;">
+                            <table class="editTable" width="900" id="mytab1">
+                                <tr>
+                                    <td class="tdData">
+                                        <label id="durationLabel" for="duration" style="width: 100px;">Skill </label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="35" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
+                                               style="width: 150px;" value="">
+                                    </td> 
+                                    <td class="tdData">
+                                        <label id="durationLabel" for="duration"># Projects Handled </label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="35" class="inputbox" id="projectshandled" name="projectshandled[]" 
+                                               style="width: 100px;" value="">
+                                    </td> 
+                                    <td class="tdData">
+                                        <label id="durationLabel" for="duration">Duration </label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="35" class="inputbox" id="duration" name="duration[]" 
+                                               style="width: 50px;" value="">
+                                    </td> 
 
-                            &nbsp;<textarea class="inputbox" tabindex="46" name="textResumeBlock" id="textResumeBlock" rows="5" cols="60" style="width: 300px; height: 300px;"><?php if ($this->associatedTextResume !== false) $this->_($this->associatedTextResume); ?></textarea>
-
-                            <p class="freeformtop" style="width: 200px;">Cut and paste resume text here.</p>
+                                    <td>
+                                        <input  type="button" class="button" value="Add" onclick="mytab1addRow(this)">
+                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab1')">
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </td>
                 </tr>
-            </table>
-            <?php else: ?>
-            <br />
-            <?php endif; ?>
-            </td>
-            </tr>
-            <tr>
-                <td colspan="5" class="tdVertical">
-                    <br>
-                    <input type="button" width=250px" class="button" name="btnmandatoryskills"  value="Technical Experience"  />                        
-                </td>
-            </tr>
-            <tr>
-                <td colspan="5" class="tdVertical">
-                    <div style="margin-left: 5px;">
-                        <table class="editTable" width="900" id="mytab1">
-                            <tr>
-                                <td class="tdData">
-                                    <label id="durationLabel" for="duration" style="width: 100px;">Skill </label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="35" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
-                                           style="width: 150px;" value="">
-                                </td> 
-                                <td class="tdData">
-                                    <label id="durationLabel" for="duration"># Projects Handled </label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="35" class="inputbox" id="projectshandled" name="projectshandled[]" 
-                                           style="width: 100px;" value="">
-                                </td> 
-                                <td class="tdData">
-                                    <label id="durationLabel" for="duration">Duration </label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="35" class="inputbox" id="duration" name="duration[]" 
-                                           style="width: 50px;" value="">
-                                </td> 
-
-                                <td>
-                                    <input  type="button" class="button" value="Add" onclick="mytab1addRow(this)">
-                                    <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab1')">
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="5" class="tdVertical">
-                    <br>
-                    <input type="button" class="button" name="btnoptionalskills"  value="Domain Knowledge"  />
-                </td>
-            </tr>
-            <tr>
-                <td colspan="5" class="tdVertical">
-                    <div style="margin-left: 5px;">
-                        <table class="editTable" width="900" id="mytab2">
-                            <tr>
-                                <td class="tdData">
-                                    <label id="durationLabel" for="duration" style="width: 100px;">Domain </label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="35" class="inputbox" id="domainname" name="domainname[]" 
-                                           style="width: 150px;" value="">
-                                </td> 
-                                <td class="tdData">
-                                    <label id="durationLabel" for="duration">Client </label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="35" class="inputbox" id="clientname" name="clientname[]" 
-                                           style="width: 100px;" value="">
-                                </td> 
-                                <td class="tdData">
-                                    <label id="durationLabel" for="duration">Duration </label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="35" class="inputbox" id="domainduration" name="domainduration[]" 
-                                           style="width: 50px;" value="">
-                                </td> 
-                                <td>
-                                    <input  type="button" class="button" value="Add" onclick="mytab2addRow(this)">
-                                    <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab2')">
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </td>
-            </tr>
+                <tr>
+                    <td colspan="5" class="tdVertical">
+                        <br>
+                        <input type="button" class="button" name="btnoptionalskills"  value="Domain Knowledge"  />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" class="tdVertical">
+                        <div style="margin-left: 5px;">
+                            <table class="editTable" width="900" id="mytab2">
+                                <tr>
+                                    <td class="tdData">
+                                        <label id="durationLabel" for="duration" style="width: 100px;">Domain </label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="35" class="inputbox" id="domainname" name="domainname[]" 
+                                               style="width: 150px;" value="">
+                                    </td> 
+                                    <td class="tdData">
+                                        <label id="durationLabel" for="duration">Client </label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="35" class="inputbox" id="clientname" name="clientname[]" 
+                                               style="width: 100px;" value="">
+                                    </td> 
+                                    <td class="tdData">
+                                        <label id="durationLabel" for="duration">Duration </label>
+                                    </td>
+                                    <td class="tdData">
+                                        <input type="text" tabindex="35" class="inputbox" id="domainduration" name="domainduration[]" 
+                                               style="width: 50px;" value="">
+                                    </td> 
+                                    <td>
+                                        <input  type="button" class="button" value="Add" onclick="mytab2addRow(this)">
+                                        <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab2')">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
             </table>
             <br>
             <p class="note" style="display:none;">Certifications</p>

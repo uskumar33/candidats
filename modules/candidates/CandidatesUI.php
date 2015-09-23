@@ -556,6 +556,7 @@ class CandidatesUI extends UserInterface {
 
     private function add($contents = '', $fields = array()) {
         $candidates = new Candidates($this->_siteID);
+        $allJobOrders = $candidates->getAllJobOrders();
 
         /* Get possible sources. */
         $sourcesRS = $candidates->getPossibleSources();
@@ -647,6 +648,7 @@ class CandidatesUI extends UserInterface {
             $parsingStatus['parseLimit'] = $parsingStatus['parseLimit'] - 1;
         }
 
+        $this->_template->assign('allJobOrders', $allJobOrders);
         $this->_template->assign('parsingStatus', $parsingStatus);
         $this->_template->assign('isParsingEnabled', $isParsingEnabled);
         $this->_template->assign('contents', $contents);
@@ -834,6 +836,21 @@ class CandidatesUI extends UserInterface {
         }
 
         $candidateID = $this->_addCandidate(false);
+
+        /*
+         * if Job Order Selected
+         */
+        try {
+            $selJobOrderID = $this->getTrimmedInput('JobOrderID', $_POST);
+            if ($selJobOrderID > 0) {
+                $pipelines = new Pipelines($this->_siteID);
+                if (!$pipelines->add($candidateID, $selJobOrderID, $this->_userID)) {
+                    CommonErrors::fatal(COMMONERROR_RECORDERROR, $this, 'Failed to add candidate to pipeline.');
+                }
+            }
+        } catch (Exception $ex) {
+            
+        }
 
         if ($candidateID <= 0) {
             CommonErrors::fatal(COMMONERROR_RECORDERROR, $this, 'Failed to add candidate.');
@@ -3594,4 +3611,5 @@ EOD;
     }
 
 }
+
 ?>

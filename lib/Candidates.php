@@ -54,6 +54,12 @@ class Candidates {
         $this->extraFields = new ExtraFields($siteID, DATA_ITEM_CANDIDATE);
     }
 
+    public function getAllJobOrders() {
+        $sql = "select joborder_id id, title from joborder order by title";
+        $skls = $this->_db->getAllAssoc($sql);
+        return $skls;
+    }
+
     /**
      * Adds a candidate to the database and returns its candidate ID.
      *
@@ -280,54 +286,7 @@ class Candidates {
                 %s,
                 %s,
                 %s
-            )", $this->_db->makeQueryString($firstName),
-                $this->_db->makeQueryString($middleName), 
-                $this->_db->makeQueryString($lastName),
-                $this->_db->makeQueryString($email1), 
-                $this->_db->makeQueryString($email2), 
-                $this->_db->makeQueryString($phoneHome), 
-                $this->_db->makeQueryString($phoneCell), 
-                $this->_db->makeQueryString($phoneWork),
-                $this->_db->makeQueryString($address), 
-                $this->_db->makeQueryString($city),
-                $this->_db->makeQueryString($state), 
-                $this->_db->makeQueryString($zip),
-                $this->_db->makeQueryString($source),
-                $this->_db->makeQueryString($keySkills), 
-                $this->_db->makeQueryStringOrNULL($dateAvailable), 
-                $this->_db->makeQueryString($currentEmployer), 
-                        ($canRelocate ? '1' : '0'),
-                $this->_db->makeQueryString($currentPay), 
-                $this->_db->makeQueryString($desiredPay), 
-                $this->_db->makeQueryString($notes), 
-                $this->_db->makeQueryString($webSite), 
-                $this->_db->makeQueryString($bestTimeToCall), 
-                $this->_db->makeQueryInteger($enteredBy), 
-                $this->_db->makeQueryInteger($owner), 
-                $this->_siteID,
-                $this->_db->makeQueryInteger($race),
-                $this->_db->makeQueryInteger($veteran),
-                $this->_db->makeQueryString($disability),
-                $this->_db->makeQueryString($gender), 
-                $this->_db->makeQueryString($sex),
-                $this->_db->makeQueryString($dob),
-                $this->_db->makeQueryString($skypeid),
-                $this->_db->makeQueryString($pan), 
-                $this->_db->makeQueryString($totalexp), 
-                $this->_db->makeQueryString($currentlocation),
-                $this->_db->makeQueryString($prefferedlocation),
-                $this->_db->makeQueryString($currentdesignation), 
-                $this->_db->makeQueryString($employeetype), 
-                $this->_db->makeQueryString($noticeperiod),
-                $this->_db->makeQueryString($reasonsforchange),
-                $this->_db->makeQueryString($anyoffersinhand), 
-                $this->_db->makeQueryString($currentemployer), 
-                $this->_db->makeQueryString($currentCTC), 
-                $this->_db->makeQueryString($expectedCTC),
-                $this->_db->makeQueryString($passportValid), 
-                $this->_db->makeQueryString($othercertifications), 
-                $this->_db->makeQueryString($othercommunication), 
-                $this->_db->makeQueryString($clientinteraction)
+            )", $this->_db->makeQueryString($firstName), $this->_db->makeQueryString($middleName), $this->_db->makeQueryString($lastName), $this->_db->makeQueryString($email1), $this->_db->makeQueryString($email2), $this->_db->makeQueryString($phoneHome), $this->_db->makeQueryString($phoneCell), $this->_db->makeQueryString($phoneWork), $this->_db->makeQueryString($address), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($zip), $this->_db->makeQueryString($source), $this->_db->makeQueryString($keySkills), $this->_db->makeQueryStringOrNULL($dateAvailable), $this->_db->makeQueryString($currentEmployer), ($canRelocate ? '1' : '0'), $this->_db->makeQueryString($currentPay), $this->_db->makeQueryString($desiredPay), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($webSite), $this->_db->makeQueryString($bestTimeToCall), $this->_db->makeQueryInteger($enteredBy), $this->_db->makeQueryInteger($owner), $this->_siteID, $this->_db->makeQueryInteger($race), $this->_db->makeQueryInteger($veteran), $this->_db->makeQueryString($disability), $this->_db->makeQueryString($gender), $this->_db->makeQueryString($sex), $this->_db->makeQueryString($dob), $this->_db->makeQueryString($skypeid), $this->_db->makeQueryString($pan), $this->_db->makeQueryString($totalexp), $this->_db->makeQueryString($currentlocation), $this->_db->makeQueryString($prefferedlocation), $this->_db->makeQueryString($currentdesignation), $this->_db->makeQueryString($employeetype), $this->_db->makeQueryString($noticeperiod), $this->_db->makeQueryString($reasonsforchange), $this->_db->makeQueryString($anyoffersinhand), $this->_db->makeQueryString($currentemployer), $this->_db->makeQueryString($currentCTC), $this->_db->makeQueryString($expectedCTC), $this->_db->makeQueryString($passportValid), $this->_db->makeQueryString($othercertifications), $this->_db->makeQueryString($othercommunication), $this->_db->makeQueryString($clientinteraction)
         );
         $queryResult = $this->_db->query($sql);
         if (!$queryResult) {
@@ -376,8 +335,7 @@ class Candidates {
       ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
      */
     public function addJobSkillsCertifications(
-    $candidateID, $userID, $mandatoryskillname, $mandatoryskillnameexp, $mandatoryskillduration, 
-            $optionalskillname, $optionalskillnameexp, $optionalskillduration) {
+    $candidateID, $userID, $mandatoryskillname, $mandatoryskillnameexp, $mandatoryskillduration, $optionalskillname, $optionalskillnameexp, $optionalskillduration) {
 
         $rResult = true;
         try {
@@ -387,13 +345,8 @@ class Candidates {
                 $sql = sprintf(
                         "INSERT INTO `candidate_skills` (`candidate_id`,`skilltype`,`skillname`,"
                         . "`projectshandled`,`entered_by`,`date_created`,`date_modified`, `duration`) VALUES "
-                        . "(%s, 'Skill', %s, %s, %s, now(), now(), %s)", 
-                        $this->_db->makeQueryInteger($candidateID), 
-                        $this->_db->makeQueryString($mskill), 
-                        $this->_db->makeQueryString($mandatoryskillnameexp[$currCnt]),
-                        $this->_db->makeQueryInteger($userID),
-                        $this->_db->makeQueryString($mandatoryskillduration[$currCnt])
-                        );
+                        . "(%s, 'Skill', %s, %s, %s, now(), now(), %s)", $this->_db->makeQueryInteger($candidateID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($mandatoryskillnameexp[$currCnt]), $this->_db->makeQueryInteger($userID), $this->_db->makeQueryString($mandatoryskillduration[$currCnt])
+                );
 
                 $queryResult = $this->_db->query($sql);
                 $currCnt++;
@@ -405,30 +358,25 @@ class Candidates {
                 $sql = sprintf(
                         "INSERT INTO `candidate_skills` (`candidate_id`,`skilltype`,`skillname`,"
                         . "`projectshandled`,`entered_by`,`date_created`,`date_modified`, `duration`) VALUES "
-                        . "(%s, 'Domain', %s, %s, %s, now(), now(), %s)", 
-                        $this->_db->makeQueryInteger($candidateID), 
-                        $this->_db->makeQueryString($mskill), 
-                        $this->_db->makeQueryString($optionalskillnameexp[$currCnt]), 
-                        $this->_db->makeQueryInteger($userID),
-                        $this->_db->makeQueryString($optionalskillduration[$currCnt])
-                        );
+                        . "(%s, 'Domain', %s, %s, %s, now(), now(), %s)", $this->_db->makeQueryInteger($candidateID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($optionalskillnameexp[$currCnt]), $this->_db->makeQueryInteger($userID), $this->_db->makeQueryString($optionalskillduration[$currCnt])
+                );
 
                 $queryResult = $this->_db->query($sql);
                 $currCnt++;
             }
 
             /*
-            //Certifications
-            $currCnt = 0;
-            foreach ($certificationname as $mskill) {
-                $sql = sprintf(
-                        "INSERT INTO `candidate_certifications` (`candidate_id`,`certificationname`,"
-                        . "`certificationtype`,`entered_by`,`date_created`,`date_modified`) VALUES "
-                        . "(%s, %s, %s, %s, now(), now())", $this->_db->makeQueryInteger($candidateID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($certificationcategory[$currCnt]), $this->_db->makeQueryInteger($userID));
+              //Certifications
+              $currCnt = 0;
+              foreach ($certificationname as $mskill) {
+              $sql = sprintf(
+              "INSERT INTO `candidate_certifications` (`candidate_id`,`certificationname`,"
+              . "`certificationtype`,`entered_by`,`date_created`,`date_modified`) VALUES "
+              . "(%s, %s, %s, %s, now(), now())", $this->_db->makeQueryInteger($candidateID), $this->_db->makeQueryString($mskill), $this->_db->makeQueryString($certificationcategory[$currCnt]), $this->_db->makeQueryInteger($userID));
 
-                $queryResult = $this->_db->query($sql);
-                $currCnt++;
-            }
+              $queryResult = $this->_db->query($sql);
+              $currCnt++;
+              }
              * 
              */
         } catch (Exception $ex) {
