@@ -255,6 +255,7 @@ function calendarViewEvent(entry)
 
     document.getElementById('viewEventTD').style.display = '';
 
+    document.getElementById('viewEventClient').innerHTML = entry.getData('client');
     document.getElementById('viewEventTitle').innerHTML = entry.getData('title');
     document.getElementById('viewEventLink').innerHTML = entry.getData('displayDataItemLarge');
 

@@ -346,6 +346,7 @@
                                     <td>
                                     <p class="noteUnsized">View Event</p>
                                     <span id="viewEventTitle" style="font-weight:bold"></span><br />
+                                    Client Name: <span id="viewEventClient"></span><br />
                                     Entered By: <span id="viewEventOwner"></span><br />
                                     Event Type: <span id="viewEventType"></span><br />
                                     <span id="viewEventLink"></span><br />
