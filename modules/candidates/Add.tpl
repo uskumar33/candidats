@@ -108,7 +108,7 @@
                                                                    document.getElementById('textResumeTD').style.display = 'none';
                                                                    document.getElementById('file').disabled = false;
                                                                }">
-                                                    <img src="images/package_editors.gif" style="margin:0px; padding:0px;"  class="absmiddle" alt="" border="0" title="Copy / Paste Resume" />
+                                                    <img src="images/package_editors.gif" style="margin:0px; padding:0px;"  class="absmiddle" alt="" height="22px" border="0" title="Copy / Paste Resume" />
                                                 </a>
                                         </nobr>
                                         <?php else: ?>
@@ -154,14 +154,24 @@
                             <input type="text" tabindex="23" name="currentlocation" id="currentlocation" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['lastName'])) $this->_($this->preassignedFields['lastName']); ?>" />&nbsp;*
                         </td>
                     </tr>
+
                     <tr>
                         <td class="tdVertical">
-                            <label id="prefferedlocationLabel" for="prefferedlocation">Preffered Location:</label>
+                            <label id="emailLabel" for="email1">E-Mail:</label>
                         </td>
                         <td class="tdData">
-                            <input type="text" tabindex="24" name="prefferedlocation" id="prefferedlocation" class="inputbox" style="width: 150px" value="" />
+                            <input type="text" tabindex="6" name="email1" id="email1" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['email'])) $this->_($this->preassignedFields['email']); elseif (isset($this->preassignedFields['email1'])) $this->_($this->preassignedFields['email1']); ?>" onchange="checkEmailAlreadyInSystem(this.value);" />
                         </td>
                     </tr>
+                    <tr>
+                        <td class="tdVertical">
+                            <label id="phoneCellLabel" for="phoneCell">Cell Phone:</label>
+                        </td>
+                        <td class="tdData">
+                            <input type="text" tabindex="9" name="phoneCell" id="phoneCell" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneCell'])) $this->_($this->preassignedFields['phoneCell']); ?>" />
+                        </td>
+                    </tr>
+
                     <tr>
                         <td class="tdVertical">
                             <label id="JobOrderLabel" for="prefferedlocation">JobOrder:</label>
@@ -177,13 +187,16 @@
                             </select>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="2" class="tdVertical">
-                            <input type="submit" class="button" value="Add Candidate" />
-                        </td>
-                    </tr>
+
                 </table>
             </Td>
+            </tr>
+            <tr>
+                <td colspan="2" class="tdVertical">
+                    <div align="right" style="margin-top: 0px; margin-right: 50px; margin-bottom: 5px;">
+                        <input type="submit" class="button" value="Add Candidate" />
+                    </div>
+                </td>
             </tr>
             </table>
             <table class="editTable" width="<?php if ($this->isModal): ?>100%<?php else: ?>925<?php endif; ?>">
@@ -244,12 +257,13 @@
                             </tr>
                             <tr>
                                 <td class="tdVertical">
-                                    <label id="emailLabel" for="email1">E-Mail:</label>
+                                    <label id="prefferedlocationLabel" for="prefferedlocation">Preffered Location:</label>
                                 </td>
                                 <td class="tdData">
-                                    <input type="text" tabindex="6" name="email1" id="email1" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['email'])) $this->_($this->preassignedFields['email']); elseif (isset($this->preassignedFields['email1'])) $this->_($this->preassignedFields['email1']); ?>" onchange="checkEmailAlreadyInSystem(this.value);" />
+                                    <input type="text" tabindex="24" name="prefferedlocation" id="prefferedlocation" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
+
 
                             <tr style="display: none;">
                                 <td class="tdVertical">
@@ -269,14 +283,6 @@
                                 </td>
                             </tr>
 
-                            <tr>
-                                <td class="tdVertical">
-                                    <label id="phoneCellLabel" for="phoneCell">Cell Phone:</label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="9" name="phoneCell" id="phoneCell" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneCell'])) $this->_($this->preassignedFields['phoneCell']); ?>" />
-                                </td>
-                            </tr>
 
                             <tr style="display: none;">
                                 <td class="tdVertical">
@@ -337,7 +343,14 @@
                                     <input type="text" tabindex="13" name="skypeid" id="skypeid" class="inputbox" style="width: 150px" value="" />
                                 </td>
                             </tr>
-
+                            <tr>
+                                <td class="tdVertical">
+                                    <label id="currentemployerlabel" for="currentemployer">Current Employer:</label>
+                                </td>
+                                <td class="tdData">
+                                    <input type="text" tabindex="30" name="currentemployer" id="currentemployer" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneHome'])) $this->_($this->preassignedFields['phoneHome']); ?>" />
+                                </td>
+                            </tr>    
 
 
                             <tr style="display: none;">
@@ -403,14 +416,7 @@
                                     <input type="text" tabindex="22" name="totalexp" id="totalexp" class="inputbox" style="width: 150px" value="<?php if(isset($this->preassignedFields['middleName'])) $this->_($this->preassignedFields['middleName']); ?>" />
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="tdVertical">
-                                    <label id="currentemployerlabel" for="currentemployer">Current Employer:</label>
-                                </td>
-                                <td class="tdData">
-                                    <input type="text" tabindex="30" name="currentemployer" id="currentemployer" class="inputbox" style="width: 150px;" value="<?php if (isset($this->preassignedFields['phoneHome'])) $this->_($this->preassignedFields['phoneHome']); ?>" />
-                                </td>
-                            </tr>    
+
 
                             <tr>
                                 <td class="tdVertical">
@@ -701,7 +707,7 @@
                             <table class="editTable" width="750" id="mytab21">
                                 <tr>
                                     <td class="tdVertical">
-                                        <label id="durationLabel" for="duration">Skill 1</label>
+                                        <label id="durationLabel" for="duration">Skill </label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="43" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
@@ -769,7 +775,7 @@
                             <table class="editTable" width="750" id="mytab31">
                                 <tr>
                                     <td class="tdVertical">
-                                        <label id="durationLabel" for="duration">Certification 1</label>
+                                        <label id="durationLabel" for="duration">Certification </label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="45" class="inputbox" id="certificationname" name="certificationname[]" 

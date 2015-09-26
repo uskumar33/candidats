@@ -339,6 +339,12 @@ class Candidates {
 
         $rResult = true;
         try {
+            //delete skills for current candidate and then reinsert
+             $sql = sprintf(
+                        "delete from `candidate_skills` where candidate_id = %s", $this->_db->makeQueryInteger($candidateID)
+                );
+             $queryResult = $this->_db->query($sql);
+             
             //mandatory skills
             $currCnt = 0;
             foreach ($mandatoryskillname as $mskill) {
@@ -526,6 +532,81 @@ class Candidates {
         }
 
         return true;
+    }
+
+    public function customUpdate(
+    $candidateID, $firstName, $lastName, $currentlocation, $email1, $phoneCell, $JobOrderID, $sex, $dob, $prefferedlocation, $pan, $validpassport, $skypeid, $currentemployer, $currentdesignation, $currentCTC, $expectedCTC, $expyearsstartID, $noticeperiod, $reasonsforchange, $anyoffersinhand, $othercertifications, $othercommunications, $clientintegration
+            ,$notes ,$keyskills
+    ) {
+        $sql = sprintf(
+                "UPDATE
+                candidate
+            SET
+                first_name            = %s,
+                last_name             = %s,
+                currentlocation       = %s,
+                email1                = %s,
+                phone_cell            = %s,
+                sex                   = %s,
+                dob                   = %s,                
+                prefferedlocation     = %s,
+                pan                   = %s,
+                passportvalid         = %s,
+                skypeid               = %s,
+                current_employer      = %s,
+                currentdesignation    = %s,
+                currentCTC            = %s,
+                expectedCTC           = %s,
+                totalexp              = %s,
+                noticeperiod          = %s,
+                reasonsforchange      = %s,
+                anyoffersinhand       = %s,
+                certifications        = %s,
+                communication         = %s,
+                clientinteraction     = %s,
+                date_modified         = NOW(),
+                notes                 = %s,
+                key_skills            = %s
+            WHERE
+                candidate_id = %s
+            AND
+                site_id = %s", 
+                $this->_db->makeQueryString($firstName ),
+                $this->_db->makeQueryString($lastName ),
+                $this->_db->makeQueryString($currentlocation ),
+                $this->_db->makeQueryString($email1 ),
+                $this->_db->makeQueryString($phoneCell ),
+                $this->_db->makeQueryString($sex ),
+                $this->_db->makeQueryString($dob ),
+                $this->_db->makeQueryString($prefferedlocation ),
+                $this->_db->makeQueryString($pan ),
+                $this->_db->makeQueryString($validpassport ),
+                $this->_db->makeQueryString($skypeid ),
+                $this->_db->makeQueryString($currentemployer ),
+                $this->_db->makeQueryString($currentdesignation ),
+                $this->_db->makeQueryString($currentCTC ),
+                $this->_db->makeQueryString($expectedCTC ),
+                $this->_db->makeQueryString($expyearsstartID ),
+                $this->_db->makeQueryString($noticeperiod ),
+                $this->_db->makeQueryString($reasonsforchange ),
+                $this->_db->makeQueryString($anyoffersinhand ),
+                $this->_db->makeQueryString($othercertifications ),
+                $this->_db->makeQueryString($othercommunications ),
+                $this->_db->makeQueryString($clientintegration ),
+                $this->_db->makeQueryString($notes ),
+                $this->_db->makeQueryString($keyskills ),
+                $this->_db->makeQueryInteger($candidateID), 
+                $this->_siteID
+        );
+
+        $queryResult = $this->_db->query($sql);
+
+        if (!$queryResult) {
+            return false;
+        }
+        else{
+        return true;
+        }
     }
 
     /**
@@ -716,6 +797,32 @@ class Candidates {
         return $this->_db->getAssoc($sql);
     }
 
+    public function getCandidateJobOrderID($candidateID) {
+        $sql = sprintf(
+                "select joborder_id from candidate_joborder where candidate_id=%s limit 1;", $this->_db->makeQueryInteger($candidateID)
+        );
+
+        return $this->_db->getAssoc($sql);
+    }
+
+    public function getCandidateTechnicalSkills($candidateID) {
+        $sql = sprintf(
+                "select skillname, projectshandled, duration from candidate_skills "
+                . "where skilltype='Skill' and candidate_id=%s order by skillname;", $this->_db->makeQueryInteger($candidateID)
+        );
+
+        return $this->_db->getAllAssoc($sql);
+    }
+
+    public function getCandidateDomainKnowledge($candidateID) {
+        $sql = sprintf(
+                "select skillname, projectshandled, duration from candidate_skills "
+                . "where skilltype='Domain' and candidate_id=%s order by skillname;", $this->_db->makeQueryInteger($candidateID)
+        );
+
+        return $this->_db->getAllAssoc($sql);
+    }
+
     /**
      * Returns all candidate information relevent for the Edit Candidate page
      * for a given candidate ID.
@@ -759,7 +866,26 @@ class Candidates {
                 candidate.is_admin_hidden AS isAdminHidden,
                 DATE_FORMAT(
                     candidate.date_available, '%%m-%%d-%%y'
-                ) AS dateAvailable
+                ) AS dateAvailable,
+                candidate.currentlocation AS currentLocation,
+                DATE_FORMAT(
+                    candidate.dob, '%%m-%%d-%%y'
+                ) AS dob ,
+                candidate.prefferedlocation AS prefferedLocation,
+                candidate.pan AS pan,
+                candidate.passportvalid AS validpassport,
+                candidate.skypeid AS skypeid,
+                candidate.currentemployer AS currentemployer,
+                candidate.currentdesignation AS currentdesignation,
+                candidate.currentCTC AS currentCTC,
+                candidate.expectedCTC AS expectedCTC,
+                candidate.totalexp AS totalexp,
+                candidate.noticeperiod AS noticeperiod,
+                candidate.reasonsforchange AS reasonsforchange,
+                candidate.anyoffersinhand AS anyoffersinhand,
+                candidate.certifications AS certifications,
+                candidate.communication AS communication,
+                candidate.clientinteraction AS clientinteraction
             FROM
                 candidate
             WHERE

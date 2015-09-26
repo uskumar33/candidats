@@ -99,7 +99,8 @@ class CandidatesUI extends UserInterface {
 
             case 'edit':
                 if ($this->isPostBack()) {
-                    $this->onEdit();
+                    //$this->onEdit();
+                    $this->onCustomEdit();
                 } else {
                     $this->edit();
                 }
@@ -874,6 +875,18 @@ class CandidatesUI extends UserInterface {
         $candidateID = $_GET['candidateID'];
 
         $candidates = new Candidates($this->_siteID);
+        $allJobOrders = $candidates->getAllJobOrders();
+
+        $CandTechnicalSkills = array();
+        $CandDomainKnowledge = array();
+        $CandTechnicalSkills = $candidates->getCandidateTechnicalSkills($candidateID);
+        $CandDomainKnowledge = $candidates->getCandidateDomainKnowledge($candidateID);
+
+        $candJobOrderID1 = 0;
+        $candJobOrderID = $candidates->getCandidateJobOrderID($candidateID);
+        if (isset($candJobOrderID['joborder_id'])) {
+            $candJobOrderID1 = $candJobOrderID['joborder_id'];
+        }
         $data = $candidates->getForEditing($candidateID);
 
         /* Bail out if we got an empty result set. */
@@ -941,6 +954,10 @@ class CandidatesUI extends UserInterface {
         $EEOSettings = new EEOSettings($this->_siteID);
         $EEOSettingsRS = $EEOSettings->getAll();
 
+        $this->_template->assign('CandDomainKnowledge', $CandDomainKnowledge);
+        $this->_template->assign('CandTechnicalSkills', $CandTechnicalSkills);
+        $this->_template->assign('candJobOrderID', $candJobOrderID1);
+        $this->_template->assign('allJobOrders', $allJobOrders);
         $this->_template->assign('active', $this);
         $this->_template->assign('data', $data);
         $this->_template->assign('usersRS', $usersRS);
@@ -955,6 +972,63 @@ class CandidatesUI extends UserInterface {
         $this->_template->display('./modules/candidates/Edit.tpl');
     }
 
+    private function onCustomEdit() {
+        $candidateID = $this->getTrimmedInput('candidateID', $_POST);
+        $firstName = $this->getTrimmedInput('firstName', $_POST);
+        $lastName = $this->getTrimmedInput('lastName', $_POST);
+        $currentlocation = $this->getTrimmedInput('currentlocation', $_POST);
+        $email1 = $this->getTrimmedInput('email1', $_POST);
+        $phoneCell = $this->getTrimmedInput('phoneCell', $_POST);
+        $JobOrderID = $this->getTrimmedInput('JobOrderID', $_POST);
+        $sex = $this->getTrimmedInput('sex', $_POST);
+        $dob = $this->getTrimmedInput('dob', $_POST);
+        $prefferedlocation = $this->getTrimmedInput('prefferedlocation', $_POST);
+        $pan = $this->getTrimmedInput('pan', $_POST);
+        $validpassport = $this->getTrimmedInput('validpassport', $_POST);
+        $skypeid = $this->getTrimmedInput('skypeid', $_POST);
+        $currentemployer = $this->getTrimmedInput('currentemployer', $_POST);
+        $currentdesignation = $this->getTrimmedInput('currentdesignation', $_POST);
+        $currentCTC = $this->getTrimmedInput('currentCTC', $_POST);
+        $expectedCTC = $this->getTrimmedInput('expectedCTC', $_POST);
+        $expyearsstartID = $this->getTrimmedInput('expyearsstartID', $_POST);
+        $noticeperiod = $this->getTrimmedInput('noticeperiod', $_POST);
+        $reasonsforchange = $this->getTrimmedInput('reasonsforchange', $_POST);
+        $anyoffersinhand = $this->getTrimmedInput('anyoffersinhand', $_POST);
+        $othercertifications = $this->getTrimmedInput('othercertifications', $_POST);
+        $othercommunications = $this->getTrimmedInput('othercommunications', $_POST);
+        $clientintegration = $this->getTrimmedInput('clientintegration', $_POST);
+        $notes = $this->getTrimmedInput('notes', $_POST);
+        $keyskills = $this->getTrimmedInput('keySkills', $_POST);
+
+        /* Update the candidate record. */
+        $candidates = new Candidates($this->_siteID);
+        $updateSuccess = $candidates->customUpdate(
+                $candidateID, $firstName, $lastName, $currentlocation, $email1, $phoneCell, $JobOrderID, $sex, $dob, $prefferedlocation, $pan, $validpassport, $skypeid, $currentemployer, $currentdesignation, $currentCTC, $expectedCTC, $expyearsstartID, $noticeperiod, $reasonsforchange, $anyoffersinhand, $othercertifications, $othercommunications, $clientintegration
+                , $notes, $keyskills
+        );
+
+        if ($updateSuccess == "true") {
+            $mandatoryskillname = $_POST['mandatoryskillname'];
+            $mandatoryskillnameexp = $_POST['projectshandled'];
+            $mandatoryskillduration = $_POST['duration'];
+
+            $optionalskillname = $_POST['domainname'];
+            $optionalskillnameexp = $_POST['clientname'];
+            $optionalskillduration = $_POST['domainduration'];
+
+            //$certificationname = $_POST['certificationname'];
+            //$certificationcategory = $_POST['certificationcategory'];
+
+            $jobOrderID = $candidates->addJobSkillsCertifications(
+                    $candidateID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $mandatoryskillduration, $optionalskillname, $optionalskillnameexp, $optionalskillduration
+            );
+
+            CATSUtility::transferRelativeURI(
+                    'm=candidates&a=show&candidateID=' . $candidateID
+            );
+        }
+    }
+
     /*
      * Called by handleRequest() to process saving / submitting the edit page.
      */
@@ -963,20 +1037,16 @@ class CandidatesUI extends UserInterface {
         if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
             CommonErrors::fatal(COMMONERROR_PERMISSION, $this, 'Invalid user level for action.');
         }
-
         $candidates = new Candidates($this->_siteID);
-
         /* Bail out if we don't have a valid candidate ID. */
         if (!$this->isRequiredIDValid('candidateID', $_POST)) {
             CommonErrors::fatalModal(COMMONERROR_BADINDEX, $this, 'Invalid candidate ID.');
             return;
         }
-
         /* Bail out if we don't have a valid owner user ID. */
         if (!$this->isOptionalIDValid('owner', $_POST)) {
             CommonErrors::fatal(COMMONERROR_BADINDEX, $this, 'Invalid owner user ID.');
         }
-
         /* Bail out if we received an invalid availability date; if not, go
          * ahead and convert the date to MySQL format.
          */
@@ -985,13 +1055,11 @@ class CandidatesUI extends UserInterface {
             if (!DateUtility::validate('-', $dateAvailable, DATE_FORMAT_MMDDYY)) {
                 CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid availability date.');
             }
-
             /* Convert start_date to something MySQL can understand. */
             $dateAvailable = DateUtility::convert(
                             '-', $dateAvailable, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
             );
         }
-
         $formattedPhoneHome = StringUtility::extractPhoneNumber(
                         $this->getTrimmedInput('phoneHome', $_POST)
         );
@@ -1000,7 +1068,6 @@ class CandidatesUI extends UserInterface {
         } else {
             $phoneHome = $this->getTrimmedInput('phoneHome', $_POST);
         }
-
         $formattedPhoneCell = StringUtility::extractPhoneNumber(
                         $this->getTrimmedInput('phoneCell', $_POST)
         );
@@ -1009,7 +1076,6 @@ class CandidatesUI extends UserInterface {
         } else {
             $phoneCell = $this->getTrimmedInput('phoneCell', $_POST);
         }
-
         $formattedPhoneWork = StringUtility::extractPhoneNumber(
                         $this->getTrimmedInput('phoneWork', $_POST)
         );
@@ -1018,31 +1084,23 @@ class CandidatesUI extends UserInterface {
         } else {
             $phoneWork = $this->getTrimmedInput('phoneWork', $_POST);
         }
-
         $candidateID = $_POST['candidateID'];
         $owner = $_POST['owner'];
-
         /* Can Relocate */
         $canRelocate = $this->isChecked('canRelocate', $_POST);
-
         $isHot = $this->isChecked('isHot', $_POST);
-
         /* Change ownership email? */
         if ($this->isChecked('ownershipChange', $_POST) && $owner > 0) {
             $candidateDetails = $candidates->get($candidateID);
-
             $users = new Users($this->_siteID);
             $ownerDetails = $users->get($owner);
-
             if (!empty($ownerDetails)) {
                 $emailAddress = $ownerDetails['email'];
-
                 /* Get the change status email template. */
                 $emailTemplates = new EmailTemplates($this->_siteID);
                 $statusChangeTemplateRS = $emailTemplates->getByTag(
                         'EMAIL_TEMPLATE_OWNERSHIPASSIGNCANDIDATE'
                 );
-
                 if (empty($statusChangeTemplateRS) ||
                         empty($statusChangeTemplateRS['textReplaced'])) {
                     $statusChangeTemplate = '';
@@ -1066,7 +1124,6 @@ class CandidatesUI extends UserInterface {
                 $statusChangeTemplate = str_replace(
                         $stringsToFind, $replacementStrings, $statusChangeTemplate
                 );
-
                 $email = $statusChangeTemplate;
             } else {
                 $email = '';
@@ -1076,7 +1133,6 @@ class CandidatesUI extends UserInterface {
             $email = '';
             $emailAddress = '';
         }
-
         $isActive = $this->isChecked('isActive', $_POST);
         $firstName = $this->getTrimmedInput('firstName', $_POST);
         $middleName = $this->getTrimmedInput('middleName', $_POST);
@@ -1099,18 +1155,14 @@ class CandidatesUI extends UserInterface {
         $race = $this->getTrimmedInput('race', $_POST);
         $veteran = $this->getTrimmedInput('veteran', $_POST);
         $disability = $this->getTrimmedInput('disability', $_POST);
-
         /* Candidate source list editor. */
         $sourceCSV = $this->getTrimmedInput('sourceCSV', $_POST);
-
         /* Bail out if any of the required fields are empty. */
         if (empty($firstName) || empty($lastName)) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Required fields are missing.');
         }
-
         if (!eval(Hooks::get('CANDIDATE_ON_EDIT_PRE')))
             return;
-
         /* Update the candidate record. */
         $updateSuccess = $candidates->update(
                 $candidateID, $isActive, $firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $owner, $isHot, $email, $emailAddress, $gender, $race, $veteran, $disability
@@ -1118,21 +1170,16 @@ class CandidatesUI extends UserInterface {
         if (!$updateSuccess) {
             CommonErrors::fatal(COMMONERROR_RECORDERROR, $this, 'Failed to update candidate.');
         }
-
         /* Update extra fields. */
         $candidates->extraFields->setValuesOnEdit($candidateID);
-
         /* Update possible source list */
         $sources = $candidates->getPossibleSources();
         $sourcesDifferences = ListEditor::getDifferencesFromList(
                         $sources, 'name', 'sourceID', $sourceCSV
         );
-
         $candidates->updatePossibleSources($sourcesDifferences);
-
         if (!eval(Hooks::get('CANDIDATE_ON_EDIT_POST')))
             return;
-
         CATSUtility::transferRelativeURI(
                 'm=candidates&a=show&candidateID=' . $candidateID
         );

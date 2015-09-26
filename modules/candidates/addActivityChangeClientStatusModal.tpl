@@ -42,7 +42,7 @@
 <script type="text/javascript">
             var ActivityTypes = ["Profile", "Interview", "HR"];
 
-    var profileActivityType = ["Sourced", "Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
+    var profileActivityType = ["Not Sourced", "Sourced", "Shortlisted", "Rejected", "Awaiting Feedback", "On Hold"];
     var interviewActivityType = ["Interview Scheduled", "Interview Rescheduled", "Interview Awaiting Feedback", "Interview On Hold", "Interview Shortlisted", "Interview Rejected"];
     var hrActivityType = ["Offered", "Rejected", "Declined", "Withdrawn", "Joined", "On Hold"];
 
