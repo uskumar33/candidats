@@ -1,95 +1,8 @@
 <?php /* $Id: Add.tpl 3810 2007-12-05 19:13:25Z brian $ */ ?>
-<?php TemplateUtility::printHeader('Job Orders', array('modules/joborders/validator.js',  'js/company.js', 'js/sweetTitles.js', 'js/suggest.js', 'js/joborder.js', 'js/lib.js', 'js/listEditor.js', 'tinymce')); ?>
+<?php TemplateUtility::printHeader('Job Orders', array('modules/joborders/validator.js', 'modules/joborders/customjobordersvalidation.js', 'js/company.js', 'js/sweetTitles.js', 'js/suggest.js', 'js/joborder.js', 'js/lib.js', 'js/listEditor.js', 'tinymce')); ?>
 <?php TemplateUtility::printHeaderBlock(); ?>
 <?php TemplateUtility::printTabs($this->active, $this->subActive); ?>
-<script type="text/javascript">
-     var clone1, clone2, clone21, clone3, clone31;
-    function mytab1addRow(but) {
-        var tbo1 = but.parentNode.parentNode.parentNode;
-        tbo1.appendChild(clone1);
-        var rows1 = tbo1.getElementsByTagName('tr');
-        clone1 = rows1[rows1.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
 
-    function mytab2addRow(but) {
-        var tbo2 = but.parentNode.parentNode.parentNode;
-        tbo2.appendChild(clone2);
-        var rows2 = tbo2.getElementsByTagName('tr');
-        clone2 = rows2[rows2.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-
-    function mytab21addRow(but) {
-        var tbo21 = but.parentNode.parentNode.parentNode;
-        tbo21.appendChild(clone21);
-        var rows21 = tbo21.getElementsByTagName('tr');
-        clone21 = rows21[rows21.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-
-    function mytab3addRow(but) {
-        var tbo3 = but.parentNode.parentNode.parentNode;
-        tbo3.appendChild(clone3);
-        var rows3 = tbo3.getElementsByTagName('tr');
-        clone3 = rows3[rows3.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-
-    function mytab31addRow(but) {
-        var tbo31 = but.parentNode.parentNode.parentNode;
-        tbo31.appendChild(clone31);
-        var rows31 = tbo31.getElementsByTagName('tr');
-        clone31 = rows31[rows31.length - 1].cloneNode(true);
-        //orderNames(rows);
-    }
-    
-    /*function removeRow(but) {
-        var thisRow = but.parentNode.parentNode;
-        var tbo = thisRow.parentNode;
-        tbo.removeChild(thisRow);
-        //var rows = tbo.getElementsByTagName('tr');
-        //orderNames(rows);
-    }*/
-    
-    function removeRow(but, cTable) {
-    //dont remove 1st row
-    var totalrows = document.getElementById(cTable).getElementsByTagName('tr');
-    if(totalrows.length > 1){
-        var thisRow = but.parentNode.parentNode;
-        var tbo = thisRow.parentNode;
-        tbo.removeChild(thisRow);
-        //var rows = tbo.getElementsByTagName('tr');
-        //orderNames(rows);
-        }
-    }
-
-    onload = function () {
-    clone1 = document.getElementById('mytab1').getElementsByTagName('tr')[0].cloneNode(true);
-        clone2 = document.getElementById('mytab2').getElementsByTagName('tr')[0].cloneNode(true);
-        clone3 = document.getElementById('mytab3').getElementsByTagName('tr')[0].cloneNode(true);
-        clone21 = document.getElementById('mytab21').getElementsByTagName('tr')[0].cloneNode(true);
-        clone31 = document.getElementById('mytab31').getElementsByTagName('tr')[0].cloneNode(true);
-            document.getElementById("clientnameID").disabled = true;
-            document.getElementById("clientLocationID").disabled = true;
-            document.getElementById("monthlyrateID").disabled = true;
-    }
-
-    function whenJobTypeChange(){
-    var myselect = document.getElementById("type");
-            var selValue = myselect.options[myselect.selectedIndex].value;
-        if (selValue == "C" || selValue=="C2H"){
-            document.getElementById("clientnameID").disabled = false;
-            document.getElementById("clientLocationID").disabled = false;
-            document.getElementById("monthlyrateID").disabled = false;
-        }
-        else{
-        document.getElementById("clientnameID").disabled = true;
-                document.getElementById("clientLocationID").disabled = true;
-                document.getElementById("monthlyrateID").disabled = true; }
-        //alert(myselect.options[myselect.selectedIndex].value);
-    }
-</script>
 <div id="main">
     <?php TemplateUtility::printQuickSearch(); ?>
 
@@ -377,40 +290,24 @@
                 </tr>
             </table>
             <br>
-            <p class="note">Candidate Experience</p>
-
+            <p class="note">Candidate Skill Experience - Mandatory</p>
             <table class="editTable" width="700">
-                <tr>
-                    <td class="tdVertical">
-                        <label id="durationLabel" for="duration">Total years of Exp.</label>
-                    </td>
-                    <td class="tdData">
-                         <input type="text" tabindex="19" class="inputbox" id="expyearsstart" name="expyearsstart" 
-                               style="width: 150px;" value="">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="tdVertical">
-                        <br>
-                        <input type="button" width=250px" class="button" name="btnmandatoryskills"  value="Add mandatory skillset (if any)"  />                        
-                    </td>
-                </tr>
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
                             <table class="editTable" width="650" id="mytab1">
-                                <tr>
-                                    <td class="tdVertical">
+                                <tr >
+                                    <td width="10%" class="tdVertical">
                                         <label id="durationLabel" for="duration">Skill </label>
                                     </td>
-                                    <td class="tdData">
+                                    <td width="30%" class="tdData">
                                         <input type="text" tabindex="21" class="inputbox" id="mandatoryskillname" name="mandatoryskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
-                                    <td class="tdVertical">
+                                    <td width="10%" class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
-                                    <td class="tdData">
+                                    <td width="30%" class="tdData">
                                         <select tabindex="22" id="mandatoryskillnameexp" name="mandatoryskillnameexp[]" class="inputbox" style="width: 100px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
@@ -426,7 +323,7 @@
                                             <option value="11">>10</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <input  type="button" class="button" value="Add" onclick="mytab1addRow(this)">
                                         <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab1')">
                                     </td>
@@ -435,28 +332,27 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="4" class="tdVertical">
-                        <br>
-                        <input type="button" class="button" name="btnoptionalskills"  value="Add optional skillset (if any)"  />
-                    </td>
-                </tr>
+               
+            </table>
+            
+            <p class="note">Candidate Skill Experience - Optional</p>
+            <table class="editTable" width="700">
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
                             <table class="editTable" width="650" id="mytab2">
                                 <tr>
-                                    <td class="tdVertical">
+                                    <td width="10%" class="tdVertical">
                                         <label id="durationLabel" for="duration">Skill </label>
                                     </td>
-                                    <td class="tdData">
+                                    <td width="30%" class="tdData">
                                         <input type="text" tabindex="23" class="inputbox" id="optionalskillname" name="optionalskillname[]" 
                                                style="width: 150px;" value="">
                                     </td>
-                                    <td class="tdVertical">
+                                    <td width="10%" class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID">Exp.</label>
                                     </td>
-                                    <td class="tdData">
+                                    <td width="30%" class="tdData">
                                         <select tabindex="24" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1"><1</option>
@@ -472,7 +368,7 @@
                                             <option value="11">>10</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <input  type="button" class="button" value="Add" onclick="mytab2addRow(this)">
                                         <input  type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab2')">
                                     </td>
@@ -482,38 +378,33 @@
                     </td>
                 </tr>
             </table>
+            
             <br>
             <p class="note">Certifications</p>
-            <table class="editTable" width="700">                
-                <tr>
-                    <td colspan="4" class="tdVertical">
-                        <br>
-                        <input type="button" width=250px" class="button" name="btnmandatoryskills"  value="Add Certifications (if any)"  />                        
-                    </td>
-                </tr>
+            <table class="editTable" width="700">                        
                 <tr>
                     <td colspan="4" class="tdVertical">
                         <div style="margin-left: 5px;">
                             <table class="editTable" width="650" id="mytab3">
                                 <tr>
-                                    <td class="tdVertical">
+                                    <td width="10%" class="tdVertical">
                                         <label id="durationLabel" for="duration">Certification </label>
                                     </td>
-                                    <td class="tdData">
+                                    <td width="30%" class="tdData">
                                         <input type="text" tabindex="25" class="inputbox" id="certificationname" name="certificationname[]" 
                                                style="width: 150px;" value="">
                                     </td>
-                                    <td class="tdVertical">
+                                    <td  width="10%" class="tdVertical">
                                         <label id="openingsIDLabel" for="openingsID"></label>
                                     </td>
-                                    <td class="tdData">
+                                    <td width="30%" class="tdData">
                                         <select tabindex="26" id="certificationcategory" name="certificationcategory[]" class="inputbox" style="width: 150px;">
                                             <option value="-1">-Select from List-</option>
                                             <option value="1">Mandatory</option>
                                             <option value="0">Optional</option>
                                         </select>
                                     </td>
-                                    <td>
+                                    <td width="20%">
                                         <input type="button" class="button" value="Add" onclick="mytab3addRow(this)">
                                         <input type="button" class="button" value="Remove" onclick="removeRow(this, 'mytab3')">
                                     </td>

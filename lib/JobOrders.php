@@ -108,6 +108,42 @@ class JobOrders {
         return $panel;
     }
 
+    public function getJobOrderMandatorySkills($jOrderID) {
+        $sql = sprintf(
+                "select skillname, skillexprience from joborder_skills where skilltype='Mandatory' and skillname is not null and length(trim(skillname))>0 and joborder_id = %s order by skillname;", $jOrderID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+
+        return $skls;
+    }
+
+    public function getJobOrderOptionalSkills($jOrderID) {
+        $sql = sprintf(
+                "select skillname, skillexprience from joborder_skills where skilltype='Optional' and skillname is not null and length(trim(skillname))>0 and joborder_id = %s order by skillname;", $jOrderID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+
+        return $skls;
+    }
+
+    public function getCertificationsByJobOrderID($jOrderID) {
+        $sql = sprintf(
+                "select certificationname skillname, certificationtype skillexprience from joborder_certifications where certificationname is not null and length(trim(certificationname))>0 and joborder_id = %s order by certificationname;", $jOrderID
+        );
+
+        $skls = $this->_db->getAllAssoc($sql);
+
+        return $skls;
+    }
+
+    public function getAllCompanies() {
+        $sql = "select company_id id, name from company order by name;";
+        $skls = $this->_db->getAllAssoc($sql);
+        return $skls;
+    }
+
     /**
      * Adds a job order to the database and returns its job order ID.
      *
@@ -257,6 +293,18 @@ class JobOrders {
 
         $rResult = true;
         try {
+            //cleanup First
+            $sql = sprintf(
+                    "delete from `joborder_skills` where joborder_id = %s", $this->_db->makeQueryInteger($jobOrderID)
+            );
+            $queryResult = $this->_db->query($sql);
+
+            $sql = sprintf(
+                    "delete from `joborder_certifications` where joborder_id = %s", $this->_db->makeQueryInteger($jobOrderID)
+            );
+            $queryResult = $this->_db->query($sql);
+
+
             //mandatory skills
             $currCnt = 0;
             foreach ($mandatoryskillname as $mskill) {
@@ -391,6 +439,46 @@ class JobOrders {
             );
         }
 
+        return true;
+    }
+
+    public function CustomEdit($jobOrderID, $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $userID, $recruiter, $owner, $department, $questionnaireID
+    , $noticeperiod, $clientname, $clientLocation, $monthlyrate, $expyearsstart) {
+        $sql = sprintf(
+                "UPDATE `joborder`
+                    SET
+                    `recruiter` = %s,
+                    `contact_id` = %s,
+                    `company_id` = %s,
+                    `entered_by` = %s,
+                    `owner` = %s,
+                    `site_id` = %s,
+                    `client_job_id` = %s,
+                    `title` = %s,
+                    `description` = %s,
+                    `notes` = %s,
+                    `type` = %s,
+                    `duration` = %s,
+                    `rate_max` = %s,
+                    `salary` = %s,
+                    `is_hot` = %s,
+                    `openings` = %s,
+                    `city` = %s,
+                    `state` = %s,
+                    `start_date` = %s,
+                    `date_created` = now(),
+                    `date_modified` = now(),
+                    `public` = %s,
+                    `company_department_id` = %s,
+                    `questionnaire_id` = %s,
+                    `exprience` = %s,
+                    `clientname` = %s,
+                    `clientlocation` = %s,
+                    `clientmonthlyrate` = %s,
+                    `noticeperiod` = %s
+                    WHERE `joborder_id` = %s;", $this->_db->makeQueryInteger($recruiter), $this->_db->makeQueryInteger($contactID), $this->_db->makeQueryInteger($companyID), $this->_db->makeQueryInteger($userID), $this->_db->makeQueryInteger($owner), $this->_db->makeQueryInteger($this->_siteID), $this->_db->makeQueryString($companyJobID), $this->_db->makeQueryString($title), $this->_db->makeQueryString($description), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($type), $this->_db->makeQueryString($duration), $this->_db->makeQueryString($maxRate), $this->_db->makeQueryString($salary), $this->_db->makeQueryInteger($isHot), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($startDate), $this->_db->makeQueryInteger($isPublic), $this->_db->makeQueryInteger($department), $this->_db->makeQueryInteger($questionnaireID), $this->_db->makeQueryString($expyearsstart), $this->_db->makeQueryString($clientname), $this->_db->makeQueryString($clientLocation), $this->_db->makeQueryString($monthlyrate), $this->_db->makeQueryString($noticeperiod), $this->_db->makeQueryInteger($jobOrderID)
+        );
+        $res = $this->_db->query($sql);
         return true;
     }
 
@@ -625,7 +713,12 @@ class JobOrders {
                 joborder.company_department_id AS departmentID,
                 DATE_FORMAT(
                     joborder.start_date, '%%m-%%d-%%y'
-                ) AS startDate
+                ) AS startDate,
+                joborder.exprience as exprience,
+                joborder.clientname as clientname,
+                joborder.clientlocation as clientlocation,
+                joborder.clientmonthlyrate as clientmonthlyrate,
+                joborder.noticeperiod as noticeperiod
             FROM
                 joborder
             LEFT JOIN company

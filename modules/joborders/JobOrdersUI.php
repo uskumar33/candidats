@@ -109,9 +109,11 @@ class JobOrdersUI extends UserInterface {
 
             case 'edit':
                 if ($this->isPostBack()) {
-                    $this->onEdit();
+                    //$this->onEdit();
+                    $this->onCustomEdit();
                 } else {
-                    $this->edit();
+                    //$this->edit();
+                    $this->CustomEdit();
                 }
 
                 break;
@@ -766,7 +768,7 @@ class JobOrdersUI extends UserInterface {
         $clientLocation = $this->getTrimmedInput('clientLocation', $_POST);
         $monthlyrate = $this->getTrimmedInput('monthlyrate', $_POST);
         $expyearsstart = $this->getTrimmedInput('expyearsstart', $_POST);
-        
+
         /* Bail out if any of the required fields are empty. */
         if (empty($title) || empty($type) || empty($city) || empty($state)) {
             CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Required fields are missing.');
@@ -778,7 +780,7 @@ class JobOrdersUI extends UserInterface {
         $jobOrders = new JobOrders($this->_siteID);
         $jobOrderID = $jobOrders->add(
                 $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $this->_userID, $recruiter, $owner, $department, $questionnaireID
-                ,$noticeperiod, $clientname ,$clientLocation ,$monthlyrate ,$expyearsstart
+                , $noticeperiod, $clientname, $clientLocation, $monthlyrate, $expyearsstart
         );
 
         if ($jobOrderID <= 0) {
@@ -818,9 +820,132 @@ class JobOrdersUI extends UserInterface {
         );
     }
 
-    /*
-     * Called by handleRequest() to process loading the edit page.
-     */
+    private function CustomEdit() {
+        $jobOrderID = $_GET['jobOrderID'];
+        $users = new Users($this->_siteID);
+        $usersRS = $users->getSelectList();
+
+        $companies = new Companies($this->_siteID);
+        $companiesRS = $companies->getSelectList();
+
+        $jobOrders = new JobOrders($this->_siteID);
+        $data = $jobOrders->getForEditing($jobOrderID);
+
+        $joborderMandatorySkills = array();
+        $joborderOptionalSkills = array();
+        $jobOrderCertifications = array();
+        $joborderMandatorySkills = $jobOrders->getJobOrderMandatorySkills($jobOrderID);
+        $joborderOptionalSkills = $jobOrders->getJobOrderOptionalSkills($jobOrderID);
+        $jobOrderCertifications = $jobOrders->getCertificationsByJobOrderID($jobOrderID);
+
+
+        /* Do we have any companies yet? */
+        if (empty($companiesRS)) {
+            $noCompanies = true;
+        } else {
+            $noCompanies = false;
+        }
+
+        if (!$this->isRequiredIDValid('selected_company_id', $_GET)) {
+            $selectedCompanyID = false;
+        } else {
+            $selectedCompanyID = $_GET['selected_company_id'];
+        }
+
+        if ($_SESSION['CATS']->isHrMode()) {
+            $companies = new Companies($this->_siteID);
+            $selectedCompanyID = $companies->getDefaultCompany();
+        }
+
+        /* Do we have a selected_company_id? */
+        if ($selectedCompanyID === false) {
+            $selectedCompanyContacts = array();
+            $selectedCompanyLocation = array();
+            $selectedDepartmentsString = '';
+
+            $defaultCompanyID = $companies->getDefaultCompany();
+            if ($defaultCompanyID !== false) {
+                $defaultCompanyRS = $companies->get($defaultCompanyID);
+            } else {
+                $defaultCompanyRS = array();
+            }
+
+            $companyRS = array();
+        } else {
+            $selectedCompanyContacts = $companies->getContactsArray(
+                    $selectedCompanyID
+            );
+            $selectedCompanyLocation = $companies->getLocationArray(
+                    $selectedCompanyID
+            );
+            $departmentsRS = $companies->getDepartments($selectedCompanyID);
+            $selectedDepartmentsString = ListEditor::getStringFromList(
+                            $departmentsRS, 'name'
+            );
+
+            $defaultCompanyID = false;
+            $defaultCompanyRS = array();
+
+            $companyRS = $companies->get($selectedCompanyID);
+        }
+
+        /* Should we prepopulate the blank JO with the contents of another JO? */
+        if (isset($_GET['typeOfAdd']) &&
+                $this->isRequiredIDValid('jobOrderID', $_GET) &&
+                $_GET['typeOfAdd'] == 'existing') {
+            $jobOrderID = $_GET['jobOrderID'];
+
+            $jobOrderSourceRS = $jobOrders->get($jobOrderID);
+
+            $jobOrderSourceExtraFields = $jobOrders->extraFields->getValuesForEdit($jobOrderID);
+
+            $this->_template->assign('jobOrderSourceRS', $jobOrderSourceRS);
+            $this->_template->assign('jobOrderSourceExtraFields', $jobOrderSourceExtraFields);
+        } else {
+            $this->_template->assign('jobOrderSourceRS', false);
+            $this->_template->assign('jobOrderSourceExtraFields', false);
+        }
+
+        /* Get extra fields. */
+        $extraFieldRS = $jobOrders->extraFields->getValuesForAdd();
+
+        /* Get questionnaires to attach (if public) */
+        $questionnaire = new Questionnaire($this->_siteID);
+        $questionnaires = $questionnaire->getAll(false);
+
+        $careerPortalSettings = new CareerPortalSettings($this->_siteID);
+        $careerPortalSettingsRS = $careerPortalSettings->getAll();
+        $careerPortalEnabled = intval($careerPortalSettingsRS['enabled']) ? true : false;
+
+        $this->_template->assign('jobOrderID', $jobOrderID);
+        $this->_template->assign('careerPortalEnabled', $careerPortalEnabled);
+        $this->_template->assign('questionnaires', $questionnaires);
+        $this->_template->assign('extraFieldRS', $extraFieldRS);
+        $this->_template->assign('defaultCompanyID', $defaultCompanyID);
+        $this->_template->assign('defaultCompanyRS', $defaultCompanyRS);
+        $this->_template->assign('active', $this);
+        $this->_template->assign('subActive', 'Add Job Order');
+        $this->_template->assign('usersRS', $usersRS);
+        $this->_template->assign('userID', $this->_userID);
+        $this->_template->assign('companiesRS', $companiesRS);
+        $this->_template->assign('companyRS', $companyRS);
+        $this->_template->assign('noCompanies', $noCompanies);
+        $this->_template->assign('selectedCompanyID', $selectedCompanyID);
+        $this->_template->assign('selectedCompanyContacts', $selectedCompanyContacts);
+        $this->_template->assign('selectedCompanyLocation', $selectedCompanyLocation);
+        $this->_template->assign('selectedDepartmentsString', $selectedDepartmentsString);
+        $this->_template->assign('isHrMode', $_SESSION['CATS']->isHrMode());
+        $this->_template->assign('sessionCookie', $_SESSION['CATS']->getCookie());
+        $this->_template->assign('jobOrderSourceRS', $data);
+        $this->_template->assign('joborderMandatorySkills', $joborderMandatorySkills);
+        $this->_template->assign('joborderOptionalSkills', $joborderOptionalSkills);
+        $this->_template->assign('jobOrderCertifications', $jobOrderCertifications);
+
+        if (!eval(Hooks::get('JO_EDIT')))
+            return;
+
+        $this->_template->display('./modules/joborders/Edit.tpl');
+    }
 
     private function edit() {
         /* Bail out if we don't have a valid candidate ID. */
@@ -943,9 +1068,78 @@ class JobOrdersUI extends UserInterface {
         $this->_template->display('./modules/joborders/Edit.tpl');
     }
 
-    /*
-     * Called by handleRequest() to process saving / submitting the edit page.
-     */
+    private function onCustomEdit() {
+
+        $jobOrderID = $_POST['jobOrderID'];
+        $startDate = $this->getTrimmedInput('startDate', $_POST);
+        if (!empty($startDate)) {
+            if (!DateUtility::validate('-', $startDate, DATE_FORMAT_MMDDYY)) {
+                CommonErrors::fatal(COMMONERROR_MISSINGFIELDS, $this, 'Invalid start date.');
+            }
+
+            /* Convert start_date to something MySQL can understand. */
+            $startDate = DateUtility::convert(
+                            '-', $startDate, DATE_FORMAT_MMDDYY, DATE_FORMAT_YYYYMMDD
+            );
+        }
+
+        $isHot = $this->isChecked('isHot', $_POST);
+        $isPublic = $this->isChecked('public', $_POST);
+
+        /* If it is public, is a questionnaire attached? */
+        $questionnaireID = // If a questionnaire is provided the field will be shown and it will != 'none'
+                isset($_POST['questionnaire']) && !empty($_POST['questionnaire']) &&
+                strcmp($_POST['questionnaire'], 'none') && $isPublic ?
+                // The result will be an ID from the questionnaire table:
+                intval($_POST['questionnaire']) :
+                // If no questionnaire exists, boolean false
+                false;
+
+        $companyID = $_POST['companyID'];
+        $contactID = $_POST['contactID'];
+        $recruiter = $_POST['recruiter'];
+        $owner = $_POST['owner'];
+        $openings = $_POST['openings'];
+
+        $title = $this->getTrimmedInput('title', $_POST);
+        $companyJobID = $this->getTrimmedInput('companyJobID', $_POST);
+        $type = $this->getTrimmedInput('type', $_POST);
+        $city = $this->getTrimmedInput('city', $_POST);
+        $state = $this->getTrimmedInput('state', $_POST);
+        $duration = $this->getTrimmedInput('duration', $_POST);
+        $department = $this->getTrimmedInput('department', $_POST);
+        $maxRate = $this->getTrimmedInput('maxRate', $_POST);
+        $salary = $this->getTrimmedInput('ctcStart', $_POST);
+        $description = $this->getTrimmedInput('description', $_POST);
+        $notes = $this->getTrimmedInput('notes', $_POST);
+
+        $noticeperiod = $this->getTrimmedInput('noticeperiod', $_POST);
+        $clientname = $this->getTrimmedInput('clientname', $_POST);
+        $clientLocation = $this->getTrimmedInput('clientLocation', $_POST);
+        $monthlyrate = $this->getTrimmedInput('monthlyrate', $_POST);
+        $expyearsstart = $this->getTrimmedInput('expyearsstart', $_POST);
+
+        $jobOrders = new JobOrders($this->_siteID);
+        $jobOrders->CustomEdit(
+                $jobOrderID, $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $this->_userID, $recruiter, $owner, $department, $questionnaireID
+                , $noticeperiod, $clientname, $clientLocation, $monthlyrate, $expyearsstart
+        );
+
+        $mandatoryskillname = $_POST['mandatoryskillname'];
+        $mandatoryskillnameexp = $_POST['mandatoryskillnameexp'];
+        $optionalskillname = $_POST['optionalskillname'];
+        $optionalskillnameexp = $_POST['optionalskillnameexp'];
+        $certificationname = $_POST['certificationname'];
+        $certificationcategory = $_POST['certificationcategory'];
+
+        $jobOrders->addJobSkillsCertifications(
+                $jobOrderID, $this->_userID, $mandatoryskillname, $mandatoryskillnameexp, $optionalskillname, $optionalskillnameexp, $certificationname, $certificationcategory
+        );
+
+        CATSUtility::transferRelativeURI(
+                'm=joborders&a=show&jobOrderID=' . $jobOrderID
+        );
+    }
 
     private function onEdit() {
         if ($this->_accessLevel < ACCESS_LEVEL_EDIT) {
