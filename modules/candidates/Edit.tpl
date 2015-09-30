@@ -39,7 +39,16 @@
                                 <td class="tdData">
                                     <input type="text" tabindex="3" name="lastName" id="lastName" class="inputbox" style="width: 150px" value="<?php $this->_($this->data['lastName']); ?>" />&nbsp;*
                                 </td>
-                            </tr>   
+                            </tr>  
+                            <tr>
+                                <td class="tdVertical">
+                                    <label id="sourceLabel" for="image">Picture:</label>
+                                </td>
+                                <td class="tdData">
+                                    <input type="button" class="button" id="addImage" name="addImage" value="Edit Profile Picture" style="width:150px;" onclick="showPopWin('<?php echo(CATSUtility::getIndexName()); ?>?m=candidates&amp;a=addEditImage&amp;candidateID=<?php echo($this->candidateID); ?>', 400, 370, null);
+                                return false;" />&nbsp;
+                                </td>
+                            </tr>
                             <tr>
                                 <td colspan="2" class="tdData">
 
@@ -442,7 +451,7 @@
 
                     </td>
                 </tr>
-                 <tr>
+                <tr>
                     <td class="tdVertical">
                         <label id="keySkillsLabel" for="keySkills">Key Skills:</label>
                     </td>
