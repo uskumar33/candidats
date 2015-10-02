@@ -189,6 +189,9 @@ define('XML_EXPORT_TEMPLATES_DIR', './modules/xml/xml_templates');
 /* Default XML export template to use (from above directory) */
 define('DEFAULT_XML_EXPORT_TEMPLATE', 'rss');
 
+/* for Image Uploads*/
+define('COMPANY_LOGO_TARGET_LOCATION', 'images/companylogo/');
+
 /* Time Zones */
 // FIXME: Support fractional GMT offsets.
 $timeZones = array(
