@@ -569,7 +569,7 @@
                                                style="width: 100px;" value="">
                                     </td> 
                                     <td class="tdData">
-                                        <label id="durationLabel" for="duration">Duration </label>
+                                        <label id="durationLabel" for="duration">Duration Years</label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="35" class="inputbox" id="duration" name="duration[]" 
@@ -611,7 +611,7 @@
                                                style="width: 100px;" value="">
                                     </td> 
                                     <td class="tdData">
-                                        <label id="durationLabel" for="duration">Duration </label>
+                                        <label id="durationLabel" for="duration">Duration Years</label>
                                     </td>
                                     <td class="tdData">
                                         <input type="text" tabindex="35" class="inputbox" id="domainduration" name="domainduration[]" 
