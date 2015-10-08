@@ -1529,6 +1529,7 @@ class CandidatesUI extends UserInterface {
 
         $candidates = new Candidates($this->_siteID);
         $candidateData = $candidates->get($candidateID);
+        $currCandidateCalendarEvents = $candidates->getCandidateCalendarEvents($candidateID);
 
         /* Bail out if we got an empty result set. */
         if (empty($candidateData)) {
@@ -1599,7 +1600,8 @@ class CandidatesUI extends UserInterface {
         } else {
             $allowEventReminders = false;
         }
-
+        
+        $this->_template->assign('currCandidateCalendarEvents', $currCandidateCalendarEvents);
         $this->_template->assign('candidateID', $candidateID);
         $this->_template->assign('pipelineRS', $pipelineRS);
         $this->_template->assign('statusRS', $statusRS);
@@ -2848,6 +2850,14 @@ class CandidatesUI extends UserInterface {
             }
 
             $calendar = new Calendar($this->_siteID);
+            
+            if($activityTypeID=="Interview Rescheduled")
+            {
+                $rescheduledInterviewsList = $this->getTrimmedInput('rescheduledInterviewsList', $_POST);
+                $eventID = $calendar->deleteEvent($rescheduledInterviewsList);
+                
+            }
+            
             $eventID = $calendar->addEvent(
                     $eventTypeID, $date, $description, $allDay, $this->_userID, $candidateID, DATA_ITEM_CANDIDATE, $eventJobOrderID, $title, $duration, $reminderEnabled, $reminderEmail, $reminderTime, $publicEntry, $_SESSION['CATS']->getTimeZoneOffset()
             );

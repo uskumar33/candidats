@@ -102,7 +102,8 @@
         document.getElementById("scheduleEventDiv").style.display = 'none';
         document.getElementById("scheduleEventchkboxDiv").style.display = 'none';
         document.getElementById("scheduleEventlabelDiv").style.display = 'none';
-
+        document.getElementById('rescheduledInterviewsList').style.visibility = "hidden";
+        
         var ActivityType2 = document.getElementById('activitySubTypeID');
         var ln = ActivityType2.length - 1;
         while (ln > 0)
@@ -120,6 +121,13 @@
                 cityArray = interviewRejected
                 break;
             case "Interview Rescheduled":
+                document.getElementById("scheduleEvent").checked = true;
+                document.getElementById("scheduleEventDiv").style.display = 'block';
+                document.getElementById("scheduleEventchkboxDiv").style.display = 'block';
+                document.getElementById("scheduleEventlabelDiv").style.display = 'block';
+                
+                document.getElementById('rescheduledInterviewsList').style.visibility = "visible";
+                
                 cityArray = interviewRescheduled
                 break;
             case "Interview Scheduled":
@@ -204,7 +212,6 @@
                         <option value="Interview">Interview</option>
                         <option value="HR">HR</option>
                     </select>
-                    <span id="changeStatusSpanB" style="color: #aaaaaa;">&nbsp;*</span>
                     <select id="lstinterviewrounds" name="lstinterviewrounds" class="inputbox" style="width: 100px; margin-bottom: 4px; visibility:hidden;">
                         <option value='Round-1'>Round-1</option>
                         <option value='Round-2'>Round-2</option>
@@ -239,7 +246,15 @@
                 <div id="activityNoteDiv" style="margin-top: 4px;">
                     <select id="activityTypeID" name="activityTypeID" onchange='stateChanged(this.value);' class="inputbox" style="width: 150px; margin-bottom: 4px;">
                         <option value=''>Select Activity Type</option>
-                    </select>  
+                    </select> 
+                    <select id="rescheduledInterviewsList" name="rescheduledInterviewsList" class="inputbox" style="width: 200px; margin-bottom: 4px; visibility:hidden;">
+                        <option value="-1">-Select from List-</option>
+                                <?php if ($this->currCandidateCalendarEvents !== false): ?>
+                                <?php foreach ($this->currCandidateCalendarEvents as $rowNumber => $contactsData): ?>
+                                <option value="<?php $this->_($contactsData['id']) ?>"><?php $this->_($contactsData['title']) ?></option>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                    </select>
                     <div id="scheduleEventchkboxDiv" style="margin-top: 4px; display: none;">
                         <input type="checkbox" name="scheduleEvent" id="scheduleEvent" style="margin-left: 0px; <?php if ($this->onlyScheduleEvent): ?>display:none;<?php endif; ?>" onclick="AS_onScheduleEventChange('scheduleEvent', 'scheduleEventDiv');"<?php if ($this->onlyScheduleEvent): ?> checked="checked"<?php endif; ?> /><?php if (!$this->onlyScheduleEvent): ?>Schedule Event<?php endif; ?>
                     </div>

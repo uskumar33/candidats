@@ -60,6 +60,14 @@ class Candidates {
         return $skls;
     }
 
+     public function getCandidateCalendarEvents($candID) {
+         $sql = sprintf(
+                        "select calendar_event_id id, CONCAT_WS('|',title,date) title from calendar_event where data_item_id = %s", $this->_db->makeQueryInteger($candID)
+                );
+        $skls = $this->_db->getAllAssoc($sql);
+        return $skls;
+    }
+    
     /**
      * Adds a candidate to the database and returns its candidate ID.
      *
