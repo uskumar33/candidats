@@ -145,13 +145,7 @@
                         <label id="openingsIDLabel" for="openingsID">Openings:</label>
                     </td>
                     <td class="tdData">
-                        <select tabindex="8" id="openingsID" name="openings" class="inputbox" style="width: 100px;">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
+                        <input type="text" tabindex="8" class="inputbox" id="openingsID" name="openings" value="" style="width: 150px;" />
                     </td>
                 </tr>
 
