@@ -5,6 +5,25 @@
  */
 
 var clone1, clone2, clone21, clone3, clone31;
+
+ function collectAdditionalDataForOffersInHand(cstatusID)
+    {
+        document.getElementById('offeramountlbl').style.visibility = "hidden";
+        document.getElementById('offeramount').style.visibility = "hidden";
+        document.getElementById('offercompanylbl').style.visibility = "hidden";
+        document.getElementById('offercompany').style.visibility = "hidden";
+        switch (cstatusID)
+        {
+            case "Y":
+                document.getElementById('offeramountlbl').style.visibility = "visible";
+                document.getElementById('offeramount').style.visibility = "visible";
+                document.getElementById('offercompanylbl').style.visibility = "visible";
+                document.getElementById('offercompany').style.visibility = "visible";
+                break;
+            default:
+        }
+   }
+   
 function mytab1addRow(but) {
     var tbo1 = but.parentNode.parentNode.parentNode;
     tbo1.appendChild(clone1);

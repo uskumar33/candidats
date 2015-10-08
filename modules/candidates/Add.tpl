@@ -505,14 +505,30 @@
                                     <label id="anyoffersinhandlabel" for="anyoffersinhand">Any Offers in hand:</label>
                                 </td>
                                 <td class="tdData">
-                                    <select tabindex="29" id="anyoffersinhand" name="anyoffersinhand" class="inputbox" style="width: 150px;">
+                                    <select tabindex="29" id="anyoffersinhand" name="anyoffersinhand" onchange='collectAdditionalDataForOffersInHand(this.value);' class="inputbox" style="width: 150px;">
                                         <option value="-1">-Select from List-</option>
                                         <option value="Y">Yes</option>
                                         <option value="N">No</option>
                                     </select>
+
                                 </td>
                             </tr>
-
+                            <tr>
+                                <td class="tdVertical">
+                                    <label style="visibility:hidden;"  id="offeramountlbl" for="offeramount">Offer Amount:</label>
+                                </td>
+                                <td class="tdData">
+                                    <input type="text" name="offeramount" id="offeramount" class="inputbox" style="width: 150px; visibility:hidden;" value="" />                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdVertical">
+                                    <label style="visibility:hidden;"  id="offercompanylbl" for="offercompany">Offered Company:</label>
+                                </td>
+                                <td class="tdData">
+                                    <input type="text" name="offercompany" id="offercompany" class="inputbox" style="width: 150px; visibility:hidden;" value="" />                                    
+                                </td>
+                            </tr>
                         </table>
                     </Td>
 

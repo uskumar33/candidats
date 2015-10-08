@@ -1600,7 +1600,7 @@ class CandidatesUI extends UserInterface {
         } else {
             $allowEventReminders = false;
         }
-        
+
         $this->_template->assign('currCandidateCalendarEvents', $currCandidateCalendarEvents);
         $this->_template->assign('candidateID', $candidateID);
         $this->_template->assign('pipelineRS', $pipelineRS);
@@ -2336,10 +2336,13 @@ class CandidatesUI extends UserInterface {
         $employeetype = $this->getTrimmedInput('employeetype', $_POST);
         $noticeperiod = $this->getTrimmedInput('noticeperiod', $_POST);
         $reasonsforchange = $this->getTrimmedInput('reasonsforchange', $_POST);
-        $anyoffersinhand = $this->getTrimmedInput('anyoffersinhand', $_POST);
         $currentemployer = $this->getTrimmedInput('currentemployer', $_POST);
         $currentCTC = $this->getTrimmedInput('currentCTC', $_POST);
         $expectedCTC = $this->getTrimmedInput('expectedCTC', $_POST);
+
+        $anyoffersinhand = $this->getTrimmedInput('anyoffersinhand', $_POST);
+        $offeramount = $this->getTrimmedInput('offeramount', $_POST);
+        $offercompany = $this->getTrimmedInput('offercompany', $_POST);
 
         $passportValid = $this->getTrimmedInput('ValidPassport', $_POST);
         $othercertifications = $this->getTrimmedInput('othercertifications', $_POST);
@@ -2378,7 +2381,21 @@ class CandidatesUI extends UserInterface {
 
         $candidates = new Candidates($this->_siteID);
         $candidateID = $candidates->add(
-                $firstName, $middleName, $lastName, $email1, $email2, $phoneHome, $phoneCell, $phoneWork, $address, $city, $state, $zip, $source, $keySkills, $dateAvailable, $currentEmployer, $canRelocate, $currentPay, $desiredPay, $notes, $webSite, $bestTimeToCall, $this->_userID, $this->_userID, $gender, $race, $veteran, $disability, $sex, $dob, $skypeid, $pan, $totalexp, $currentlocation, $prefferedlocation, $currentdesignation, $employeetype, $noticeperiod, $reasonsforchange, $anyoffersinhand, $currentemployer, $currentCTC, $expectedCTC, $passportValid, $othercertifications, $othercommunication, $clientinteraction
+                $firstName, $middleName, $lastName, 
+                $email1, $email2, $phoneHome, $phoneCell, 
+                $phoneWork, $address, $city, $state, $zip, 
+                $source, $keySkills, $dateAvailable, 
+                $currentEmployer, $canRelocate, $currentPay, 
+                $desiredPay, $notes, $webSite, 
+                $bestTimeToCall, $this->_userID, $this->_userID,
+                $gender, $race, $veteran, $disability, $sex, 
+                $dob, $skypeid, $pan, $totalexp, 
+                $currentlocation, $prefferedlocation,
+                $currentdesignation, $employeetype, $noticeperiod, 
+                $reasonsforchange, $anyoffersinhand, $currentemployer, 
+                $currentCTC, $expectedCTC, $passportValid,
+                $othercertifications, $othercommunication, $clientinteraction,
+                $offeramount, $offercompany
         );
 
         if ($candidateID <= 0) {
@@ -2850,14 +2867,12 @@ class CandidatesUI extends UserInterface {
             }
 
             $calendar = new Calendar($this->_siteID);
-            
-            if($activityTypeID=="Interview Rescheduled")
-            {
+
+            if ($activityTypeID == "Interview Rescheduled") {
                 $rescheduledInterviewsList = $this->getTrimmedInput('rescheduledInterviewsList', $_POST);
                 $eventID = $calendar->deleteEvent($rescheduledInterviewsList);
-                
             }
-            
+
             $eventID = $calendar->addEvent(
                     $eventTypeID, $date, $description, $allDay, $this->_userID, $candidateID, DATA_ITEM_CANDIDATE, $eventJobOrderID, $title, $duration, $reminderEnabled, $reminderEmail, $reminderTime, $publicEntry, $_SESSION['CATS']->getTimeZoneOffset()
             );
