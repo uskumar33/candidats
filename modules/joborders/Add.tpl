@@ -299,22 +299,22 @@
                                                style="width: 150px;" value="">
                                     </td>
                                     <td width="10%" class="tdVertical">
-                                        <label id="openingsIDLabel" for="openingsID">Exp.</label>
+                                        <label id="openingsIDLabel" for="openingsID" style="width: 150px;">Desirable Exp.:</label>
                                     </td>
                                     <td width="30%" class="tdData">
                                         <select tabindex="22" id="mandatoryskillnameexp" name="mandatoryskillnameexp[]" class="inputbox" style="width: 100px;">
                                             <option value="-1">-Select from List-</option>
-                                            <option value="1"><1</option>
-                                            <option value="2"><2</option>
-                                            <option value="3"><3</option>
-                                            <option value="4"><4</option>
-                                            <option value="5"><5</option>
-                                            <option value="6"><6</option>
-                                            <option value="7"><7</option>
-                                            <option value="8"><8</option>
-                                            <option value="9"><9</option>
-                                            <option value="10"><10</option>
-                                            <option value="11">>10</option>
+                                            <option value="1">0 - 1</option>
+                                            <option value="2">1 - 3</option>
+                                            <option value="3">3 - 5</option>
+                                            <option value="4">5 - 7</option>
+                                            <option value="5">7 - 10</option>
+                                            <option value="6">10 - 12</option>
+                                            <option value="7">12 - 15</option>
+                                            <option value="8">15 - 18</option>
+                                            <option value="9">18 - 20</option>
+                                            <option value="10">20 - 25</option>
+                                            <option value="11">25+</option>
                                         </select>
                                     </td>
                                     <td width="20%">
@@ -344,22 +344,22 @@
                                                style="width: 150px;" value="">
                                     </td>
                                     <td width="10%" class="tdVertical">
-                                        <label id="openingsIDLabel" for="openingsID">Exp.</label>
+                                        <label id="openingsIDLabel" for="openingsID">Desirable Exp.:</label>
                                     </td>
                                     <td width="30%" class="tdData">
-                                        <select tabindex="24" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 150px;">
+                                        <select tabindex="24" id="optionalskillnameexp" name="optionalskillnameexp[]" class="inputbox" style="width: 100px;">
                                             <option value="-1">-Select from List-</option>
-                                            <option value="1"><1</option>
-                                            <option value="2"><2</option>
-                                            <option value="3"><3</option>
-                                            <option value="4"><4</option>
-                                            <option value="5"><5</option>
-                                            <option value="6"><6</option>
-                                            <option value="7"><7</option>
-                                            <option value="8"><8</option>
-                                            <option value="9"><9</option>
-                                            <option value="10"><10</option>
-                                            <option value="11">>10</option>
+                                            <option value="1">0 - 1</option>
+                                            <option value="2">1 - 3</option>
+                                            <option value="3">3 - 5</option>
+                                            <option value="4">5 - 7</option>
+                                            <option value="5">7 - 10</option>
+                                            <option value="6">10 - 12</option>
+                                            <option value="7">12 - 15</option>
+                                            <option value="8">15 - 18</option>
+                                            <option value="9">18 - 20</option>
+                                            <option value="10">20 - 25</option>
+                                            <option value="11">25+</option>
                                         </select>
                                     </td>
                                     <td width="20%">
