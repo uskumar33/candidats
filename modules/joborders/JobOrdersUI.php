@@ -1118,11 +1118,15 @@ class JobOrdersUI extends UserInterface {
         $clientLocation = $this->getTrimmedInput('clientLocation', $_POST);
         $monthlyrate = $this->getTrimmedInput('monthlyrate', $_POST);
         $expyearsstart = $this->getTrimmedInput('expyearsstart', $_POST);
+        $joborderstatus = $this->getTrimmedInput('status', $_POST);
 
         $jobOrders = new JobOrders($this->_siteID);
         $jobOrders->CustomEdit(
-                $jobOrderID, $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $this->_userID, $recruiter, $owner, $department, $questionnaireID
-                , $noticeperiod, $clientname, $clientLocation, $monthlyrate, $expyearsstart
+                $jobOrderID, $title, $companyID, $contactID, $description, $notes, 
+                $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, 
+                $salary, $city, $state, $startDate, $this->_userID, $recruiter, $owner, 
+                $department, $questionnaireID, $noticeperiod, $clientname, 
+                $clientLocation, $monthlyrate, $expyearsstart, $joborderstatus
         );
 
         $mandatoryskillname = $_POST['mandatoryskillname'];

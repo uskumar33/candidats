@@ -56,7 +56,7 @@ class Candidates {
 
     public function getAllJobOrders() {
         //$sql = "select joborder_id id, title from joborder order by title";
-        $sql = "select a.joborder_id id, CONCAT_WS(' - ',b.name,a.title) title from joborder a, company b where a.company_id = b.company_id order by a.title;";
+        $sql = "select a.joborder_id id, CONCAT_WS(' - ',b.name,a.title) title from joborder a, company b where a.company_id = b.company_id and a.status = 'Active' order by a.title;";
         $skls = $this->_db->getAllAssoc($sql);
         return $skls;
     }

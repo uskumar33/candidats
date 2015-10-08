@@ -243,12 +243,32 @@
                         <img title="Checking this box indicates that the job order is public. Job orders flaged as public will be able to be viewed by anonymous users." src="images/information.gif" alt="" width="16" height="16" />
                     </td>
                     <td class="tdVertical">
-
+                        <label id="statusLabel" for="status">Status:</label>
                     </td>
                     <td class="tdData">
+                        <?php if(isset($this->overOpenJOQuota) && ($this->jobOrderSourceRS['status'] == 'OnHold' || $this->jobOrderSourceRS['status'] == 'Full' || $this->jobOrderSourceRS['status'] == 'Closed' || $this->jobOrderSourceRS['status'] == 'Canceled')): ?>
+                        <select tabindex="8" id="status" name="status" class="inputbox" style="width: 150px;">
+                            <option <?php if ($this->jobOrderSourceRS['status'] == 'OnHold'): ?>selected<?php endif; ?> value="OnHold">On Hold</option>
+                            <option <?php if ($this->jobOrderSourceRS['status'] == 'Full'): ?>selected<?php endif; ?> value="Full">Full</option>
+                            <option <?php if ($this->jobOrderSourceRS['status'] == 'Closed'): ?>selected<?php endif; ?> value="Closed">Closed</option>
+                            <option <?php if ($this->jobOrderSourceRS['status'] == 'Canceled'): ?>selected<?php endif; ?> value="Canceled">Canceled</option>
+                        </select><br />
+                        <span style="font-size:10px;">(You have already reached your limit of <?php echo(FREE_ACCOUNT_JOBORDERS); ?> open Job Orders, and cannot make this Job Order Active.)<br /></font>
 
+                            <?php else: ?>
+                            <select tabindex="8" id="status" name="status" class="inputbox" style="width: 150px;">
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'Active'): ?>selected<?php endif; ?> value="Active">Active</option>
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'Upcoming'): ?>selected<?php endif; ?> value="Upcoming">Upcoming</option>
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'Lead'): ?>selected<?php endif; ?> value="Lead">Prospective / Lead</option>
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'OnHold'): ?>selected<?php endif; ?> value="OnHold">On Hold</option>
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'Full'): ?>selected<?php endif; ?> value="Full">Full</option>
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'Closed'): ?>selected<?php endif; ?> value="Closed">Closed</option>
+                                <option <?php if ($this->jobOrderSourceRS['status'] == 'Canceled'): ?>selected<?php endif; ?> value="Canceled">Canceled</option>
+                            </select>
+                            <?php endif; ?>
                     </td>
                 </tr>
+
             </table>
             <br>
             <p class="note">Candidate Skill Experience - Mandatory</p>

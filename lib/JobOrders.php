@@ -442,8 +442,10 @@ class JobOrders {
         return true;
     }
 
-    public function CustomEdit($jobOrderID, $title, $companyID, $contactID, $description, $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, $salary, $city, $state, $startDate, $userID, $recruiter, $owner, $department, $questionnaireID
-    , $noticeperiod, $clientname, $clientLocation, $monthlyrate, $expyearsstart) {
+    public function CustomEdit($jobOrderID, $title, $companyID, $contactID, $description, 
+            $notes, $duration, $maxRate, $type, $isHot, $isPublic, $openings, $companyJobID, 
+            $salary, $city, $state, $startDate, $userID, $recruiter, $owner, $department, $questionnaireID,
+            $noticeperiod, $clientname, $clientLocation, $monthlyrate, $expyearsstart, $joborderstatus) {
         $sql = sprintf(
                 "UPDATE `joborder`
                     SET
@@ -475,8 +477,15 @@ class JobOrders {
                     `clientname` = %s,
                     `clientlocation` = %s,
                     `clientmonthlyrate` = %s,
-                    `noticeperiod` = %s
-                    WHERE `joborder_id` = %s;", $this->_db->makeQueryInteger($recruiter), $this->_db->makeQueryInteger($contactID), $this->_db->makeQueryInteger($companyID), $this->_db->makeQueryInteger($userID), $this->_db->makeQueryInteger($owner), $this->_db->makeQueryInteger($this->_siteID), $this->_db->makeQueryString($companyJobID), $this->_db->makeQueryString($title), $this->_db->makeQueryString($description), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($type), $this->_db->makeQueryString($duration), $this->_db->makeQueryString($maxRate), $this->_db->makeQueryString($salary), $this->_db->makeQueryInteger($isHot), $this->_db->makeQueryInteger($openings), $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($startDate), $this->_db->makeQueryInteger($isPublic), $this->_db->makeQueryInteger($department), $this->_db->makeQueryInteger($questionnaireID), $this->_db->makeQueryString($expyearsstart), $this->_db->makeQueryString($clientname), $this->_db->makeQueryString($clientLocation), $this->_db->makeQueryString($monthlyrate), $this->_db->makeQueryString($noticeperiod), $this->_db->makeQueryInteger($jobOrderID)
+                    `noticeperiod` = %s,
+                    `status` = %s         
+                    WHERE `joborder_id` = %s;", $this->_db->makeQueryInteger($recruiter), $this->_db->makeQueryInteger($contactID), $this->_db->makeQueryInteger($companyID), $this->_db->makeQueryInteger($userID), $this->_db->makeQueryInteger($owner), $this->_db->makeQueryInteger($this->_siteID), $this->_db->makeQueryString($companyJobID), $this->_db->makeQueryString($title), $this->_db->makeQueryString($description), $this->_db->makeQueryString($notes), $this->_db->makeQueryString($type), $this->_db->makeQueryString($duration), $this->_db->makeQueryString($maxRate), $this->_db->makeQueryString($salary), $this->_db->makeQueryInteger($isHot), $this->_db->makeQueryInteger($openings),
+                $this->_db->makeQueryString($city), $this->_db->makeQueryString($state), $this->_db->makeQueryString($startDate), 
+                $this->_db->makeQueryInteger($isPublic), $this->_db->makeQueryInteger($department),
+                $this->_db->makeQueryInteger($questionnaireID), $this->_db->makeQueryString($expyearsstart), 
+                $this->_db->makeQueryString($clientname), $this->_db->makeQueryString($clientLocation), 
+                $this->_db->makeQueryString($monthlyrate), $this->_db->makeQueryString($noticeperiod),
+                $this->_db->makeQueryString($joborderstatus), $this->_db->makeQueryInteger($jobOrderID)
         );
         $res = $this->_db->query($sql);
         return true;
