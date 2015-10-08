@@ -168,12 +168,13 @@
 
                         <select tabindex="10" id="noticeperiod" name="noticeperiod" class="inputbox" style="width: 100px;">
                             <option value="0">-None-</option>
-                            <option value="1">1 Month</option>
-                            <option value="2">2 Months</option>
-                            <option value="3">3 Months</option>
-                            <option value="4">4 Months</option>
-                            <option value="5">5 Months</option>
-                            <option value="6">6 Months</option>
+                            <option value="Immediate">Immediate</option>
+                            <option value="7 days">7 days</option>
+                            <option value="15 days">15 days</option>
+                            <option value="30 days">30 days</option>
+                            <option value="2 Month">2 Month</option>
+                            <option value="3 Month">3 Month</option>
+                            <option value="Greater than 3 Month">Greater than 3 Month</option>
                         </select>
                     </td>
                 </tr>
@@ -326,9 +327,9 @@
                         </div>
                     </td>
                 </tr>
-               
+
             </table>
-            
+
             <p class="note">Candidate Skill Experience - Optional</p>
             <table class="editTable" width="700">
                 <tr>
@@ -372,7 +373,7 @@
                     </td>
                 </tr>
             </table>
-            
+
             <br>
             <p class="note">Certifications</p>
             <table class="editTable" width="700">                        
